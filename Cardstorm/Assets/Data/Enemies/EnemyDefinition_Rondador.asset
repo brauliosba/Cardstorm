@@ -25,4 +25,4 @@ MonoBehaviour:
   behaviour: 0
   shape: 0
   color: {r: 0.8509804, g: 0.3254902, b: 0.30980393, a: 1}
-  poolPrewarm: 250
+  poolPrewarm: 350

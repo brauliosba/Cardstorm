@@ -4312,6 +4312,98 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!1 &1626020805
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1626020809}
+  - component: {fileID: 1626020808}
+  - component: {fileID: 1626020807}
+  - component: {fileID: 1626020806}
+  m_Layer: 0
+  m_Name: DebugTools
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1626020806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626020805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c833011295320374e955e496e431b96e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.DebugTools.FrameTimeRecorder
+  duration: 30
+  enemies: {fileID: 0}
+--- !u!114 &1626020807
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626020805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1bfc89deb5e66894a9c937c3b7f64ee9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.DebugTools.DebugOverlay
+  visibleOnStart: 1
+  clock: {fileID: 0}
+  spawner: {fileID: 0}
+  enemies: {fileID: 0}
+  player: {fileID: 0}
+  recorder: {fileID: 0}
+  cheats: {fileID: 0}
+  bossNoticeTime: 6
+--- !u!114 &1626020808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626020805}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37f0f9cf042aeab48b132fbec857de74, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.DebugTools.DebugCheats
+  clock: {fileID: 0}
+  spawner: {fileID: 0}
+  enemies: {fileID: 0}
+  player: {fileID: 0}
+  map: {fileID: 0}
+  overlay: {fileID: 0}
+  recorder: {fileID: 0}
+  killRadius: 6
+  loadTestEnemy: {fileID: 0}
+  loadTestCount: 300
+  loadTestPerRing: 50
+  loadTestRingSpacing: 1.2
+--- !u!4 &1626020809
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1626020805}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 27.2399, y: -31.57903, z: -174.24939}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1630897832
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5974,3 +6066,4 @@ SceneRoots:
   - {fileID: 1894500785}
   - {fileID: 350652527}
   - {fileID: 829606319}
+  - {fileID: 1626020809}
