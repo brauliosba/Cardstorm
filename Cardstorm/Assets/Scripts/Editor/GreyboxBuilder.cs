@@ -2,6 +2,7 @@ using System.IO;
 using Cardstorm.CameraRig;
 using Cardstorm.Core;
 using Cardstorm.Enemies;
+using Cardstorm.Spawning;
 using Unity.Cinemachine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -28,6 +29,8 @@ namespace Cardstorm.EditorTools
         public const string GameplayScenePath = "Assets/Scenes/Gameplay.unity";
 
         public const string EnemyDataFolder = "Assets/Data/Enemies";
+        public const string SpawningDataFolder = "Assets/Data/Spawning";
+        public const string SpawnCurvePath = SpawningDataFolder + "/SpawnCurve_Partida.asset";
 
         const string UnlitSpriteMaterialPath = "Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Unlit-Default.mat";
 
@@ -56,6 +59,7 @@ namespace Cardstorm.EditorTools
             BuildPlayerPrefab();
             BuildObstaclePrefabs();
             CreateEnemyDefinitions(overwrite: false);
+            CreateSpawnCurve(overwrite: false);
             BuildEnemyPrefab();
             AssetDatabase.SaveAssets();
 
@@ -78,11 +82,12 @@ namespace Cardstorm.EditorTools
         {
             if (!Application.isBatchMode && !EditorUtility.DisplayDialog(
                     "Restablecer datos",
-                    "Se sobrescribirán las definiciones de enemigos con los valores de la memoria. Los cambios hechos en el inspector se perderán.",
+                    "Se sobrescribirán las definiciones de enemigos y la curva de aparición con los valores de la memoria. Los cambios hechos en el inspector se perderán.",
                     "Restablecer", "Cancelar"))
                 return;
 
             CreateEnemyDefinitions(overwrite: true);
+            CreateSpawnCurve(overwrite: true);
             AssetDatabase.SaveAssets();
             Debug.Log("[GreyboxBuilder] Datos restablecidos.");
         }
@@ -115,6 +120,37 @@ namespace Cardstorm.EditorTools
         }
 
         public static string EnemyDefinitionPath(string suffix) => $"{EnemyDataFolder}/EnemyDefinition_{suffix}.asset";
+
+        // Curva de la partida (hojas Tramos y Oleadas). Solo se crea si no existe, salvo al restablecer.
+        static void CreateSpawnCurve(bool overwrite)
+        {
+            Directory.CreateDirectory(SpawningDataFolder);
+
+            var curve = AssetDatabase.LoadAssetAtPath<SpawnCurve>(SpawnCurvePath);
+            if (curve != null && !overwrite)
+                return;
+
+            bool isNew = curve == null;
+            if (isNew)
+                curve = ScriptableObject.CreateInstance<SpawnCurve>();
+
+            curve.enemyTypes = new[]
+            {
+                AssetDatabase.LoadAssetAtPath<EnemyDefinition>(EnemyDefinitionPath("Rondador")),
+                AssetDatabase.LoadAssetAtPath<EnemyDefinition>(EnemyDefinitionPath("Corredor")),
+                AssetDatabase.LoadAssetAtPath<EnemyDefinition>(EnemyDefinitionPath("Tirador")),
+                AssetDatabase.LoadAssetAtPath<EnemyDefinition>(EnemyDefinitionPath("Coloso")),
+            };
+            SpawnCurveDefaults.ApplyTo(curve);
+
+            if (isNew)
+                AssetDatabase.CreateAsset(curve, SpawnCurvePath);
+            else
+                EditorUtility.SetDirty(curve);
+
+            foreach (var issue in curve.Validate())
+                Debug.LogWarning($"[GreyboxBuilder] SpawnCurve: {issue}");
+        }
 
         static void CreateEnemyDefinition(bool overwrite, string suffix, string id, string displayName,
             float maxHealth, int xp, float goldAverage, float goldChance,
@@ -469,13 +505,25 @@ namespace Cardstorm.EditorTools
             managerSo.FindProperty("flowField").objectReferenceValue = flowField;
             managerSo.ApplyModifiedPropertiesWithoutUndo();
 
-            // TEMPORAL: hasta que exista el WaveSpawner.
-            var spawner = root.AddComponent<DebugTools.DebugEnemySpawner>();
-            var spawnerSo = new SerializedObject(spawner);
-            spawnerSo.FindProperty("manager").objectReferenceValue = manager;
-            spawnerSo.FindProperty("definition").objectReferenceValue = definitions[0];
-            spawnerSo.FindProperty("map").objectReferenceValue = mapBounds;
-            spawnerSo.ApplyModifiedPropertiesWithoutUndo();
+            BuildGameSystems(scene, mapBounds, manager, definitions[2]);
+        }
+
+        // Reloj de la partida y spawner de oleadas.
+        static void BuildGameSystems(Scene scene, MapBounds mapBounds, EnemyManager manager, EnemyDefinition tirador)
+        {
+            var root = RecreateRoot(scene, "Game");
+            var clock = root.AddComponent<GameClock>();
+
+            var spawner = root.AddComponent<WaveSpawner>();
+            var so = new SerializedObject(spawner);
+            so.FindProperty("curve").objectReferenceValue = AssetDatabase.LoadAssetAtPath<SpawnCurve>(SpawnCurvePath);
+            so.FindProperty("clock").objectReferenceValue = clock;
+            so.FindProperty("enemies").objectReferenceValue = manager;
+            so.FindProperty("map").objectReferenceValue = mapBounds;
+            var lineTypes = so.FindProperty("pincerLineTypes");
+            lineTypes.arraySize = 1;
+            lineTypes.GetArrayElementAtIndex(0).objectReferenceValue = tirador;
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         static void BuildCameraRig(Scene scene, MapBounds mapBounds, Transform player)

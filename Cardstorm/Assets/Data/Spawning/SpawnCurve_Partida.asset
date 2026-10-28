@@ -1,0 +1,232 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3819e27a14100f44c995814154d1a37f, type: 3}
+  m_Name: SpawnCurve_Partida
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Spawning.SpawnCurve
+  enemyTypes:
+  - {fileID: 11400000, guid: ce2dbab91483a8241b9a0e3aeb9990ea, type: 2}
+  - {fileID: 11400000, guid: a074a7a9acb43a84e94e34b38b71b5cb, type: 2}
+  - {fileID: 11400000, guid: db1a024588a1657499642882e25a42a9, type: 2}
+  - {fileID: 11400000, guid: c300d01d7e04d624196b682656444df1, type: 2}
+  groupInterval: 2.5
+  groupSpread: 1.5
+  segments:
+  - name: Aprendizaje
+    startTime: 0
+    endTime: 60
+    ratePerMinute:
+    - 40
+    - 0
+    - 0
+    - 0
+    reinforcement: 1
+    pattern: 0
+  - name: Aprendizaje
+    startTime: 60
+    endTime: 120
+    ratePerMinute:
+    - 54
+    - 0
+    - 0
+    - 0
+    reinforcement: 1
+    pattern: 0
+  - name: Primer pico
+    startTime: 120
+    endTime: 165
+    ratePerMinute:
+    - 54
+    - 10
+    - 0
+    - 0
+    reinforcement: 1
+    pattern: 0
+  - name: Oleada 1
+    startTime: 165
+    endTime: 195
+    ratePerMinute:
+    - 54
+    - 10
+    - 0
+    - 0
+    reinforcement: 1
+    pattern: 0
+  - name: Respiro
+    startTime: 195
+    endTime: 240
+    ratePerMinute:
+    - 40
+    - 6
+    - 0
+    - 0
+    reinforcement: 1
+    pattern: 0
+  - name: Primer pico
+    startTime: 240
+    endTime: 300
+    ratePerMinute:
+    - 60
+    - 10
+    - 8
+    - 0
+    reinforcement: 1.1
+    pattern: 0
+  - name: Heraldo
+    startTime: 300
+    endTime: 360
+    ratePerMinute:
+    - 40
+    - 6
+    - 4
+    - 0
+    reinforcement: 1.1
+    pattern: 0
+  - name: Respiro
+    startTime: 360
+    endTime: 390
+    ratePerMinute:
+    - 36
+    - 6
+    - 4
+    - 0
+    reinforcement: 1.1
+    pattern: 0
+  - name: "Construcci\xF3n"
+    startTime: 390
+    endTime: 480
+    ratePerMinute:
+    - 72
+    - 28
+    - 9
+    - 2
+    reinforcement: 1.2
+    pattern: 0
+  - name: Oleada 2
+    startTime: 480
+    endTime: 510
+    ratePerMinute:
+    - 72
+    - 28
+    - 9
+    - 2
+    reinforcement: 1.2
+    pattern: 0
+  - name: Respiro
+    startTime: 510
+    endTime: 540
+    ratePerMinute:
+    - 44
+    - 12
+    - 6
+    - 1
+    reinforcement: 1.2
+    pattern: 0
+  - name: "Construcci\xF3n"
+    startTime: 540
+    endTime: 660
+    ratePerMinute:
+    - 88
+    - 38
+    - 12
+    - 3
+    reinforcement: 1.3
+    pattern: 0
+  - name: Oleada 3
+    startTime: 660
+    endTime: 690
+    ratePerMinute:
+    - 88
+    - 38
+    - 12
+    - 3
+    reinforcement: 1.3
+    pattern: 0
+  - name: Respiro
+    startTime: 690
+    endTime: 720
+    ratePerMinute:
+    - 54
+    - 18
+    - 8
+    - 2
+    reinforcement: 1.3
+    pattern: 0
+  - name: "Cl\xEDmax"
+    startTime: 720
+    endTime: 840
+    ratePerMinute:
+    - 112
+    - 50
+    - 18
+    - 4
+    reinforcement: 1.4
+    pattern: 0
+  - name: Oleada 4
+    startTime: 840
+    endTime: 870
+    ratePerMinute:
+    - 112
+    - 50
+    - 18
+    - 4
+    reinforcement: 1.4
+    pattern: 0
+  - name: Calma
+    startTime: 870
+    endTime: 900
+    ratePerMinute:
+    - 0
+    - 0
+    - 0
+    - 0
+    reinforcement: 1.4
+    pattern: 0
+  waves:
+  - name: 'Oleada 1: Cerco'
+    startTime: 165
+    duration: 30
+    extraCount: 1e000000000000000000000000000000
+    formation: 0
+    pulses: 2
+    chestGold: 15
+    chestTime: 195
+  - name: 'Oleada 2: Pinza'
+    startTime: 480
+    duration: 30
+    extraCount: 00000000140000000800000000000000
+    formation: 1
+    pulses: 2
+    chestGold: 20
+    chestTime: 510
+  - name: 'Oleada 3: Estampida'
+    startTime: 660
+    duration: 30
+    extraCount: 28000000000000000000000001000000
+    formation: 2
+    pulses: 2
+    chestGold: 25
+    chestTime: 690
+  - name: 'Oleada 4: Tormenta'
+    startTime: 840
+    duration: 30
+    extraCount: 1e000000080000000400000001000000
+    formation: 3
+    pulses: 2
+    chestGold: 25
+    chestTime: 870
+  bosses:
+  - name: Heraldo
+    time: 300
+    health: 800
+  - name: Ojo de la tormenta
+    time: 900
+    health: 2000
