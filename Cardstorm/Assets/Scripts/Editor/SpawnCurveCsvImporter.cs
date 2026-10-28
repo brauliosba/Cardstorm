@@ -12,15 +12,16 @@ namespace Cardstorm.EditorTools
     // Si hay errores o la curva resultante no es válida, no se toca el asset.
     public static class SpawnCurveCsvImporter
     {
+        public const string SpawnCurvePath = "Assets/Data/Spawning/SpawnCurve_Partida.asset";
         const string LastFolderKey = "Cardstorm.SpawnCurveCsvImporter.LastFolder";
 
         [MenuItem("Cardstorm/Datos/Importar curva desde CSV")]
         public static void ImportFromMenu()
         {
-            var curve = AssetDatabase.LoadAssetAtPath<SpawnCurve>(GreyboxBuilder.SpawnCurvePath);
+            var curve = AssetDatabase.LoadAssetAtPath<SpawnCurve>(SpawnCurvePath);
             if (curve == null)
             {
-                EditorUtility.DisplayDialog("Importar curva", $"No existe {GreyboxBuilder.SpawnCurvePath}. Ejecuta antes Cardstorm > Greybox > Construir greybox.", "Vale");
+                EditorUtility.DisplayDialog("Importar curva", $"No existe {SpawnCurvePath}. Crea antes el asset (Create > Cardstorm > Spawn Curve).", "Vale");
                 return;
             }
 
