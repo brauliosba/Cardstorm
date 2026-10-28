@@ -1,7 +1,11 @@
 using System.IO;
+using Cardstorm.CameraRig;
 using Cardstorm.Core;
+using Unity.Cinemachine;
 using UnityEditor;
+using UnityEditor.SceneManagement;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Cardstorm.EditorTools
 {
@@ -16,10 +20,29 @@ namespace Cardstorm.EditorTools
 
         public const string PrefabFolder = "Assets/Prefabs";
         public const string PlayerPrefabPath = PrefabFolder + "/Player.prefab";
+        public const string RockPrefabPath = PrefabFolder + "/Obstacle_Rock.prefab";
+        public const string ColumnPrefabPath = PrefabFolder + "/Obstacle_Column.prefab";
+
+        public const string GameplayScenePath = "Assets/Scenes/Gameplay.unity";
 
         const string UnlitSpriteMaterialPath = "Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Unlit-Default.mat";
 
         const int SpriteSize = 64;
+
+        // Mapa
+        static readonly Vector2 MapSize = new Vector2(120f, 120f);
+        const float BorderThickness = 2f;
+        const float GridSpacing = 10f;
+        static readonly Color FloorColor = new Color32(0x2B, 0x2B, 0x30, 0xFF);
+        static readonly Color GridColor = new Color32(0x36, 0x36, 0x3C, 0xFF);
+        static readonly Color BorderColor = new Color32(0x4A, 0x4A, 0x52, 0xFF);
+        static readonly Color ObstacleColor = new Color32(0x80, 0x80, 0x86, 0xFF);
+
+        // Cámara (valores provisionales)
+        const float OrthoSize = 9f;
+        const float FollowDamping = 0.4f;
+        const float LookaheadTime = 0.3f;      // 0,3 s × 5 u/s = 1,5 unidades de adelanto
+        const float LookaheadSmoothing = 10f;
 
         [MenuItem("Cardstorm/Greybox/Construir greybox")]
         public static void BuildAll()
@@ -27,7 +50,19 @@ namespace Cardstorm.EditorTools
             ApplyLayersAndPhysics();
             CreateGreyboxSprites();
             BuildPlayerPrefab();
+            BuildObstaclePrefabs();
             AssetDatabase.SaveAssets();
+
+            if (!OpenGameplayScene(out Scene scene))
+            {
+                Debug.LogWarning("[GreyboxBuilder] Construcción de la escena cancelada.");
+                return;
+            }
+            var mapBounds = BuildMap(scene);
+            var player = EnsurePlayer(scene);
+            BuildCameraRig(scene, mapBounds, player);
+            EditorSceneManager.MarkSceneDirty(scene);
+            EditorSceneManager.SaveScene(scene);
             Debug.Log("[GreyboxBuilder] Greybox construido.");
         }
 
@@ -161,6 +196,201 @@ namespace Cardstorm.EditorTools
 
             PrefabUtility.SaveAsPrefabAsset(root, PlayerPrefabPath);
             Object.DestroyImmediate(root);
+        }
+
+        static void BuildObstaclePrefabs()
+        {
+            var rock = new GameObject("Obstacle_Rock") { layer = Layers.Obstacle };
+            AddSprite(rock, CircleSpritePath, ObstacleColor, -10);
+            rock.AddComponent<CircleCollider2D>().radius = 0.5f;
+            PrefabUtility.SaveAsPrefabAsset(rock, RockPrefabPath);
+            Object.DestroyImmediate(rock);
+
+            var column = new GameObject("Obstacle_Column") { layer = Layers.Obstacle };
+            AddSprite(column, SquareSpritePath, ObstacleColor, -10);
+            column.AddComponent<BoxCollider2D>().size = Vector2.one;
+            PrefabUtility.SaveAsPrefabAsset(column, ColumnPrefabPath);
+            Object.DestroyImmediate(column);
+        }
+
+        // ---------------------------------------------------------------------
+        // 5. Escena: mapa, jugador y cámara (sobre Gameplay.unity, sin tocar el resto de objetos)
+        // ---------------------------------------------------------------------
+
+        static bool OpenGameplayScene(out Scene scene)
+        {
+            scene = SceneManager.GetActiveScene();
+            if (scene.path == GameplayScenePath)
+                return true;
+            if (!Application.isBatchMode && !EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                return false;
+            scene = EditorSceneManager.OpenScene(GameplayScenePath, OpenSceneMode.Single);
+            return scene.IsValid();
+        }
+
+        static GameObject RecreateRoot(Scene scene, string name)
+        {
+            foreach (var go in scene.GetRootGameObjects())
+            {
+                if (go.name == name)
+                    Object.DestroyImmediate(go);
+            }
+            var root = new GameObject(name);
+            SceneManager.MoveGameObjectToScene(root, scene);
+            return root;
+        }
+
+        static GameObject CreateChild(Transform parent, string name, int layer = 0)
+        {
+            var go = new GameObject(name) { layer = layer };
+            go.transform.SetParent(parent, false);
+            return go;
+        }
+
+        static MapBounds BuildMap(Scene scene)
+        {
+            var map = RecreateRoot(scene, "Map");
+            var bounds = map.AddComponent<MapBounds>();
+            Rect rect = new Rect(-MapSize * 0.5f, MapSize);
+
+            // Suelo y cuadrícula para percibir el desplazamiento
+            var floor = CreateChild(map.transform, "Floor");
+            floor.transform.localScale = new Vector3(MapSize.x, MapSize.y, 1f);
+            AddSprite(floor, SquareSpritePath, FloorColor, -100);
+
+            var grid = CreateChild(map.transform, "Grid");
+            for (float x = rect.xMin; x <= rect.xMax + 0.01f; x += GridSpacing)
+            {
+                var line = CreateChild(grid.transform, $"V {x:0}");
+                line.transform.localPosition = new Vector3(x, 0f, 0f);
+                line.transform.localScale = new Vector3(0.06f, MapSize.y, 1f);
+                AddSprite(line, SquareSpritePath, GridColor, -99);
+            }
+            for (float y = rect.yMin; y <= rect.yMax + 0.01f; y += GridSpacing)
+            {
+                var line = CreateChild(grid.transform, $"H {y:0}");
+                line.transform.localPosition = new Vector3(0f, y, 0f);
+                line.transform.localScale = new Vector3(MapSize.x, 0.06f, 1f);
+                AddSprite(line, SquareSpritePath, GridColor, -99);
+            }
+
+            // Muros del borde, por fuera del área jugable
+            var borders = CreateChild(map.transform, "Borders");
+            float t = BorderThickness;
+            CreateWall(borders.transform, "North", new Vector2(0f, rect.yMax + t * 0.5f), new Vector2(MapSize.x + 2f * t, t));
+            CreateWall(borders.transform, "South", new Vector2(0f, rect.yMin - t * 0.5f), new Vector2(MapSize.x + 2f * t, t));
+            CreateWall(borders.transform, "East", new Vector2(rect.xMax + t * 0.5f, 0f), new Vector2(t, MapSize.y));
+            CreateWall(borders.transform, "West", new Vector2(rect.xMin - t * 0.5f, 0f), new Vector2(t, MapSize.y));
+
+            // Obstáculos con semilla fija
+            var obstacles = CreateChild(map.transform, "Obstacles");
+            var rockPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(RockPrefabPath);
+            var columnPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(ColumnPrefabPath);
+            int index = 0;
+            foreach (var o in MapLayout.GenerateObstacles(MapLayout.DefaultSettings(rect)))
+            {
+                bool isRock = o.Kind == MapLayout.ObstacleKind.Rock;
+                var go = (GameObject)PrefabUtility.InstantiatePrefab(isRock ? rockPrefab : columnPrefab, scene);
+                go.name = $"{(isRock ? "Rock" : "Column")} {index++:00}";
+                go.transform.SetParent(obstacles.transform, false);
+                go.transform.localPosition = o.Position;
+                float scale = isRock ? o.Size * 2f : o.Size;
+                go.transform.localScale = new Vector3(scale, scale, 1f);
+            }
+
+            // Forma para el Confiner2D de Cinemachine. Desactivada: no participa en la física.
+            var cameraBounds = CreateChild(map.transform, "CameraBounds");
+            var boundsCollider = cameraBounds.AddComponent<BoxCollider2D>();
+            boundsCollider.size = MapSize;
+            boundsCollider.isTrigger = true;
+            boundsCollider.enabled = false;
+
+            return bounds;
+        }
+
+        static void CreateWall(Transform parent, string name, Vector2 position, Vector2 size)
+        {
+            var wall = CreateChild(parent, name, Layers.Obstacle);
+            wall.transform.localPosition = position;
+            wall.transform.localScale = new Vector3(size.x, size.y, 1f);
+            AddSprite(wall, SquareSpritePath, BorderColor, -10);
+            wall.AddComponent<BoxCollider2D>().size = Vector2.one;
+        }
+
+        static Transform EnsurePlayer(Scene scene)
+        {
+            foreach (var go in scene.GetRootGameObjects())
+            {
+                var movement = go.GetComponentInChildren<Player.PlayerMovement>(true);
+                if (movement != null)
+                    return movement.transform;
+            }
+            var prefab = AssetDatabase.LoadAssetAtPath<GameObject>(PlayerPrefabPath);
+            var player = (GameObject)PrefabUtility.InstantiatePrefab(prefab, scene);
+            player.transform.position = Vector3.zero;
+            return player.transform;
+        }
+
+        static void BuildCameraRig(Scene scene, MapBounds mapBounds, Transform player)
+        {
+            // Cámara real: ortográfica, con el Brain de Cinemachine
+            Camera mainCamera = null;
+            foreach (var go in scene.GetRootGameObjects())
+            {
+                mainCamera = go.GetComponentInChildren<Camera>(true);
+                if (mainCamera != null && mainCamera.CompareTag("MainCamera")) break;
+                mainCamera = null;
+            }
+            if (mainCamera == null)
+            {
+                var go = new GameObject("Main Camera") { tag = "MainCamera" };
+                SceneManager.MoveGameObjectToScene(go, scene);
+                mainCamera = go.AddComponent<Camera>();
+            }
+            mainCamera.orthographic = true;
+            mainCamera.orthographicSize = OrthoSize;
+            mainCamera.clearFlags = CameraClearFlags.SolidColor;
+            mainCamera.backgroundColor = new Color32(0x15, 0x15, 0x18, 0xFF);
+            mainCamera.transform.SetPositionAndRotation(new Vector3(0f, 0f, -10f), Quaternion.identity);
+            if (!mainCamera.TryGetComponent(out CinemachineBrain _))
+                mainCamera.gameObject.AddComponent<CinemachineBrain>();
+
+            // Cámara virtual que sigue al jugador
+            var rig = RecreateRoot(scene, "CM PlayerCamera");
+            rig.transform.position = new Vector3(player.position.x, player.position.y, -10f);
+
+            var cmCamera = rig.AddComponent<CinemachineCamera>();
+            cmCamera.Target.TrackingTarget = player;
+            var lens = LensSettings.Default;
+            lens.ModeOverride = LensSettings.OverrideModes.Orthographic;
+            lens.OrthographicSize = OrthoSize;
+            cmCamera.Lens = lens;
+
+            var composer = rig.AddComponent<CinemachinePositionComposer>();
+            composer.CameraDistance = 10f;
+            composer.Damping = new Vector3(FollowDamping, FollowDamping, 0f);
+            composer.Lookahead = new LookaheadSettings
+            {
+                Enabled = true,
+                Time = LookaheadTime,
+                Smoothing = LookaheadSmoothing,
+                IgnoreY = false,
+            };
+
+            var confiner = rig.AddComponent<CinemachineConfiner2D>();
+            confiner.BoundingShape2D = mapBounds.transform.Find("CameraBounds").GetComponent<BoxCollider2D>();
+            confiner.Damping = 0f;
+
+            // Sacudida: impulso uniforme que recibe el listener de esta cámara
+            var listener = rig.AddComponent<CinemachineImpulseListener>();
+            listener.UseCameraSpace = true;
+            var source = rig.AddComponent<CinemachineImpulseSource>();
+            source.ImpulseDefinition.ImpulseType = CinemachineImpulseDefinition.ImpulseTypes.Uniform;
+            source.ImpulseDefinition.ImpulseShape = CinemachineImpulseDefinition.ImpulseShapes.Bump;
+            var shake = rig.AddComponent<CameraShake>();
+            var so = new SerializedObject(shake);
+            so.FindProperty("player").objectReferenceValue = player.GetComponent<Player.PlayerHealth>();
+            so.ApplyModifiedPropertiesWithoutUndo();
         }
 
         static SpriteRenderer AddSprite(GameObject go, string spritePath, Color color, int sortingOrder)

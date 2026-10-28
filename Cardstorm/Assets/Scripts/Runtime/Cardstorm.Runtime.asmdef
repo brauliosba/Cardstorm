@@ -2,7 +2,8 @@
     "name": "Cardstorm.Runtime",
     "rootNamespace": "Cardstorm",
     "references": [
-        "Unity.InputSystem"
+        "Unity.InputSystem",
+        "Unity.Cinemachine"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

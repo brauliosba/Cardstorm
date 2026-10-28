@@ -2,7 +2,8 @@
     "name": "Cardstorm.Editor",
     "rootNamespace": "Cardstorm.EditorTools",
     "references": [
-        "Cardstorm.Runtime"
+        "Cardstorm.Runtime",
+        "Unity.Cinemachine"
     ],
     "includePlatforms": [
         "Editor"
