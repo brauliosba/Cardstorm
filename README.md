@@ -73,7 +73,7 @@ Las versiones compiladas de cada entrega (PEC) se publican en la sección **[Rel
 | Acción | Teclado y ratón | Mando |
 |---|---|---|
 | Moverse | WASD | Joystick izquierdo |
-| Jugar carta 1–4 | 1, 2, 3, 4 | X, Y, A, B |
+| Jugar carta 1–4 | IJKL | X, Y, A, B |
 | Pausa | Esc | Start |
 
 *Los controles pueden cambiar durante el desarrollo.*
