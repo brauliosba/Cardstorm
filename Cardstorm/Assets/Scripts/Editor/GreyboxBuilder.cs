@@ -22,6 +22,7 @@ namespace Cardstorm.EditorTools
         public const string PrefabFolder = "Assets/Prefabs";
         public const string PlayerPrefabPath = PrefabFolder + "/Player.prefab";
         public const string RockPrefabPath = PrefabFolder + "/Obstacle_Rock.prefab";
+        public const string EnemyPrefabPath = PrefabFolder + "/Enemy.prefab";
         public const string ColumnPrefabPath = PrefabFolder + "/Obstacle_Column.prefab";
 
         public const string GameplayScenePath = "Assets/Scenes/Gameplay.unity";
@@ -55,6 +56,7 @@ namespace Cardstorm.EditorTools
             BuildPlayerPrefab();
             BuildObstaclePrefabs();
             CreateEnemyDefinitions(overwrite: false);
+            BuildEnemyPrefab();
             AssetDatabase.SaveAssets();
 
             if (!OpenGameplayScene(out Scene scene))
@@ -65,6 +67,7 @@ namespace Cardstorm.EditorTools
             var mapBounds = BuildMap(scene);
             var player = EnsurePlayer(scene);
             BuildCameraRig(scene, mapBounds, player);
+            BuildEnemySystems(scene, mapBounds, player);
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
             Debug.Log("[GreyboxBuilder] Greybox construido.");
@@ -411,6 +414,68 @@ namespace Cardstorm.EditorTools
             var player = (GameObject)PrefabUtility.InstantiatePrefab(prefab, scene);
             player.transform.position = Vector3.zero;
             return player.transform;
+        }
+
+        // Prefab genérico: Enemy.Activate le da forma, color, tamaño y masa según la definición.
+        static void BuildEnemyPrefab()
+        {
+            var root = new GameObject("Enemy") { layer = Layers.Enemy };
+            AddSprite(root, CircleSpritePath, Color.white, 0);
+            root.AddComponent<Rigidbody2D>();
+            root.AddComponent<CircleCollider2D>().radius = 0.5f;
+            var enemy = root.AddComponent<Enemy>();
+
+            var so = new SerializedObject(enemy);
+            so.FindProperty("circleSprite").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Sprite>(CircleSpritePath);
+            so.FindProperty("squareSprite").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Sprite>(SquareSpritePath);
+            so.FindProperty("triangleSprite").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Sprite>(TriangleSpritePath);
+            so.ApplyModifiedPropertiesWithoutUndo();
+
+            PrefabUtility.SaveAsPrefabAsset(root, EnemyPrefabPath);
+            Object.DestroyImmediate(root);
+        }
+
+        static void BuildEnemySystems(Scene scene, MapBounds mapBounds, Transform player)
+        {
+            var root = RecreateRoot(scene, "Enemies");
+
+            var definitions = new[]
+            {
+                AssetDatabase.LoadAssetAtPath<EnemyDefinition>(EnemyDefinitionPath("Rondador")),
+                AssetDatabase.LoadAssetAtPath<EnemyDefinition>(EnemyDefinitionPath("Corredor")),
+                AssetDatabase.LoadAssetAtPath<EnemyDefinition>(EnemyDefinitionPath("Tirador")),
+                AssetDatabase.LoadAssetAtPath<EnemyDefinition>(EnemyDefinitionPath("Coloso")),
+            };
+
+            var pool = root.AddComponent<Pooling.EnemyPool>();
+            var poolSo = new SerializedObject(pool);
+            poolSo.FindProperty("prefab").objectReferenceValue = AssetDatabase.LoadAssetAtPath<Enemy>(EnemyPrefabPath);
+            var defsProp = poolSo.FindProperty("definitions");
+            defsProp.arraySize = definitions.Length;
+            for (int i = 0; i < definitions.Length; i++)
+                defsProp.GetArrayElementAtIndex(i).objectReferenceValue = definitions[i];
+            poolSo.ApplyModifiedPropertiesWithoutUndo();
+
+            var flowField = root.AddComponent<Navigation.FlowFieldProvider>();
+            var flowSo = new SerializedObject(flowField);
+            flowSo.FindProperty("map").objectReferenceValue = mapBounds;
+            flowSo.FindProperty("target").objectReferenceValue = player;
+            flowSo.ApplyModifiedPropertiesWithoutUndo();
+
+            var manager = root.AddComponent<EnemyManager>();
+            var managerSo = new SerializedObject(manager);
+            managerSo.FindProperty("player").objectReferenceValue = player;
+            managerSo.FindProperty("pool").objectReferenceValue = pool;
+            managerSo.FindProperty("flowField").objectReferenceValue = flowField;
+            managerSo.ApplyModifiedPropertiesWithoutUndo();
+
+            // TEMPORAL: hasta que exista el WaveSpawner.
+            var spawner = root.AddComponent<DebugTools.DebugEnemySpawner>();
+            var spawnerSo = new SerializedObject(spawner);
+            spawnerSo.FindProperty("manager").objectReferenceValue = manager;
+            spawnerSo.FindProperty("definition").objectReferenceValue = definitions[0];
+            spawnerSo.FindProperty("map").objectReferenceValue = mapBounds;
+            spawnerSo.ApplyModifiedPropertiesWithoutUndo();
         }
 
         static void BuildCameraRig(Scene scene, MapBounds mapBounds, Transform player)
