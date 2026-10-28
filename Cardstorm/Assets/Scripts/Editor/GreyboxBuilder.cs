@@ -1,6 +1,7 @@
 using System.IO;
 using Cardstorm.CameraRig;
 using Cardstorm.Core;
+using Cardstorm.Enemies;
 using Unity.Cinemachine;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -24,6 +25,8 @@ namespace Cardstorm.EditorTools
         public const string ColumnPrefabPath = PrefabFolder + "/Obstacle_Column.prefab";
 
         public const string GameplayScenePath = "Assets/Scenes/Gameplay.unity";
+
+        public const string EnemyDataFolder = "Assets/Data/Enemies";
 
         const string UnlitSpriteMaterialPath = "Packages/com.unity.render-pipelines.universal/Runtime/Materials/Sprite-Unlit-Default.mat";
 
@@ -51,6 +54,7 @@ namespace Cardstorm.EditorTools
             CreateGreyboxSprites();
             BuildPlayerPrefab();
             BuildObstaclePrefabs();
+            CreateEnemyDefinitions(overwrite: false);
             AssetDatabase.SaveAssets();
 
             if (!OpenGameplayScene(out Scene scene))
@@ -64,6 +68,84 @@ namespace Cardstorm.EditorTools
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
             Debug.Log("[GreyboxBuilder] Greybox construido.");
+        }
+
+        [MenuItem("Cardstorm/Greybox/Restablecer datos a la memoria")]
+        public static void ResetData()
+        {
+            if (!Application.isBatchMode && !EditorUtility.DisplayDialog(
+                    "Restablecer datos",
+                    "Se sobrescribirán las definiciones de enemigos con los valores de la memoria. Los cambios hechos en el inspector se perderán.",
+                    "Restablecer", "Cancelar"))
+                return;
+
+            CreateEnemyDefinitions(overwrite: true);
+            AssetDatabase.SaveAssets();
+            Debug.Log("[GreyboxBuilder] Datos restablecidos.");
+        }
+
+        // ---------------------------------------------------------------------
+        // 3. Datos: definiciones de enemigos (solo se crean si no existen)
+        // ---------------------------------------------------------------------
+
+        static void CreateEnemyDefinitions(bool overwrite)
+        {
+            Directory.CreateDirectory(EnemyDataFolder);
+
+            // Vida, XP y oro de la memoria; velocidad, daño, radio y masa provisionales.
+            CreateEnemyDefinition(overwrite, "Rondador", "rondador", "Rondador",
+                maxHealth: 10f, xp: 1, goldAverage: 0.3f, goldChance: 0.3f,
+                moveSpeed: 3f, contactDamage: 10f, radius: 0.4f, mass: 1f,
+                EnemyShape.Circle, new Color32(0xD9, 0x53, 0x4F, 0xFF), poolPrewarm: 250);
+            CreateEnemyDefinition(overwrite, "Corredor", "corredor", "Corredor",
+                maxHealth: 6f, xp: 1, goldAverage: 0.3f, goldChance: 0.3f,
+                moveSpeed: 7f, contactDamage: 10f, radius: 0.3f, mass: 0.7f,
+                EnemyShape.Triangle, new Color32(0xF0, 0xAD, 0x4E, 0xFF), poolPrewarm: 80);
+            CreateEnemyDefinition(overwrite, "Tirador", "tirador", "Tirador",
+                maxHealth: 20f, xp: 2, goldAverage: 0.5f, goldChance: 0.5f,
+                moveSpeed: 2.5f, contactDamage: 10f, radius: 0.45f, mass: 1f,
+                EnemyShape.Square, new Color32(0x9B, 0x59, 0xB6, 0xFF), poolPrewarm: 40);
+            CreateEnemyDefinition(overwrite, "Coloso", "coloso", "Coloso",
+                maxHealth: 120f, xp: 10, goldAverage: 3f, goldChance: 1f,
+                moveSpeed: 1.8f, contactDamage: 20f, radius: 1f, mass: 20f,
+                EnemyShape.Circle, new Color32(0x8B, 0x5A, 0x2B, 0xFF), poolPrewarm: 10);
+        }
+
+        public static string EnemyDefinitionPath(string suffix) => $"{EnemyDataFolder}/EnemyDefinition_{suffix}.asset";
+
+        static void CreateEnemyDefinition(bool overwrite, string suffix, string id, string displayName,
+            float maxHealth, int xp, float goldAverage, float goldChance,
+            float moveSpeed, float contactDamage, float radius, float mass,
+            EnemyShape shape, Color color, int poolPrewarm)
+        {
+            string path = EnemyDefinitionPath(suffix);
+            var def = AssetDatabase.LoadAssetAtPath<EnemyDefinition>(path);
+            if (def != null && !overwrite)
+                return;
+
+            bool isNew = def == null;
+            if (isNew)
+                def = ScriptableObject.CreateInstance<EnemyDefinition>();
+
+            def.id = id;
+            def.displayName = displayName;
+            def.maxHealth = maxHealth;
+            def.xp = xp;
+            def.goldAverage = goldAverage;
+            def.goldChance = goldChance;
+            def.moveSpeed = moveSpeed;
+            def.contactDamage = contactDamage;
+            def.radius = radius;
+            def.mass = mass;
+            def.behaviour = EnemyBehaviour.Chase;
+            def.shape = shape;
+            def.color = color;
+            def.poolPrewarm = poolPrewarm;
+
+            if (isNew)
+                AssetDatabase.CreateAsset(def, path);
+            else
+                EditorUtility.SetDirty(def);
         }
 
         // ---------------------------------------------------------------------
