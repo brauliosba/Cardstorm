@@ -13,7 +13,7 @@ Este repositorio contiene el prototipo desarrollado como **Trabajo Final de Más
 
 ## Concepto
 
-- **Mano de cuatro cartas** asignadas a cuatro botones (1–4 en teclado, X/Y/A/B en mando).
+- **Mano de cuatro cartas** asignadas a cuatro botones en rombo (I, J, K, L o 1–4 en teclado; Y, X, B, A en mando).
 - **Energía** que se regenera con el tiempo; cada carta tiene un coste. Al jugar una carta se roba otra del mazo y, cuando el mazo se agota, se baraja el descarte.
 - **Tipos de carta:** ataque (proyectil, área, cuerpo a cuerpo), defensa y movilidad, invocaciones y cartas de poder con efecto pasivo.
 - **Progresión en la partida:** los enemigos sueltan experiencia y oro; al subir de nivel se elige entre añadir una carta nueva, mejorarla con gemas o mejorar un atributo.
@@ -70,10 +70,14 @@ Las versiones compiladas de cada entrega (PEC) se publican en la sección **[Rel
 
 ## Controles
 
-| Acción | Teclado y ratón | Mando |
+| Acción | Teclado | Mando |
 |---|---|---|
 | Moverse | WASD | Joystick izquierdo |
-| Jugar carta 1–4 | IJKL | X, Y, A, B |
+| Carta de arriba | I o 1 | Y |
+| Carta de la izquierda | J o 2 | X |
+| Carta de la derecha | L o 3 | B |
+| Carta de abajo | K o 4 | A |
+| Ver descripción de las cartas | Mantener Mayús | Mantener gatillo izquierdo |
 | Pausa | Esc | Start |
 
 *Los controles pueden cambiar durante el desarrollo.*
