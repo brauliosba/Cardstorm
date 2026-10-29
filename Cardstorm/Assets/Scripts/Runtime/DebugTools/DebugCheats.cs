@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Cardstorm.CameraRig;
+using Cardstorm.Cards;
 using Cardstorm.Core;
 using Cardstorm.Enemies;
 using Cardstorm.Player;
@@ -18,6 +19,7 @@ namespace Cardstorm.DebugTools
         [SerializeField] WaveSpawner spawner;
         [SerializeField] EnemyManager enemies;
         [SerializeField] PlayerHealth player;
+        [SerializeField] PlayerCards cards;
         [SerializeField] MapBounds map;
         [SerializeField] DebugOverlay overlay;
         [SerializeField] FrameTimeRecorder recorder;
@@ -51,6 +53,7 @@ namespace Cardstorm.DebugTools
             if (spawner == null) spawner = FindFirstObjectByType<WaveSpawner>();
             if (enemies == null) enemies = FindFirstObjectByType<EnemyManager>();
             if (player == null) player = FindFirstObjectByType<PlayerHealth>();
+            if (cards == null) cards = FindFirstObjectByType<PlayerCards>();
             if (map == null) map = FindFirstObjectByType<MapBounds>();
             if (overlay == null) overlay = FindFirstObjectByType<DebugOverlay>();
             if (recorder == null) recorder = FindFirstObjectByType<FrameTimeRecorder>();
@@ -93,6 +96,7 @@ namespace Cardstorm.DebugTools
             if (k.f4Key.wasPressedThisFrame && spawner != null) TogglePauseSpawning();
             if (k.f5Key.wasPressedThisFrame) KillNearby();
             if (k.f6Key.wasPressedThisFrame && player != null) ToggleGodMode();
+            if (k.f7Key.wasPressedThisFrame) ToggleInfiniteEnergy();
             if (k.f9Key.wasPressedThisFrame) LoadTest();
             if (k.f10Key.wasPressedThisFrame && enemies != null) DespawnAll();
             if (k.f11Key.wasPressedThisFrame && recorder != null) recorder.StartRecording();
@@ -147,6 +151,14 @@ namespace Cardstorm.DebugTools
         {
             player.GodMode = !player.GodMode;
             Debug.Log($"[DebugCheats] Invulnerable: {(player.GodMode ? "sí" : "no")}");
+        }
+
+        // F7
+        void ToggleInfiniteEnergy()
+        {
+            if (cards == null || cards.Energy == null) return;
+            cards.Energy.Infinite = !cards.Energy.Infinite;
+            Debug.Log($"[DebugCheats] Energía infinita: {(cards.Energy.Infinite ? "sí" : "no")}");
         }
 
         // F9: loadTestCount enemigos en anillos alrededor del jugador, fuera de la vista; pausa las apariciones normales.
