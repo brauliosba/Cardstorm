@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cardstorm.Combat;
 using Cardstorm.Enemies;
 using Cardstorm.Player;
 using UnityEngine;
@@ -13,6 +14,7 @@ namespace Cardstorm.Cards
         const int TargetBufferCapacity = 600;
 
         [SerializeField] EnemyManager enemies;
+        [SerializeField] ProjectileManager projectiles;
 
         [Tooltip("Radio con el que se cuentan los vecinos al buscar la zona más densa.")]
         [Min(0.1f)] [SerializeField] float densityRadius = 2f;
@@ -28,6 +30,7 @@ namespace Cardstorm.Cards
         public PlayerMovement Movement { get; private set; }
         public PlayerHealth Health { get; private set; }
         public EnemyManager Enemies => enemies;
+        public ProjectileManager Projectiles => projectiles;
 
         // Multiplicador de daño de todas las cartas (Furia).
         public float DamageMultiplier { get; set; } = 1f;
@@ -38,6 +41,7 @@ namespace Cardstorm.Cards
             Movement = GetComponent<PlayerMovement>();
             Health = GetComponent<PlayerHealth>();
             if (enemies == null) enemies = FindFirstObjectByType<EnemyManager>();
+            if (projectiles == null) projectiles = FindFirstObjectByType<ProjectileManager>();
         }
 
         public void Cast(CardDefinition card)

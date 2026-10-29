@@ -86,6 +86,13 @@ namespace Cardstorm.Player
             }
         }
 
+        // Invulnerabilidad sin recibir daño (Esquivar). Si ya había una más larga, se conserva.
+        public void GrantInvulnerability(float seconds)
+        {
+            if (seconds <= 0f) return;
+            invulnerableUntil = Mathf.Max(invulnerableUntil, Time.time + seconds);
+        }
+
         public void ResetHealth()
         {
             Current = maxHealth;

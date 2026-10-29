@@ -1,3 +1,4 @@
+using Cardstorm.Core;
 using UnityEngine;
 
 namespace Cardstorm.Player
@@ -19,6 +20,8 @@ namespace Cardstorm.Player
 
         Rigidbody2D rb;
         PlayerInputReader input;
+        Vector2 dashVelocity;
+        float dashTimer;
 
         // Multiplicador de la carta Zancada (+10 % por copia).
         public float SpeedMultiplier { get; set; } = 1f;
@@ -29,6 +32,8 @@ namespace Cardstorm.Player
         public Vector2 LastMoveDirection { get; private set; } = Vector2.up;
 
         public Vector2 CurrentMove { get; private set; }
+
+        public bool IsDashing => dashTimer > 0f;
 
         void Awake()
         {
@@ -57,8 +62,31 @@ namespace Cardstorm.Player
             }
         }
 
+        // Desplazamiento rápido que ignora la entrada. Atraviesa a los enemigos, pero no los obstáculos.
+        public void Dash(Vector2 direction, float distance, float duration)
+        {
+            if (distance <= 0f || duration <= 0f) return;
+            if (direction.sqrMagnitude < 0.0001f) direction = LastMoveDirection;
+
+            dashVelocity = direction.normalized * (distance / duration);
+            dashTimer = duration;
+            rb.excludeLayers = Layers.EnemyMask;
+        }
+
         void FixedUpdate()
         {
+            if (IsDashing)
+            {
+                rb.linearVelocity = dashVelocity;
+                dashTimer -= Time.fixedDeltaTime;
+                if (dashTimer <= 0f)
+                {
+                    dashTimer = 0f;
+                    rb.excludeLayers = 0;
+                }
+                return;
+            }
+
             Vector2 target = CurrentMove * Speed;
             rb.linearVelocity = acceleration <= 0f
                 ? target

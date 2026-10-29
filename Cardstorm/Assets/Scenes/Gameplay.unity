@@ -1437,6 +1437,54 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5900704735514819264, guid: ecf4e3472ea00a24098d41c44d6e4119, type: 3}
   m_PrefabInstance: {fileID: 351426990}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &355111578
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 355111580}
+  - component: {fileID: 355111579}
+  m_Layer: 0
+  m_Name: Projectiles
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &355111579
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 355111578}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 10bc1ac4e2be41c4d99267b2726121c1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Combat.ProjectileManager
+  prefab: {fileID: 8313055915397941267, guid: 56012cac2d3f08345828aba7c2ad9a1c, type: 3}
+  clock: {fileID: 829606318}
+  prewarm: 64
+  maxSize: 256
+--- !u!4 &355111580
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 355111578}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &361164800
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6073,5 +6121,6 @@ SceneRoots:
   - {fileID: 127580125}
   - {fileID: 1894500785}
   - {fileID: 350652527}
+  - {fileID: 355111580}
   - {fileID: 829606319}
   - {fileID: 1626020809}
