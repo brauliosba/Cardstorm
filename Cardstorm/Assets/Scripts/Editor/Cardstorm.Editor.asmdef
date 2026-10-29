@@ -3,7 +3,9 @@
     "rootNamespace": "Cardstorm.EditorTools",
     "references": [
         "Cardstorm.Runtime",
-        "Unity.Cinemachine"
+        "Unity.Cinemachine",
+        "UnityEngine.UI",
+        "Unity.TextMeshPro"
     ],
     "includePlatforms": [
         "Editor"
