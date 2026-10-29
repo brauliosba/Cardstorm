@@ -13,6 +13,18 @@ namespace Cardstorm.UI
         const float WaitingAlpha = 0.5f;
         const float InfoScale = 1.25f;
 
+        // Sacudida al pulsar sin poder jugar.
+        const float ShakeTime = 0.15f;
+        const float ShakeAmplitude = 8f;
+        const float ShakeFrequency = 50f;
+
+        // «Pop» al jugar la carta.
+        const float PopTime = 0.1f;
+        const float PopScale = 1.1f;
+
+        // Destello rojo del coste al pulsar sin energía.
+        const float CostFlashTime = 0.25f;
+
         [SerializeField] CanvasGroup group;
         [SerializeField] GameObject emptyFrame;
         [SerializeField] GameObject content;
@@ -29,12 +41,32 @@ namespace Cardstorm.UI
         [Tooltip("Velo que se retira de arriba abajo durante el robo.")]
         [SerializeField] Image drawVeil;
 
+        RectTransform rect;
+        Vector2 basePosition;
         CardInstance shownCard;
         SlotState? shownState;
-        bool? shownAffordable;
         bool? shownInfo;
+        bool? shownCostRed;
+        bool info;
+        float shakeTimer;
+        float popTimer;
+        float costFlashTimer;
+
+        void Awake()
+        {
+            rect = (RectTransform)transform;
+            basePosition = rect.anchoredPosition;
+        }
 
         public void SetKeyLabel(string label) => keyText.text = label;
+
+        public void Played() => popTimer = PopTime;
+
+        public void Failed(PlayResult result)
+        {
+            shakeTimer = ShakeTime;
+            if (result == PlayResult.NotEnoughEnergy) costFlashTimer = CostFlashTime;
+        }
 
         public void Refresh(CardCycle<CardInstance> cycle, Energy energy, int slot, bool infoHeld)
         {
@@ -45,7 +77,6 @@ namespace Cardstorm.UI
             {
                 shownCard = card;
                 if (card != null) ShowCard(card.Definition);
-                shownAffordable = null;
             }
 
             if (state != shownState)
@@ -55,8 +86,9 @@ namespace Cardstorm.UI
                 content.SetActive(!waiting);
                 emptyFrame.SetActive(waiting);
                 drawVeil.gameObject.SetActive(state == SlotState.Drawing);
-                shownAffordable = null;
             }
+
+            Animate(Time.deltaTime);
 
             if (state == SlotState.Waiting || card == null)
             {
@@ -79,13 +111,30 @@ namespace Cardstorm.UI
                 group.alpha = affordable ? 1f : NoEnergyAlpha;
             }
 
-            if (affordable != shownAffordable)
+            bool costRed = !affordable || costFlashTimer > 0f;
+            if (costRed != shownCostRed)
             {
-                shownAffordable = affordable;
-                costText.color = affordable ? HudColors.Bar : HudColors.NotEnough;
+                shownCostRed = costRed;
+                costText.color = costRed ? HudColors.NotEnough : HudColors.Bar;
             }
 
             SetInfo(infoHeld);
+        }
+
+        void Animate(float dt)
+        {
+            shakeTimer = Mathf.Max(0f, shakeTimer - dt);
+            popTimer = Mathf.Max(0f, popTimer - dt);
+            costFlashTimer = Mathf.Max(0f, costFlashTimer - dt);
+
+            float shake = shakeTimer > 0f
+                ? Mathf.Sin(shakeTimer * ShakeFrequency) * ShakeAmplitude * (shakeTimer / ShakeTime)
+                : 0f;
+            rect.anchoredPosition = basePosition + new Vector2(shake, 0f);
+
+            float pop = 1f + (PopScale - 1f) * (popTimer / PopTime);
+            float scale = (info ? InfoScale : 1f) * pop;
+            rect.localScale = new Vector3(scale, scale, 1f);
         }
 
         void ShowCard(CardDefinition definition)
@@ -104,17 +153,17 @@ namespace Cardstorm.UI
         }
 
         // Con la información pulsada, la descripción sustituye al dibujo y la carta se agranda.
-        void SetInfo(bool info)
+        void SetInfo(bool value)
         {
-            if (info == shownInfo) return;
-            shownInfo = info;
+            info = value;
+            if (value == shownInfo) return;
+            shownInfo = value;
 
-            art.gameObject.SetActive(!info);
-            nameText.gameObject.SetActive(!info);
-            typeText.gameObject.SetActive(!info);
-            descriptionText.gameObject.SetActive(info);
-            transform.localScale = Vector3.one * (info ? InfoScale : 1f);
-            if (info) transform.SetAsLastSibling();
+            art.gameObject.SetActive(!value);
+            nameText.gameObject.SetActive(!value);
+            typeText.gameObject.SetActive(!value);
+            descriptionText.gameObject.SetActive(value);
+            if (value) transform.SetAsLastSibling();
         }
     }
 }

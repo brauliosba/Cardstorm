@@ -20,11 +20,21 @@ namespace Cardstorm.UI
         void OnEnable()
         {
             if (input != null) input.DeviceChanged += RefreshKeyLabels;
+            if (cards != null)
+            {
+                cards.CardPlayed += OnCardPlayed;
+                cards.PlayFailed += OnPlayFailed;
+            }
         }
 
         void OnDisable()
         {
             if (input != null) input.DeviceChanged -= RefreshKeyLabels;
+            if (cards != null)
+            {
+                cards.CardPlayed -= OnCardPlayed;
+                cards.PlayFailed -= OnPlayFailed;
+            }
         }
 
         void Start() => RefreshKeyLabels();
@@ -38,6 +48,16 @@ namespace Cardstorm.UI
             int count = Mathf.Min(slots.Length, cycle.HandSize);
             for (int i = 0; i < count; i++)
                 slots[i].Refresh(cycle, cards.Energy, i, info);
+        }
+
+        void OnCardPlayed(int slot, CardInstance _)
+        {
+            if (slot < slots.Length) slots[slot].Played();
+        }
+
+        void OnPlayFailed(int slot, PlayResult result)
+        {
+            if (slot < slots.Length) slots[slot].Failed(result);
         }
 
         void RefreshKeyLabels()
