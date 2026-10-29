@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 07ffa7085595d4345a3f106b2a668d7e, type: 3}
+  m_Name: Deck_Inicial
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Cards.DeckDefinition
+  cards:
+  - card: {fileID: 11400000, guid: 52b75a7495ad6b2459fc1b76c5bd7f49, type: 2}
+    copies: 4
+  - card: {fileID: 11400000, guid: 149f3722634333f4cb040e912c870f0a, type: 2}
+    copies: 2
+  - card: {fileID: 11400000, guid: dfc502698038ab649bff302e108adbc0, type: 2}
+    copies: 2

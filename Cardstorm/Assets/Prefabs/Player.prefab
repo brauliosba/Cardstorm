@@ -245,6 +245,7 @@ GameObject:
   - component: {fileID: 7939436989049362612}
   - component: {fileID: 217550424331203377}
   - component: {fileID: 2664324199609604321}
+  - component: {fileID: 3018700684756410107}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -452,3 +453,24 @@ MonoBehaviour:
   arcFlash: {fileID: 2023199421477618143}
   densityRadius: 2
   testCard: {fileID: 0}
+--- !u!114 &3018700684756410107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8508988601957066472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 86b664c82fdf5624db986f93d8a6dde5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Cards.PlayerCards
+  startingDeck: {fileID: 11400000, guid: d372549df370a4b49a377762bb029cb2, type: 2}
+  clock: {fileID: 0}
+  handSize: 4
+  drawTime: 0.5
+  reshuffleTime: 1
+  seed: 0
+  maxEnergy: 10
+  energyRegen: 1
+  startingEnergy: 10

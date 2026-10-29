@@ -20,10 +20,6 @@ namespace Cardstorm.Cards
         [Tooltip("Radio con el que se cuentan los vecinos al buscar la zona más densa.")]
         [Min(0.1f)] [SerializeField] float densityRadius = 2f;
 
-        [Header("Prueba")]
-        [Tooltip("Carta que lanza el menú contextual «Lanzar carta de prueba».")]
-        [SerializeField] CardDefinition testCard;
-
         readonly List<Vector2> positions = new(TargetBufferCapacity);
         readonly List<float> healths = new(TargetBufferCapacity);
         Rigidbody2D rb;
@@ -94,17 +90,6 @@ namespace Cardstorm.Cards
                 _ => Targeting.Nearest(origin, positions, card.targetRange),
             };
             return index >= 0 ? active[index] : null;
-        }
-
-        [ContextMenu("Lanzar carta de prueba")]
-        void CastTestCard()
-        {
-            if (!Application.isPlaying || testCard == null)
-            {
-                Debug.LogWarning("Asigna una carta de prueba y entra en Play.", this);
-                return;
-            }
-            Cast(testCard);
         }
     }
 }

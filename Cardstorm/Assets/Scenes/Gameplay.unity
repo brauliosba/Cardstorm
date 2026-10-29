@@ -477,6 +477,10 @@ PrefabInstance:
       propertyPath: projectiles
       value: 
       objectReference: {fileID: 355111579}
+    - target: {fileID: 3018700684756410107, guid: 90c100c509dddab43a10c506745eca4d, type: 3}
+      propertyPath: clock
+      value: 
+      objectReference: {fileID: 829606318}
     - target: {fileID: 7201284127405044473, guid: 90c100c509dddab43a10c506745eca4d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

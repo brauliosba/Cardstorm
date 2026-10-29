@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f2de0a350ae8ff4da1f4b9b6c70f1f7, type: 3}
+  m_Name: Card_Tajo
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Cards.CardDefinition
+  id: tajo
+  displayName: Tajo
+  description: "Golpe en arco de 120\xB0 hacia el enemigo m\xE1s cercano: 18 de da\xF1o
+    a todos los alcanzados."
+  icon: {fileID: 21300000, guid: d8246baa1a4b28e429f4bed0eea6daf8, type: 3}
+  type: 0
+  rarity: 0
+  cost: 2
+  targeting: 0
+  targetRange: 12
+  powerValue: 22.9
+  effects:
+  - rid: 8012374996973781059
+  references:
+    version: 2
+    RefIds:
+    - rid: 8012374996973781059
+      type: {class: ArcEffect, ns: Cardstorm.Cards.Effects, asm: Cardstorm.Runtime}
+      data:
+        damage: 18
+        range: 2.5
+        arcDegrees: 120
