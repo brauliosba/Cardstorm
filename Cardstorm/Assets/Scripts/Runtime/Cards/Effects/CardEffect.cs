@@ -6,6 +6,6 @@ namespace Cardstorm.Cards.Effects
     [Serializable]
     public abstract class CardEffect
     {
-        // public abstract void Apply(in CardContext context);
+        public abstract void Apply(in CardContext context);
     }
 }

@@ -138,6 +138,7 @@ GameObject:
   - component: {fileID: 1886502887077754329}
   - component: {fileID: 7939436989049362612}
   - component: {fileID: 217550424331203377}
+  - component: {fileID: 2664324199609604321}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -327,3 +328,18 @@ MonoBehaviour:
   invulnerabilityTime: 0.5
   blinkInterval: 0.08
   blinkRenderers: []
+--- !u!114 &2664324199609604321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8508988601957066472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9bcd078035866439e3402d9626520a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Cards.CardCaster
+  enemies: {fileID: 0}
+  densityRadius: 2
+  testCard: {fileID: 0}

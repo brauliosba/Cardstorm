@@ -337,6 +337,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 2664324199609604321, guid: 90c100c509dddab43a10c506745eca4d, type: 3}
+      propertyPath: enemies
+      value: 
+      objectReference: {fileID: 350652524}
+    - target: {fileID: 2664324199609604321, guid: 90c100c509dddab43a10c506745eca4d, type: 3}
+      propertyPath: testCard
+      value: 
+      objectReference: {fileID: 0}
     - target: {fileID: 7201284127405044473, guid: 90c100c509dddab43a10c506745eca4d, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
