@@ -13,6 +13,8 @@ namespace Cardstorm.Enemies
         [SerializeField] Sprite squareSprite;
         [SerializeField] Sprite triangleSprite;
 
+        const float HitFlashTime = 0.08f;
+
         Rigidbody2D rb;
         SpriteRenderer spriteRenderer;
 
@@ -28,10 +30,15 @@ namespace Cardstorm.Enemies
 
         public float ContactDamage => Definition != null ? Definition.contactDamage : 0f;
 
+        public float Radius => Definition != null ? Definition.radius : 0.5f;
+
         // Estado que gestiona EnemyManager.
         internal EnemyManager Manager { get; set; }
         internal int ActiveIndex { get; set; } = -1;
         internal float FarTimer { get; set; }
+
+        // Tiempo que queda del destello blanco al recibir daño.
+        internal float FlashTimer { get; set; }
 
         void Awake()
         {
@@ -56,6 +63,7 @@ namespace Cardstorm.Enemies
             XpMultiplier = reinforcement;
             IsAlive = true;
             FarTimer = 0f;
+            FlashTimer = 0f;
 
             float diameter = definition.radius * 2f;
             transform.SetPositionAndRotation(position, Quaternion.identity);
@@ -89,7 +97,17 @@ namespace Cardstorm.Enemies
                 Health = 0f;
                 IsAlive = false;
                 Manager?.NotifyKilled(this);
+                return;
             }
+
+            spriteRenderer.color = Color.white;
+            FlashTimer = HitFlashTime;
+        }
+
+        internal void RestoreColor()
+        {
+            FlashTimer = 0f;
+            if (Definition != null) spriteRenderer.color = Definition.color;
         }
 
         Sprite SpriteFor(EnemyShape shape) => shape switch

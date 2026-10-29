@@ -101,6 +101,12 @@ namespace Cardstorm.Enemies
                     enemy.FarTimer = 0f;
                 }
 
+                if (enemy.FlashTimer > 0f)
+                {
+                    enemy.FlashTimer -= dt;
+                    if (enemy.FlashTimer <= 0f) enemy.RestoreColor();
+                }
+
                 // En la greybox todos persiguen; los demás comportamientos se enchufan aquí.
                 Vector2 dir = flowField != null ? flowField.GetDirection(pos) : (playerPos - pos).normalized;
                 body.linearVelocity = dir * enemy.Speed;

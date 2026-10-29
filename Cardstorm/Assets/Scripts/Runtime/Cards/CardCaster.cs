@@ -15,6 +15,7 @@ namespace Cardstorm.Cards
 
         [SerializeField] EnemyManager enemies;
         [SerializeField] ProjectileManager projectiles;
+        [SerializeField] ArcFlash arcFlash;
 
         [Tooltip("Radio con el que se cuentan los vecinos al buscar la zona más densa.")]
         [Min(0.1f)] [SerializeField] float densityRadius = 2f;
@@ -31,6 +32,7 @@ namespace Cardstorm.Cards
         public PlayerHealth Health { get; private set; }
         public EnemyManager Enemies => enemies;
         public ProjectileManager Projectiles => projectiles;
+        public ArcFlash ArcFlash => arcFlash;
 
         // Multiplicador de daño de todas las cartas (Furia).
         public float DamageMultiplier { get; set; } = 1f;
@@ -42,6 +44,7 @@ namespace Cardstorm.Cards
             Health = GetComponent<PlayerHealth>();
             if (enemies == null) enemies = FindFirstObjectByType<EnemyManager>();
             if (projectiles == null) projectiles = FindFirstObjectByType<ProjectileManager>();
+            if (arcFlash == null) arcFlash = GetComponentInChildren<ArcFlash>(true);
         }
 
         public void Cast(CardDefinition card)
