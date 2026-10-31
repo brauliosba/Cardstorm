@@ -51,7 +51,7 @@ namespace Cardstorm.Cards.Effects
             Array.Clear(Buffer, 0, count);
 
             var flash = context.Caster.ArcFlash;
-            if (flash != null) flash.Show(context.Aim, range, CardPalette.For(context.Card.type));
+            if (flash != null) flash.Show(context.Aim, range, arcDegrees, CardPalette.For(context.Card.type));
         }
     }
 }
