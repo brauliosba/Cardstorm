@@ -28,6 +28,16 @@ namespace Cardstorm.Cards
         [Tooltip("Valor V del presupuesto de poder. Solo informativo.")]
         public float powerValue;
 
+        [Header("Tienda")]
+        [Tooltip("Copias que se pueden comprar en una partida. 0 = sin límite.")]
+        [Min(0)] public int maxCopiesPerRun;
+
+        [Tooltip("Precio antes de la inflación. 0 = el de su rareza.")]
+        [Min(0)] public int basePrice;
+
+        [Tooltip("El precio se multiplica por este valor con cada copia comprada. 1 = fijo.")]
+        [Min(1f)] public float priceMultiplierPerCopy = 1f;
+
         [Header("Efectos")]
         [SerializeReference, SubclassSelector]
         public List<CardEffect> effects = new();

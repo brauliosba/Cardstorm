@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f2de0a350ae8ff4da1f4b9b6c70f1f7, type: 3}
+  m_Name: Card_Vitalidad
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Cards.CardDefinition
+  id: vitalidad
+  displayName: Vitalidad
+  description: "Aumenta en 15 la vida m\xE1xima y cura 15 de vida."
+  icon: {fileID: 21300000, guid: ff771ce775659304f84fbecef4bb4a44, type: 3}
+  type: 4
+  rarity: 1
+  cost: 1
+  targeting: 3
+  targetRange: 0
+  powerValue: 0
+  maxCopiesPerRun: 5
+  basePrice: 20
+  priceMultiplierPerCopy: 1
+  effects:
+  - rid: 8012375045157158912
+  references:
+    version: 2
+    RefIds:
+    - rid: 8012375045157158912
+      type: {class: StatModifierEffect, ns: Cardstorm.Cards.Effects, asm: Cardstorm.Runtime}
+      data:
+        stat: 0
+        amount: 15
+        isPercent: 0
+        healAmount: 15

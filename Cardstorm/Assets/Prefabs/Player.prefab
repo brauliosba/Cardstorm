@@ -295,6 +295,7 @@ GameObject:
   - component: {fileID: 217550424331203377}
   - component: {fileID: 2664324199609604321}
   - component: {fileID: 3018700684756410107}
+  - component: {fileID: 4952090793181966221}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -523,3 +524,16 @@ MonoBehaviour:
   maxEnergy: 10
   energyRegen: 1
   startingEnergy: 10
+--- !u!114 &4952090793181966221
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8508988601957066472}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f249d76b226027245822fc13612c2b54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Progression.PlayerStatsBinder
+  config: {fileID: 11400000, guid: 82f5121c4bde5ff40b14a97c69833bb8, type: 2}

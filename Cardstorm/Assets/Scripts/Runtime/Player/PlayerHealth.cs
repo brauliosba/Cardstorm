@@ -25,9 +25,25 @@ namespace Cardstorm.Player
         ContactFilter2D enemyFilter;
         CircleCollider2D body;
         float invulnerableUntil;
+        float maxHealthBonus;
 
-        public float MaxHealth => maxHealth;
+        public float BaseMaxHealth => maxHealth;
+        public float MaxHealth => maxHealth + maxHealthBonus;
         public float Current { get; private set; }
+
+        // Bonificación de la carta Vitalidad. Si la vida máxima baja, la vida actual se ajusta.
+        public float MaxHealthBonus
+        {
+            get => maxHealthBonus;
+            set
+            {
+                maxHealthBonus = value;
+                Current = Mathf.Min(Current, MaxHealth);
+            }
+        }
+
+        // Vida por segundo (carta Regeneración). Avanza con Time.deltaTime, así que se para con la pausa.
+        public float RegenPerSecond { get; set; }
         public bool IsDead { get; private set; }
 
         // Truco de depuración (F6)
@@ -66,6 +82,8 @@ namespace Cardstorm.Player
 
         void Update()
         {
+            if (RegenPerSecond > 0f) Heal(RegenPerSecond * Time.deltaTime);
+
             bool visible = !IsInvulnerable || Mathf.FloorToInt((invulnerableUntil - Time.time) / blinkInterval) % 2 == 0;
             for (int i = 0; i < blinkRenderers.Length; i++)
                 blinkRenderers[i].enabled = visible;
@@ -86,6 +104,13 @@ namespace Cardstorm.Player
             }
         }
 
+        // Sin pasar de la vida máxima. No resucita.
+        public void Heal(float amount)
+        {
+            if (IsDead || amount <= 0f) return;
+            Current = Mathf.Min(MaxHealth, Current + amount);
+        }
+
         // Invulnerabilidad sin recibir daño (Esquivar). Si ya había una más larga, se conserva.
         public void GrantInvulnerability(float seconds)
         {
@@ -95,7 +120,7 @@ namespace Cardstorm.Player
 
         public void ResetHealth()
         {
-            Current = maxHealth;
+            Current = MaxHealth;
             IsDead = false;
             invulnerableUntil = 0f;
         }

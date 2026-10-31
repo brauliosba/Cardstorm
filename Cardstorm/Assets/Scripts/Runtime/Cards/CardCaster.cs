@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Cardstorm.Combat;
 using Cardstorm.Enemies;
 using Cardstorm.Player;
+using Cardstorm.Progression;
 using UnityEngine;
 
 namespace Cardstorm.Cards
@@ -23,12 +24,16 @@ namespace Cardstorm.Cards
         readonly List<Vector2> positions = new(TargetBufferCapacity);
         readonly List<float> healths = new(TargetBufferCapacity);
         Rigidbody2D rb;
+        PlayerStatsBinder statsBinder;
 
         public PlayerMovement Movement { get; private set; }
         public PlayerHealth Health { get; private set; }
         public EnemyManager Enemies => enemies;
         public ProjectileManager Projectiles => projectiles;
         public ArcFlash ArcFlash => arcFlash;
+
+        // null si el jugador no tiene PlayerStatsBinder.
+        public PlayerStats Stats => statsBinder != null ? statsBinder.Stats : null;
 
         // Multiplicador de daño de todas las cartas (Furia).
         public float DamageMultiplier { get; set; } = 1f;
@@ -38,6 +43,7 @@ namespace Cardstorm.Cards
             rb = GetComponent<Rigidbody2D>();
             Movement = GetComponent<PlayerMovement>();
             Health = GetComponent<PlayerHealth>();
+            statsBinder = GetComponent<PlayerStatsBinder>();
             if (enemies == null) enemies = FindFirstObjectByType<EnemyManager>();
             if (projectiles == null) projectiles = FindFirstObjectByType<ProjectileManager>();
             if (arcFlash == null) arcFlash = GetComponentInChildren<ArcFlash>(true);

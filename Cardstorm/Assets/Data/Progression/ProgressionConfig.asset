@@ -1,0 +1,60 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f3cea8ffafca754b9e6349eb8c040ab, type: 3}
+  m_Name: ProgressionConfig
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Progression.ProgressionConfig
+  rules:
+    xpBase: 5
+    xpFactor: 4
+    xpExponent: 1.5
+    startingGold: 15
+    inflationPerLevel: 0.04
+    commonPrice: 15
+    uncommonPrice: 22
+    rarePrice: 35
+    commonWeight: 60
+    uncommonWeight: 30
+    rareWeight: 10
+    rareMinTime: 300
+    refreshPriceStep: 5
+    removalEveryLevels: 5
+    removalBasePrice: 20
+    removalStep: 10
+    minActionCards: 5
+    stats:
+    - stat: 0
+      baseValue: 100
+      max: 175
+    - stat: 1
+      baseValue: 0
+      max: 0.9
+    - stat: 2
+      baseValue: 1
+      max: 1.3
+    - stat: 3
+      baseValue: 1
+      max: 1.45
+    - stat: 4
+      baseValue: 10
+      max: 16
+    - stat: 5
+      baseValue: 5
+      max: 6.5
+    - stat: 6
+      baseValue: 2
+      max: 4
+    - stat: 7
+      baseValue: 1
+      max: 1.3
+    - stat: 8
+      baseValue: 1
+      max: 1.2
