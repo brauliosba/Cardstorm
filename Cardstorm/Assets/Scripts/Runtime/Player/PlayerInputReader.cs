@@ -19,6 +19,7 @@ namespace Cardstorm.Player
         InputAction cardInfoAction;
         InputAction[] cardActions;
         Action<InputAction.CallbackContext>[] cardHandlers;
+        bool waitCardRelease;
 
         public Vector2 Move => moveAction != null ? moveAction.ReadValue<Vector2>() : Vector2.zero;
 
@@ -29,6 +30,8 @@ namespace Cardstorm.Player
         public bool UsingGamepad { get; private set; }
 
         public int CardSlotCount => CardActions.Length;
+
+        public bool GameplayEnabled => map != null && map.enabled;
 
         public event Action PausePressed;
         public event Action<int> CardPressed;
@@ -67,6 +70,30 @@ namespace Cardstorm.Player
             for (int i = 0; i < cardActions.Length; i++)
                 cardActions[i].performed -= cardHandlers[i];
             map.Disable();
+        }
+
+        // Activa o desactiva los controles de juego (las pantallas de la tienda usan el mapa UI del EventSystem).
+        // Al volver, las cartas no se juegan hasta soltar los botones: la pulsación que cierra la tienda no cuenta.
+        public void SetGameplayEnabled(bool value)
+        {
+            if (value == map.enabled) return;
+            if (value)
+            {
+                map.Enable();
+                waitCardRelease = true;
+            }
+            else
+            {
+                map.Disable();
+            }
+        }
+
+        void Update()
+        {
+            if (!waitCardRelease) return;
+            for (int i = 0; i < cardActions.Length; i++)
+                if (cardActions[i].IsPressed()) return;
+            waitCardRelease = false;
         }
 
         // Etiqueta del botón de la ranura para el dispositivo actual. Se lee de los bindings,
@@ -114,7 +141,7 @@ namespace Cardstorm.Player
         void OnCardPerformed(int slot, InputAction.CallbackContext ctx)
         {
             NoteDevice(ctx);
-            CardPressed?.Invoke(slot);
+            if (!waitCardRelease) CardPressed?.Invoke(slot);
         }
 
         void NoteDevice(InputAction.CallbackContext ctx)
