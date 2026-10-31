@@ -1,7 +1,9 @@
 using System.Text;
 using Cardstorm.Core;
 using Cardstorm.Enemies;
+using Cardstorm.Pickups;
 using Cardstorm.Player;
+using Cardstorm.Progression;
 using Cardstorm.Spawning;
 using UnityEngine;
 
@@ -19,6 +21,8 @@ namespace Cardstorm.DebugTools
         [SerializeField] PlayerHealth player;
         [SerializeField] FrameTimeRecorder recorder;
         [SerializeField] DebugCheats cheats;
+        [SerializeField] RunManager run;
+        [SerializeField] PickupManager pickups;
 
         [Tooltip("Segundos que se muestra el aviso de un jefe.")]
         [SerializeField, Min(0f)] float bossNoticeTime = 6f;
@@ -58,6 +62,8 @@ namespace Cardstorm.DebugTools
             if (player == null) player = FindFirstObjectByType<PlayerHealth>();
             if (recorder == null) recorder = FindFirstObjectByType<FrameTimeRecorder>();
             if (cheats == null) cheats = FindFirstObjectByType<DebugCheats>();
+            if (run == null) run = FindFirstObjectByType<RunManager>();
+            if (pickups == null) pickups = FindFirstObjectByType<PickupManager>();
         }
 
         void OnEnable()
@@ -160,6 +166,22 @@ namespace Cardstorm.DebugTools
                 sb.Append("Vida ").Append(Mathf.CeilToInt(player.Current)).Append('/').Append(Mathf.CeilToInt(player.MaxHealth));
                 if (player.GodMode) sb.Append("   [invulnerable]");
                 sb.AppendLine();
+            }
+
+            var state = run != null ? run.State : null;
+            if (state != null)
+            {
+                sb.Append("Nv. ").Append(state.Level)
+                  .Append(" · XP ").Append(Mathf.FloorToInt(state.Levels.Xp)).Append('/').Append(state.Levels.XpNeeded)
+                  .Append(" · Oro ").Append(state.Gold).AppendLine();
+            }
+
+            if (pickups != null)
+            {
+                sb.Append("Recogibles: orbes ").Append(pickups.ActiveOf(PickupKind.Xp))
+                  .Append(" · monedas ").Append(pickups.ActiveOf(PickupKind.Gold))
+                  .Append(" · cofres ").Append(pickups.ActiveOf(PickupKind.Chest))
+                  .Append(" · Pool ").Append(pickups.InstanceCount).AppendLine();
             }
 
             sb.Append("FPS ").Append(Mathf.RoundToInt(fps)).Append("  (").Append(frameMs.ToString("0.0")).AppendLine(" ms)");
