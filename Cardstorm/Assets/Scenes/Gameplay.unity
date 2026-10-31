@@ -1552,14 +1552,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1226079074117708343, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
-      propertyPath: m_AdditionalShaderChannelsFlag
-      value: 25
-      objectReference: {fileID: 0}
-    - target: {fileID: 3484181632131442508, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3809635822165831234, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
       propertyPath: m_Name
       value: ShopCanvas
@@ -1567,17 +1559,14 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 3809635822165831234, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 2099886382}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
 --- !u!114 &398906489 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5271045469262502236, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
   m_PrefabInstance: {fileID: 398906488}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2099886377}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: edb16e5566c4f114d830f05d32450c7b, type: 3}
@@ -1710,17 +1699,6 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
---- !u!114 &415192131 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6206942750788756269, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
-  m_PrefabInstance: {fileID: 398906488}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
 --- !u!1 &420173967
 GameObject:
   m_ObjectHideFlags: 0
@@ -3650,7 +3628,6 @@ GameObject:
   - component: {fileID: 848437392}
   - component: {fileID: 848437391}
   - component: {fileID: 848437390}
-  - component: {fileID: 848437393}
   m_Layer: 0
   m_Name: EventSystem
   m_TagString: Untagged
@@ -3719,20 +3696,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &848437393
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 848437389}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d0322ed791091e4eafd8e609a9a2f47, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Cardstorm.Runtime::ChristinaCreatesGames.UI.RememberCurrentlySelectedGameObject
-  eventSystem: {fileID: 848437391}
-  lastSelectedElement: {fileID: 0}
 --- !u!1001 &875091123
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -6678,27 +6641,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 189f9ee5cc6054a4886c7480179336ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Player.PlayerInputReader
---- !u!1 &2099886377 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3809635822165831234, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
-  m_PrefabInstance: {fileID: 398906488}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &2099886382
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2099886377}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 280235742d3433d429b29d796fb786c8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Cardstorm.Runtime::ChristinaCreatesGames.UI.SetsUiElementToSelectOnInteraction
-  eventSystem: {fileID: 848437391}
-  elementToSelect: {fileID: 415192131}
-  showVisualization: 0
-  navigationColour: {r: 0, g: 1, b: 1, a: 1}
 --- !u!1001 &2117517068
 PrefabInstance:
   m_ObjectHideFlags: 0
