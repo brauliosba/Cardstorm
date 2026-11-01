@@ -190,6 +190,16 @@ MonoBehaviour:
     - 0
     reinforcement: 1.4
     pattern: 0
+  - name: Ojo de la tormenta
+    startTime: 900
+    endTime: 1200
+    ratePerMinute:
+    - 0
+    - 0
+    - 14
+    - 0
+    reinforcement: 1.4
+    pattern: 0
   waves:
   - name: 'Oleada 1: Cerco'
     startTime: 165
