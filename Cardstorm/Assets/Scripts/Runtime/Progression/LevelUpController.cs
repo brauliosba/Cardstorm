@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Cardstorm.Cards;
 using Cardstorm.Core;
 using Cardstorm.Player;
@@ -7,6 +8,7 @@ using UnityEngine;
 namespace Cardstorm.Progression
 {
     // Pausa la partida en cada subida de nivel y muestra la tienda; al cerrar la última, la reanuda.
+    // En los niveles que lo ofrecen, la tienda deja además eliminar una carta del mazo.
     public class LevelUpController : MonoBehaviour
     {
         [SerializeField] RunManager run;
@@ -15,6 +17,7 @@ namespace Cardstorm.Progression
         [SerializeField] PlayerHealth health;
         [SerializeField] PlayerCards cards;
         [SerializeField] ShopScreen shop;
+        [SerializeField] RemovalScreen removalScreen;
         [SerializeField] ShopCatalog catalog;
 
         [Tooltip("Invulnerabilidad al volver a la partida, para no recibir un golpe nada más cerrar la tienda.")]
@@ -22,11 +25,17 @@ namespace Cardstorm.Progression
 
         LevelUpQueue queue;
         ShopOffer<CardDefinition> offer;
+        CardRemoval removal;
+        readonly List<CardInstance> deckBuffer = new();
+        readonly List<RemovalEntry> entries = new();
+        int entryCount;
+        int actionCards;
         float previousTimeScale = 1f;
 
         public bool IsOpen { get; private set; }
         public LevelUpQueue Queue => queue;
         public ShopOffer<CardDefinition> Offer => offer;
+        public CardRemoval Removal => removal;
 
         double Now => clock != null ? clock.Elapsed : Time.timeSinceLevelLoad;
 
@@ -38,6 +47,7 @@ namespace Cardstorm.Progression
             if (health == null) health = FindFirstObjectByType<PlayerHealth>();
             if (cards == null) cards = FindFirstObjectByType<PlayerCards>();
             if (shop == null) shop = FindFirstObjectByType<ShopScreen>(FindObjectsInactive.Include);
+            if (removalScreen == null) removalScreen = FindFirstObjectByType<RemovalScreen>(FindObjectsInactive.Include);
             if (catalog == null) Debug.LogError("LevelUpController no tiene ShopCatalog: la tienda saldrá vacía.", this);
         }
 
@@ -48,7 +58,13 @@ namespace Cardstorm.Progression
             {
                 shop.BuyPressed += OnBuy;
                 shop.RefreshPressed += OnRefresh;
+                shop.RemovePressed += OnRemovePressed;
                 shop.ContinuePressed += OnContinue;
+            }
+            if (removalScreen != null)
+            {
+                removalScreen.EntryPressed += OnRemoveEntry;
+                removalScreen.BackPressed += CloseRemoval;
             }
         }
 
@@ -59,7 +75,13 @@ namespace Cardstorm.Progression
             {
                 shop.BuyPressed -= OnBuy;
                 shop.RefreshPressed -= OnRefresh;
+                shop.RemovePressed -= OnRemovePressed;
                 shop.ContinuePressed -= OnContinue;
+            }
+            if (removalScreen != null)
+            {
+                removalScreen.EntryPressed -= OnRemoveEntry;
+                removalScreen.BackPressed -= CloseRemoval;
             }
         }
 
@@ -76,6 +98,7 @@ namespace Cardstorm.Progression
                     catalog != null ? catalog.powerCards : null);
                 offer = new ShopOffer<CardDefinition>(roller, state);
             }
+            removal ??= new CardRemoval(state);
         }
 
         void OnLevelUp(double time, int level)
@@ -100,7 +123,8 @@ namespace Cardstorm.Progression
         void ShowCurrent()
         {
             offer.Open(queue.CurrentLevel, Now);
-            shop.Show(queue.CurrentLevel, queue.Position, queue.Total, queue.CurrentOffersRemoval, offer);
+            removal.Open(queue.CurrentLevel, queue.CurrentOffersRemoval && removalScreen != null);
+            shop.Show(queue.CurrentLevel, queue.Position, queue.Total, offer, removal);
         }
 
         void OnBuy(int slot)
@@ -128,9 +152,102 @@ namespace Cardstorm.Progression
             shop.UpdateOffer(offer);
         }
 
+        // Sin oro, el botón tambalea y no abre la lista.
+        void OnRemovePressed()
+        {
+            if (!IsOpen || removalScreen.IsVisible || !removal.Offered) return;
+            if (removal.State.Gold < removal.Price)
+            {
+                shop.RemoveFailed();
+                return;
+            }
+
+            shop.SetSuspended(true);
+            ShowEntries();
+        }
+
+        void ShowEntries()
+        {
+            BuildEntries();
+            removalScreen.Show(entries, entryCount, removal.Price, removal.State.Gold, removal.State.Rules.minActionCards);
+        }
+
+        void OnRemoveEntry(int index)
+        {
+            if (!IsOpen || index < 0 || index >= entryCount) return;
+
+            var entry = entries[index];
+            var result = removal.TryRemove(entry.Card.id, IsAction(entry.Card), actionCards, Now);
+            if (result != RemovalResult.Removed)
+            {
+                removalScreen.EntryFailed(index);
+                return;
+            }
+
+            // La lista sigue abierta para quitar más, con el precio nuevo; Volver regresa a la tienda.
+            cards.Cycle.Remove(entry.Instance);
+            shop.UpdateOffer(offer);
+            ShowEntries();
+        }
+
+        void CloseRemoval()
+        {
+            if (!removalScreen.IsVisible) return;
+            removalScreen.Hide();
+            shop.SetSuspended(false);
+        }
+
+        // Agrupa el mazo por carta.
+        void BuildEntries()
+        {
+            cards.Cycle.CopyCards(deckBuffer);
+            entryCount = 0;
+            actionCards = 0;
+
+            foreach (var instance in deckBuffer)
+            {
+                var card = instance.Definition;
+                if (IsAction(card)) actionCards++;
+
+                int found = -1;
+                for (int i = 0; i < entryCount; i++)
+                    if (entries[i].Card == card) { found = i; break; }
+
+                if (found >= 0)
+                {
+                    entries[found].Count++;
+                    continue;
+                }
+
+                if (entryCount == entries.Count) entries.Add(new RemovalEntry());
+                var entry = entries[entryCount++];
+                entry.Card = card;
+                entry.Instance = instance;
+                entry.Count = 1;
+            }
+
+            for (int i = 0; i < entryCount; i++)
+                entries[i].Allowed = removal.Allows(IsAction(entries[i].Card), actionCards);
+
+            entries.Sort(0, entryCount, EntryOrder.Instance);
+        }
+
+        static bool IsAction(CardDefinition card) => card.type != CardType.Power;
+
+        sealed class EntryOrder : IComparer<RemovalEntry>
+        {
+            public static readonly EntryOrder Instance = new();
+
+            public int Compare(RemovalEntry a, RemovalEntry b)
+            {
+                int byType = IsAction(b.Card).CompareTo(IsAction(a.Card));
+                return byType != 0 ? byType : string.CompareOrdinal(a.Card.displayName, b.Card.displayName);
+            }
+        }
+
         void OnContinue()
         {
-            if (!IsOpen) return;
+            if (!IsOpen || (removalScreen != null && removalScreen.IsVisible)) return;
 
             if (queue.Complete()) ShowCurrent();
             else Close();

@@ -27,8 +27,8 @@ MonoBehaviour:
     rareMinTime: 300
     refreshPriceStep: 5
     removalEveryLevels: 5
-    removalBasePrice: 20
-    removalStep: 10
+    removalBasePrice: 5
+    removalStep: 5
     minActionCards: 5
     stats:
     - stat: 0

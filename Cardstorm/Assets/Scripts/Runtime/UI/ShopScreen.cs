@@ -26,6 +26,7 @@ namespace Cardstorm.UI
         [SerializeField] TMP_Text refreshText;
         [Tooltip("Solo aparece en los niveles múltiplos de 5.")]
         [SerializeField] Button removeButton;
+        [SerializeField] TMP_Text removeText;
         [SerializeField] Button continueButton;
 
         [Tooltip("Segundos del fundido al abrir y cerrar. Usa tiempo real: el juego está en pausa.")]
@@ -37,12 +38,17 @@ namespace Cardstorm.UI
         Tween goldCount;
         Tween goldFlash;
         Tween refreshWobble;
+        Tween removeWobble;
         Color goldColor;
         Color refreshColor;
+        Color removeColor;
         int shownGold;
+        CardRemoval removal;
+        bool suspended;
 
         public event Action<int> BuyPressed;
         public event Action RefreshPressed;
+        public event Action RemovePressed;
         public event Action ContinuePressed;
 
         public bool IsVisible { get; private set; }
@@ -54,6 +60,7 @@ namespace Cardstorm.UI
             SetVisible(false, instant: true);
             goldColor = goldText.color;
             if (refreshText != null) refreshColor = refreshText.color;
+            if (removeText != null) removeColor = removeText.color;
 
             if (slots.Length != ShopOffer<CardDefinition>.SlotCount)
                 Debug.LogWarning($"ShopScreen tiene {slots.Length} ranuras y la tienda ofrece {ShopOffer<CardDefinition>.SlotCount}.", this);
@@ -64,6 +71,7 @@ namespace Cardstorm.UI
                 slots[i].Button.onClick.AddListener(() => BuyPressed?.Invoke(index));
             }
             if (refreshButton != null) refreshButton.onClick.AddListener(OnRefreshClicked);
+            if (removeButton != null) removeButton.onClick.AddListener(OnRemoveClicked);
             continueButton.onClick.AddListener(OnContinueClicked);
         }
 
@@ -73,24 +81,24 @@ namespace Cardstorm.UI
             goldCount?.Kill();
             goldFlash?.Kill();
             refreshWobble?.Kill();
+            removeWobble?.Kill();
             foreach (var slot in slots)
                 if (slot != null) slot.Button.onClick.RemoveAllListeners();
             if (refreshButton != null) refreshButton.onClick.RemoveListener(OnRefreshClicked);
+            if (removeButton != null) removeButton.onClick.RemoveListener(OnRemoveClicked);
             continueButton.onClick.RemoveListener(OnContinueClicked);
         }
 
-        public void Show(int level, int position, int total, bool offersRemoval, ShopOffer<CardDefinition> offer)
+        public void Show(int level, int position, int total, ShopOffer<CardDefinition> offer, CardRemoval removal)
         {
+            this.removal = removal;
             titleText.SetText("Nivel {0}", level);
             UpdateQueue(position, total);
-            if (removeButton != null)
-            {
-                removeButton.gameObject.SetActive(offersRemoval);
-                removeButton.interactable = false;  // Se activa con la eliminación de cartas
-            }
+            if (removeButton != null) removeButton.gameObject.SetActive(removal != null && removal.Offered);
             shownGold = offer.State.Gold;
             UpdateOffer(offer);
 
+            suspended = false;
             SetVisible(true, instant: false);
             lastSelected = DefaultSelection();
             Select(lastSelected.gameObject);
@@ -103,7 +111,7 @@ namespace Cardstorm.UI
             queueText.SetText("{0} de {1}", position, total);
         }
 
-        // Vuelve a pintar oro, ranuras y Refrescar después de comprar o refrescar.
+        // Vuelve a pintar oro, ranuras, Refrescar y Eliminar después de comprar, refrescar o eliminar.
         public void UpdateOffer(ShopOffer<CardDefinition> offer)
         {
             int gold = offer.State.Gold;
@@ -124,6 +132,26 @@ namespace Cardstorm.UI
                 refreshText.SetText("Refrescar ({0} oro)", price);
                 refreshText.color = gold >= price ? refreshColor : HudColors.NotEnough;
             }
+
+            UpdateRemoval(gold);
+        }
+
+        // El precio sube con cada eliminación. Sin oro, el botón tambalea, como Refrescar.
+        void UpdateRemoval(int gold)
+        {
+            if (removeText == null || removal == null || !removal.Offered) return;
+
+            int price = removal.Price;
+            removeText.SetText("Eliminar carta ({0} oro)", price);
+            removeText.color = gold >= price ? removeColor : HudColors.NotEnough;
+        }
+
+        // Mientras la pantalla de eliminar está encima, la tienda no se puede pulsar ni recupera la selección.
+        public void SetSuspended(bool value)
+        {
+            suspended = value;
+            group.interactable = IsVisible && !value;
+            group.blocksRaycasts = IsVisible && !value;
         }
 
         public void Bought(int slot) => slots[slot].Bought();
@@ -140,6 +168,12 @@ namespace Cardstorm.UI
             FlashGold();
         }
 
+        public void RemoveFailed()
+        {
+            if (removeButton != null) UiTweens.Wobble(removeButton.transform, ref removeWobble);
+            FlashGold();
+        }
+
         void FlashGold() => UiTweens.Flash(goldText, goldColor, HudColors.NotEnough, ref goldFlash);
 
         public void Hide()
@@ -147,12 +181,14 @@ namespace Cardstorm.UI
             var es = EventSystem.current;
             if (es != null && IsInside(es.currentSelectedGameObject)) es.SetSelectedGameObject(null);
             lastSelected = null;
+            suspended = false;
+            removal = null;
             SetVisible(false, instant: false);
         }
 
         void Update()
         {
-            if (IsVisible) KeepFocus();
+            if (IsVisible && !suspended) KeepFocus();
         }
 
         // Si se pierde la selección (clic en el fondo, carta recién comprada) o sale de la tienda,
@@ -193,22 +229,14 @@ namespace Cardstorm.UI
             group.interactable = visible;
             group.blocksRaycasts = visible;
 
-            float target = visible ? 1f : 0f;
-            fade?.Kill();
-            if (instant || fadeTime <= 0f)
-            {
-                group.alpha = target;
-                return;
-            }
-            fade = DOTween.To(() => group.alpha, a => group.alpha = a, target, fadeTime)
-                .SetEase(visible ? Ease.OutQuad : Ease.InQuad)
-                .SetUpdate(true)
-                .SetLink(gameObject);
+            UiTweens.Fade(group, visible, instant ? 0f : fadeTime, ref fade);
         }
 
         bool IsInside(GameObject go) => go != null && go.activeInHierarchy && go.transform.IsChildOf(root.transform);
 
         void OnRefreshClicked() => RefreshPressed?.Invoke();
+
+        void OnRemoveClicked() => RemovePressed?.Invoke();
 
         void OnContinueClicked() => ContinuePressed?.Invoke();
 

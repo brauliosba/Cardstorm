@@ -67,9 +67,10 @@ namespace Cardstorm.Progression
 
         [Header("Eliminar carta")]
         [Min(1)] public int removalEveryLevels = 5;
-        [Min(0)] public int removalBasePrice = 20;
+        [Tooltip("Precio de la primera eliminación. No lleva inflación.")]
+        [Min(0)] public int removalBasePrice = 5;
         [Tooltip("Lo que sube el precio con cada eliminación anterior en la partida.")]
-        [Min(0)] public int removalStep = 10;
+        [Min(0)] public int removalStep = 5;
         [Tooltip("Cartas de acción que deben quedar como mínimo en el mazo.")]
         [Min(1)] public int minActionCards = 5;
 

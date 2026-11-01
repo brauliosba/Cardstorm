@@ -39,6 +39,22 @@ namespace Cardstorm.UI
                 .SetLink(text.gameObject);
         }
 
+        // Fundido del alfa de un CanvasGroup. Con duración 0 cambia en el acto.
+        public static void Fade(CanvasGroup group, bool visible, float duration, ref Tween tween)
+        {
+            tween?.Kill();
+            float target = visible ? 1f : 0f;
+            if (duration <= 0f)
+            {
+                group.alpha = target;
+                return;
+            }
+            tween = DOTween.To(() => group.alpha, a => group.alpha = a, target, duration)
+                .SetEase(visible ? Ease.OutQuad : Ease.InQuad)
+                .SetUpdate(true)
+                .SetLink(group.gameObject);
+        }
+
         // Cuenta de un número a otro en el texto. format lleva un {0}, como SetText.
         public static void Count(TMP_Text text, string format, int from, int to, ref Tween tween, float duration = 0.2f)
         {

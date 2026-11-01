@@ -28,6 +28,9 @@ namespace Cardstorm.Progression
         // Tiempo, precio pagado.
         public static event Action<double, int> ShopRefreshed;
 
+        // Tiempo, id de la carta, precio pagado.
+        public static event Action<double, string, int> CardRemoved;
+
         // Tiempo, oro gastado, motivo.
         public static event Action<double, int, SpendReason> GoldSpent;
 
@@ -42,6 +45,8 @@ namespace Cardstorm.Progression
         public static void RaiseCardBought(double time, string cardId, int price) => CardBought?.Invoke(time, cardId, price);
 
         public static void RaiseShopRefreshed(double time, int price) => ShopRefreshed?.Invoke(time, price);
+
+        public static void RaiseCardRemoved(double time, string cardId, int price) => CardRemoved?.Invoke(time, cardId, price);
 
         public static void RaiseGoldSpent(double time, int amount, SpendReason reason) => GoldSpent?.Invoke(time, amount, reason);
     }

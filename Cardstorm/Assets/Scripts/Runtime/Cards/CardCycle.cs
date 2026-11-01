@@ -130,6 +130,35 @@ namespace Cardstorm.Cards
             drawPile.Insert(rng.Next(drawPile.Count + 1), card);
         }
 
+        // Quita una carta del mazo, de la mano o del descarte. Si estaba en la mano, su ranura empieza
+        // el robo normal. Las cartas agotadas ya no están en el ciclo y no se pueden quitar.
+        public bool Remove(TCard card)
+        {
+            if (card == null) return false;
+
+            for (int i = 0; i < hand.Length; i++)
+            {
+                if (hand[i] != card) continue;
+                hand[i] = null;
+                states[i] = SlotState.Waiting;
+                TryReserve(i);
+                return true;
+            }
+
+            return drawPile.Remove(card) || discardPile.Remove(card);
+        }
+
+        // Copia en la lista las cartas que siguen en el ciclo: primero el mazo, luego el descarte y por
+        // último la mano. Las agotadas no se incluyen.
+        public void CopyCards(List<TCard> into)
+        {
+            into.Clear();
+            into.AddRange(drawPile);
+            into.AddRange(discardPile);
+            foreach (var card in hand)
+                if (card != null) into.Add(card);
+        }
+
         // Pone en la ranura la carta de arriba del mazo; si no hay, empieza el rebarajado cuando hay descarte.
         bool TryReserve(int slot)
         {
