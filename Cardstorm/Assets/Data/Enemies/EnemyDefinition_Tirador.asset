@@ -23,7 +23,7 @@ MonoBehaviour:
   moveSpeed: 2.5
   radius: 0.45
   mass: 1
-  behaviour: 0
+  behaviour: 1
   isBoss: 0
   shape: 1
   color: {r: 0.60784316, g: 0.34901962, b: 0.7137255, a: 1}

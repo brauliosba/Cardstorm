@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Cardstorm.Core;
 using Cardstorm.Enemies;
+using Cardstorm.Player;
 using UnityEngine;
 using UnityEngine.Pool;
 
@@ -20,6 +21,7 @@ namespace Cardstorm.Combat
         readonly RaycastHit2D[] hits = new RaycastHit2D[16];
         ObjectPool<Projectile> pool;
         ContactFilter2D filter;
+        ContactFilter2D hostileFilter;
 
         public int ActiveCount => active.Count;
 
@@ -32,6 +34,8 @@ namespace Cardstorm.Combat
 
             filter = new ContactFilter2D { useTriggers = false };
             filter.SetLayerMask(Layers.EnemyMask | Layers.ObstacleMask);
+            hostileFilter = new ContactFilter2D { useTriggers = false };
+            hostileFilter.SetLayerMask(Layers.PlayerMask | Layers.ObstacleMask);
 
             pool = new ObjectPool<Projectile>(
                 createFunc: Create,
@@ -48,11 +52,18 @@ namespace Cardstorm.Combat
         }
 
         public void Launch(Vector2 origin, Vector2 dir, float speed, float maxDistance, float radius, float damage, int pierce, Color color)
+            => Launch(origin, dir, speed, maxDistance, radius, damage, pierce, color, false);
+
+        // Proyectil enemigo: daña al jugador y se destruye contra obstáculos.
+        public void LaunchHostile(Vector2 origin, Vector2 dir, float speed, float maxDistance, float radius, float damage, Color color)
+            => Launch(origin, dir, speed, maxDistance, radius, damage, 0, color, true);
+
+        void Launch(Vector2 origin, Vector2 dir, float speed, float maxDistance, float radius, float damage, int pierce, Color color, bool hostile)
         {
             if (dir.sqrMagnitude < 1e-6f || speed <= 0f || maxDistance <= 0f) return;
 
             var projectile = pool.Get();
-            projectile.Launch(origin, dir.normalized, speed, maxDistance, radius, damage, pierce, color);
+            projectile.Launch(origin, dir.normalized, speed, maxDistance, radius, damage, pierce, color, hostile);
             projectile.ActiveIndex = active.Count;
             active.Add(projectile);
         }
@@ -80,13 +91,21 @@ namespace Cardstorm.Combat
         bool Step(Projectile p, float dt)
         {
             float step = Mathf.Min(p.Speed * dt, p.MaxDistance - p.Travelled);
-            int count = Physics2D.CircleCast(p.Position, p.Radius, p.Direction, filter, hits, step);
+            int count = Physics2D.CircleCast(p.Position, p.Radius, p.Direction, p.Hostile ? hostileFilter : filter, hits, step);
             SortByDistance(count);
 
             for (int i = 0; i < count; i++)
             {
                 var collider = hits[i].collider;
                 if (collider.gameObject.layer == Layers.Obstacle) return false;
+
+                if (p.Hostile)
+                {
+                    // Se consume aunque el jugador sea invulnerable en ese momento.
+                    if (!collider.TryGetComponent(out PlayerHealth player)) continue;
+                    player.TakeDamage(p.Damage);
+                    return false;
+                }
 
                 if (!collider.TryGetComponent(out Enemy enemy) || !enemy.IsAlive || p.Hit.Contains(enemy)) continue;
 

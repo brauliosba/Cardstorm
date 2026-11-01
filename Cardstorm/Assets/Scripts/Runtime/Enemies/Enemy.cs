@@ -41,6 +41,9 @@ namespace Cardstorm.Enemies
         internal int ActiveIndex { get; set; } = -1;
         internal float FarTimer { get; set; }
 
+        // Segundos hasta el siguiente disparo (KeepDistance).
+        internal float FireTimer { get; set; }
+
         // Tiempo que queda del destello blanco al recibir daño.
         internal float FlashTimer { get; set; }
 
@@ -69,6 +72,8 @@ namespace Cardstorm.Enemies
             IsAlive = true;
             FarTimer = 0f;
             FlashTimer = 0f;
+            // Desfase aleatorio para que los tiradores de una misma oleada no disparen a la vez.
+            FireTimer = definition.fireInterval * Random.Range(0.5f, 1.5f);
 
             float diameter = definition.radius * 2f;
             transform.SetPositionAndRotation(position, Quaternion.identity);

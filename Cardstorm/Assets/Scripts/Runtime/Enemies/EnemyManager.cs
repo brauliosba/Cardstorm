@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Cardstorm.Combat;
+using Cardstorm.Core;
 using Cardstorm.Navigation;
 using Cardstorm.Pooling;
 using UnityEngine;
@@ -12,6 +14,8 @@ namespace Cardstorm.Enemies
         [SerializeField] Transform player;
         [SerializeField] EnemyPool pool;
         [SerializeField] FlowFieldProvider flowField;
+        [Tooltip("Para los disparos de los tiradores. Si se deja vacío, se busca en la escena.")]
+        [SerializeField] ProjectileManager projectiles;
 
         [Header("Despawn de seguridad")]
         [Tooltip("Si un enemigo pasa más de despawnTime segundos a más de esta distancia del jugador, se recicla.")]
@@ -33,6 +37,11 @@ namespace Cardstorm.Enemies
         public IReadOnlyList<Enemy> Active => active;
         public EnemyPool Pool => pool;
         public Transform Player => player;
+
+        void Awake()
+        {
+            if (projectiles == null) projectiles = FindFirstObjectByType<ProjectileManager>();
+        }
 
         public int AliveOf(EnemyDefinition definition) => aliveByType.TryGetValue(definition, out int n) ? n : 0;
 
@@ -108,10 +117,50 @@ namespace Cardstorm.Enemies
                     if (enemy.FlashTimer <= 0f) enemy.RestoreColor();
                 }
 
-                // En la greybox todos persiguen; los demás comportamientos se enchufan aquí.
-                Vector2 dir = flowField != null && !boss ? flowField.GetDirection(pos) : (playerPos - pos).normalized;
-                body.linearVelocity = dir * enemy.Speed;
+                Vector2 chaseDir = flowField != null && !boss ? flowField.GetDirection(pos) : (playerPos - pos).normalized;
+
+                if (enemy.Definition.behaviour == EnemyBehaviour.KeepDistance)
+                    body.linearVelocity = KeepDistance(enemy, pos, playerPos, chaseDir, dt);
+                else
+                    body.linearVelocity = chaseDir * enemy.Speed;
             }
+        }
+
+        // Se acerca hasta la distancia preferida, retrocede si el jugador se acerca demasiado y dispara con línea de visión.
+        Vector2 KeepDistance(Enemy enemy, Vector2 pos, Vector2 playerPos, Vector2 chaseDir, float dt)
+        {
+            var def = enemy.Definition;
+            Vector2 toPlayer = playerPos - pos;
+            float distance = toPlayer.magnitude;
+            Vector2 aim = distance > 1e-4f ? toPlayer / distance : Vector2.zero;
+
+            // La línea de visión solo se comprueba cuando importa: dentro del alcance o de la zona de espera.
+            bool inRange = distance <= Mathf.Max(def.fireRange, def.preferredDistance + def.distanceTolerance);
+            bool clearShot = inRange && !Physics2D.Linecast(pos, playerPos, Layers.ObstacleMask);
+
+            enemy.FireTimer -= dt;
+            if (enemy.FireTimer <= 0f)
+            {
+                if (clearShot && distance <= def.fireRange && projectiles != null)
+                {
+                    Vector2 origin = pos + aim * (def.radius + def.projectileRadius);
+                    projectiles.LaunchHostile(origin, aim, def.projectileSpeed, def.projectileRange,
+                        def.projectileRadius, def.projectileDamage, def.projectileColor);
+                    enemy.FireTimer = def.fireInterval;
+                }
+                else
+                {
+                    // Sin tiro: lo reintenta enseguida en lugar de esperar un intervalo completo.
+                    enemy.FireTimer = 0.2f;
+                }
+            }
+
+            // Sin línea de visión se acerca rodeando obstáculos con el flow field.
+            if (!clearShot || distance > def.preferredDistance + def.distanceTolerance)
+                return chaseDir * enemy.Speed;
+            if (distance < def.preferredDistance - def.distanceTolerance)
+                return -aim * enemy.Speed;
+            return Vector2.zero;
         }
 
         // Quita en O(1) intercambiando con el último y devuelve la instancia al pool.

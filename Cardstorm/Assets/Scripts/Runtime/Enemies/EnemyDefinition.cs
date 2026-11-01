@@ -5,7 +5,7 @@ namespace Cardstorm.Enemies
 {
     public enum EnemyShape { Circle, Square, Triangle, Diamond, Ring }
 
-    // Solo Chase está implementado; KeepDistance y Charge quedan para los comportamientos propios de cada tipo.
+    // Chase: persigue. KeepDistance: se mantiene a distancia y dispara (Tirador). Charge: sin implementar.
     public enum EnemyBehaviour { Chase, KeepDistance, Charge }
 
     // Datos de un tipo de enemigo. Se editan en el inspector.
@@ -37,6 +37,25 @@ namespace Cardstorm.Enemies
         [Min(0.05f)] public float radius = 0.4f;
         [Min(0.01f)] public float mass = 1f;
         public EnemyBehaviour behaviour = EnemyBehaviour.Chase;
+
+        [Header("Distancia (solo KeepDistance)")]
+        [Tooltip("Distancia al jugador a la que intenta quedarse.")]
+        [Min(0f)] public float preferredDistance = 6f;
+        [Tooltip("Margen alrededor de la distancia preferida en el que se queda quieto.")]
+        [Min(0f)] public float distanceTolerance = 1f;
+
+        [Header("Disparo (solo KeepDistance)")]
+        [Tooltip("Segundos entre disparos.")]
+        [Min(0.1f)] public float fireInterval = 2f;
+        [Tooltip("Solo dispara si el jugador está a esta distancia o menos y sin obstáculos en medio.")]
+        [Min(0f)] public float fireRange = 9f;
+        [Min(0f)] public float projectileDamage = 8f;
+        [Tooltip("Unidades/s.")]
+        [Min(0.1f)] public float projectileSpeed = 7f;
+        [Tooltip("Distancia máxima que recorre el proyectil.")]
+        [Min(0.1f)] public float projectileRange = 12f;
+        [Min(0.02f)] public float projectileRadius = 0.15f;
+        public Color projectileColor = new(1f, 0.55f, 0.9f, 1f);
 
         [Header("Jefe")]
         [Tooltip("Un jefe no se recicla por distancia, atraviesa los obstáculos y persigue en línea recta.")]
