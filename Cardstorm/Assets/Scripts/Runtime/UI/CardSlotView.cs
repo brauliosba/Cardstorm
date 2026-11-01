@@ -144,9 +144,7 @@ namespace Cardstorm.UI
             art.color = Color.Lerp(color, HudColors.Panel, 0.55f);
             icon.sprite = definition.icon;
             icon.enabled = definition.icon != null;
-            costText.text = definition.cost == Mathf.Round(definition.cost)
-                ? ((int)definition.cost).ToString()
-                : definition.cost.ToString("0.#");
+            costText.text = HudColors.CostLabel(definition.cost);
             nameText.text = definition.displayName;
             typeText.text = HudColors.TypeName(definition.type);
             descriptionText.text = definition.description;

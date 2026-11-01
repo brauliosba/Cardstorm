@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using Cardstorm.Cards.Effects;
+using Cardstorm.Progression;
 using UnityEngine;
 
 namespace Cardstorm.Cards
 {
     // Datos de una carta. Se crea y se equilibra desde el inspector.
     [CreateAssetMenu(menuName = "Cardstorm/Carta", fileName = "Card_")]
-    public class CardDefinition : ScriptableObject
+    public class CardDefinition : ScriptableObject, IShopItem
     {
         [Header("Identidad")]
         public string id;
@@ -44,6 +45,12 @@ namespace Cardstorm.Cards
 
         // Las cartas de poder no van al descarte: salen del mazo.
         public bool ExhaustOnPlay => type == CardType.Power;
+
+        string IShopItem.Id => id;
+        CardRarity IShopItem.Rarity => rarity;
+        int IShopItem.BasePrice => basePrice;
+        float IShopItem.PriceMultiplierPerCopy => priceMultiplierPerCopy;
+        int IShopItem.MaxCopies => maxCopiesPerRun;
 
         void OnValidate()
         {

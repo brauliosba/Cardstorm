@@ -21,9 +21,6 @@ namespace Cardstorm.Progression
         public int Total { get; private set; }
         public int Position => IsEmpty ? 0 : Total - levels.Count + 1;
 
-        // Veces que se ha refrescado la tienda actual; vuelve a 0 en cada tienda.
-        public int Refreshes { get; private set; }
-
         public bool CurrentOffersRemoval => !IsEmpty && OffersRemoval(CurrentLevel);
 
         public bool OffersRemoval(int level) =>
@@ -35,15 +32,12 @@ namespace Cardstorm.Progression
             Total++;
         }
 
-        public void RegisterRefresh() => Refreshes++;
-
         // Cierra la tienda actual. Devuelve true si queda otra por mostrar.
         public bool Complete()
         {
             if (IsEmpty) return false;
 
             levels.Dequeue();
-            Refreshes = 0;
             if (IsEmpty) Total = 0;
             return !IsEmpty;
         }

@@ -24,5 +24,17 @@ namespace Cardstorm.UI
             CardType.Power => "Poder",
             _ => "Ataque",
         };
+
+        public static string RarityName(CardRarity rarity) => rarity switch
+        {
+            CardRarity.Basic => "Básica",
+            CardRarity.Uncommon => "Poco común",
+            CardRarity.Rare => "Rara",
+            _ => "Común",
+        };
+
+        // Sin decimales si el coste es entero.
+        public static string CostLabel(float cost) =>
+            cost == Mathf.Round(cost) ? ((int)cost).ToString() : cost.ToString("0.#");
     }
 }

@@ -18,6 +18,7 @@ namespace Cardstorm.EditorTools
         public const string TriangleSpritePath = ArtFolder + "/Greybox_Triangle.png";
         public const string Arc120SpritePath = ArtFolder + "/Greybox_Arc120.png";
         public const string DiamondSpritePath = ArtFolder + "/Greybox_Diamond.png";
+        public const string RingSpritePath = ArtFolder + "/Greybox_Ring.png";
 
         public const string PrefabFolder = "Assets/Prefabs";
         public const string RockPrefabPath = PrefabFolder + "/Obstacle_Rock.prefab";
@@ -55,10 +56,10 @@ namespace Cardstorm.EditorTools
         }
 
         // ---------------------------------------------------------------------
-        // Sprites greybox (blancos, 64 x 64 px, 64 PPU = 1 unidad; el arco, 32 PPU = radio 1)
+        // Sprites greybox (blancos, 64 x 64 px, 64 PPU = 1 unidad; el arco y el anillo, 32 PPU = radio 1)
         // ---------------------------------------------------------------------
 
-        enum Shape { Circle, Square, Triangle, Arc120, Diamond }
+        enum Shape { Circle, Square, Triangle, Arc120, Diamond, Ring }
 
         static void CreateGreyboxSprites()
         {
@@ -68,6 +69,7 @@ namespace Cardstorm.EditorTools
             CreateSpriteIfMissing(TriangleSpritePath, Shape.Triangle);
             CreateSpriteIfMissing(Arc120SpritePath, Shape.Arc120, SpriteSize / 2);
             CreateSpriteIfMissing(DiamondSpritePath, Shape.Diamond);
+            CreateSpriteIfMissing(RingSpritePath, Shape.Ring, SpriteSize / 2);
         }
 
         static void CreateSpriteIfMissing(string path, Shape shape, int pixelsPerUnit = SpriteSize)
@@ -133,6 +135,11 @@ namespace Cardstorm.EditorTools
                 case Shape.Diamond:
                     // Rombo con los vértices en el centro de cada lado.
                     return Mathf.Abs(u - 0.5f) + Mathf.Abs(v - 0.5f) <= 0.5f;
+                case Shape.Ring:
+                    // Corona circular de radio exterior 1 e interior 0,7, centrada en el pivote.
+                    float ru = u * 2f - 1f, rv = v * 2f - 1f;
+                    float r2 = ru * ru + rv * rv;
+                    return r2 <= 1f && r2 >= 0.49f;
                 default:
                     return true;
             }

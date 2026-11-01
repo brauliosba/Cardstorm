@@ -121,6 +121,15 @@ namespace Cardstorm.Cards
             return PlayResult.Played;
         }
 
+        // Mete una carta nueva en el mazo de robo, en una posición al azar. Durante el rebarajado
+        // el mazo está vacío y la carta se baraja con el descarte al terminar. Una ranura en espera
+        // la roba en el siguiente Tick.
+        public void Add(TCard card)
+        {
+            if (card == null) return;
+            drawPile.Insert(rng.Next(drawPile.Count + 1), card);
+        }
+
         // Pone en la ranura la carta de arriba del mazo; si no hay, empieza el rebarajado cuando hay descarte.
         bool TryReserve(int slot)
         {

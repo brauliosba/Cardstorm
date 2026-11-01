@@ -15,6 +15,10 @@ namespace Cardstorm.Progression
             return Round(price);
         }
 
+        // Refrescar por k-ésima vez en la misma tienda: paso · k · inflación.
+        public static int RefreshPrice(ProgressionRules rules, int level, int k) =>
+            Round(rules.refreshPriceStep * Math.Max(1, k) * Inflation(rules, level));
+
         static int Round(double value) => (int)Math.Round(value, MidpointRounding.AwayFromZero);
     }
 }
