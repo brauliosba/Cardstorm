@@ -23,7 +23,7 @@ MonoBehaviour:
   targetRange: 0
   powerValue: 0
   maxCopiesPerRun: 3
-  basePrice: 20
+  basePrice: 50
   priceMultiplierPerCopy: 1.5
   effects:
   - rid: 8012375045157158912

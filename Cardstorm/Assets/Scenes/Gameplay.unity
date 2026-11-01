@@ -3467,7 +3467,7 @@ MonoBehaviour:
   chestSize: 1
   sortingOrder: -5
   xpPrewarm: 400
-  coinPrewarm: 100
+  coinPrewarm: 400
   chestPrewarm: 4
   attractStartSpeed: 6
   attractMaxSpeed: 18

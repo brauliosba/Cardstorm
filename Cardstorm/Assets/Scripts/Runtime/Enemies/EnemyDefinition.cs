@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cardstorm.Enemies
 {
@@ -22,10 +23,11 @@ namespace Cardstorm.Enemies
         [Header("Recompensas")]
         [Tooltip("Experiencia al morir. Se multiplica por el refuerzo del tramo.")]
         [Min(0)] public int xp = 1;
-        [Tooltip("Oro medio por enemigo. No se multiplica por el refuerzo.")]
-        [Min(0f)] public float goldAverage = 0.3f;
-        [Tooltip("Probabilidad de soltar oro (0-1).")]
-        [Range(0f, 1f)] public float goldChance = 0.3f;
+        [Tooltip("Oro de la moneda que suelta siempre. No se multiplica por el refuerzo.")]
+        [Min(0)] public int coinValue = 1;
+        [Tooltip("Probabilidad (0-1) de que la moneda sea un dime, que vale el doble.")]
+        [FormerlySerializedAs("goldChance")]
+        [Range(0f, 1f)] public float doubleCoinChance = 0.3f;
 
         [Header("Movimiento y físicas")]
         [Tooltip("Unidades/s. El jugador va a 5.")]

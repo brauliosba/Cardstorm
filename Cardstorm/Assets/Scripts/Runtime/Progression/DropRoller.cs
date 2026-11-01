@@ -8,19 +8,16 @@ namespace Cardstorm.Progression
     {
         public static float Xp(int baseXp, float xpMultiplier) => Math.Max(0f, baseXp * xpMultiplier);
 
-        // Valor de la moneda: el oro medio repartido entre las veces que sale (mínimo 1).
-        public static int CoinValue(float goldAverage, float goldChance)
+        // Siempre una moneda de coinValue; con probabilidad doubleChance vale el doble (dime).
+        public static int RollGold(int coinValue, float doubleChance, Random random)
         {
-            if (goldAverage <= 0f || goldChance <= 0f) return 0;
-            double value = goldAverage / Math.Min(1f, goldChance);
-            return Math.Max(1, (int)Math.Round(value, MidpointRounding.AwayFromZero));
+            if (coinValue <= 0) return 0;
+            if (doubleChance <= 0f) return coinValue;
+            if (doubleChance >= 1f) return coinValue * 2;
+            return random.NextDouble() < doubleChance ? coinValue * 2 : coinValue;
         }
 
-        // Con probabilidad goldChance, una moneda de CoinValue; si no, 0.
-        public static int RollGold(float goldAverage, float goldChance, Random random)
-        {
-            int value = CoinValue(goldAverage, goldChance);
-            return value > 0 && random.NextDouble() < goldChance ? value : 0;
-        }
+        public static double ExpectedGold(int coinValue, float doubleChance) =>
+            Math.Max(0, coinValue) * (1.0 + Math.Clamp(doubleChance, 0f, 1f));
     }
 }

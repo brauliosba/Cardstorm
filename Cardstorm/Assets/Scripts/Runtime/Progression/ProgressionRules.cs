@@ -43,15 +43,15 @@ namespace Cardstorm.Progression
         public float xpExponent = 1.5f;
 
         [Header("Oro y precios")]
-        [Min(0)] public int startingGold = 15;
+        [Min(0)] public int startingGold = 38;
 
         [Tooltip("Subida de todos los precios por nivel: × (1 + inflación · (nivel − 1)).")]
         [Min(0f)] public float inflationPerLevel = 0.04f;
 
         [Tooltip("Precio base de una carta según su rareza (las básicas cuestan como las comunes).")]
-        [Min(0)] public int commonPrice = 15;
-        [Min(0)] public int uncommonPrice = 22;
-        [Min(0)] public int rarePrice = 35;
+        [Min(0)] public int commonPrice = 38;
+        [Min(0)] public int uncommonPrice = 55;
+        [Min(0)] public int rarePrice = 88;
 
         [Header("Tienda")]
         [Tooltip("Peso de cada rareza al sortear una ranura de acción.")]
@@ -63,7 +63,7 @@ namespace Cardstorm.Progression
         [Min(0f)] public float rareMinTime = 300f;
 
         [Tooltip("Refrescar cuesta paso · k, con k = 1, 2, 3… en cada tienda.")]
-        [Min(0)] public int refreshPriceStep = 5;
+        [Min(0)] public int refreshPriceStep = 12;
 
         [Header("Eliminar carta")]
         [Min(1)] public int removalEveryLevels = 5;

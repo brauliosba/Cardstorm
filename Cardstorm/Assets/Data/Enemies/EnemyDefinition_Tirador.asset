@@ -17,8 +17,8 @@ MonoBehaviour:
   maxHealth: 20
   contactDamage: 10
   xp: 2
-  goldAverage: 0.5
-  goldChance: 0.5
+  coinValue: 1
+  doubleCoinChance: 0.5
   moveSpeed: 2.5
   radius: 0.45
   mass: 1

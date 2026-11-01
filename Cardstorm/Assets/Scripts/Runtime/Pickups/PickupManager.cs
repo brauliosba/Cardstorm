@@ -29,13 +29,15 @@ namespace Cardstorm.Pickups
         [SerializeField] Color chestColor = new(0.55f, 0.33f, 0.15f);
         [SerializeField, Min(0.05f)] float xpSize = 0.35f;
         [SerializeField, Min(0.05f)] float coinSize = 0.4f;
+        [Tooltip("Escala del dime (moneda que vale el doble) respecto a la moneda normal.")]
+        [SerializeField, Min(1f)] float dimeScale = 1.35f;
         [SerializeField, Min(0.05f)] float chestSize = 1f;
         [Tooltip("Por debajo de los enemigos y por encima del suelo.")]
         [SerializeField] int sortingOrder = -5;
 
         [Header("Pools")]
         [SerializeField, Min(0)] int xpPrewarm = 400;
-        [SerializeField, Min(0)] int coinPrewarm = 100;
+        [SerializeField, Min(0)] int coinPrewarm = 400;
         [SerializeField, Min(0)] int chestPrewarm = 4;
 
         [Header("Atracción y recogida")]
@@ -70,7 +72,7 @@ namespace Cardstorm.Pickups
         const int KindCount = 3;
 
         readonly List<Pickup> active = new(512);
-        readonly Stack<Pickup>[] pools = { new(400), new(100), new(4) };
+        readonly Stack<Pickup>[] pools = { new(400), new(400), new(4) };
         readonly int[] activeByKind = new int[KindCount];
 
         public int ActiveCount => active.Count;
@@ -142,12 +144,13 @@ namespace Cardstorm.Pickups
 
             SpawnXp(position, DropRoller.Xp(definition.xp, enemy.XpMultiplier));
 
-            int gold = DropRoller.RollGold(definition.goldAverage, definition.goldChance, state.Random);
+            int gold = DropRoller.RollGold(definition.coinValue, definition.doubleCoinChance, state.Random);
             if (gold > 0)
             {
                 float angle = (float)(state.Random.NextDouble() * Mathf.PI * 2.0);
                 Vector2 offset = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * coinOffset;
-                SpawnGold(position + offset, gold, GoldSource.Enemy);
+                var coin = Spawn(PickupKind.Gold, position + offset, gold, GoldSource.Enemy);
+                if (gold > definition.coinValue) SetSize(coin, coinSize * dimeScale);
             }
         }
 
@@ -224,7 +227,7 @@ namespace Cardstorm.Pickups
             return nearest;
         }
 
-        void Spawn(PickupKind kind, Vector2 position, float value, GoldSource source)
+        Pickup Spawn(PickupKind kind, Vector2 position, float value, GoldSource source)
         {
             var pool = pools[(int)kind];
             var p = pool.Count > 0 ? pool.Pop() : Create(kind);
@@ -235,12 +238,16 @@ namespace Cardstorm.Pickups
             p.Attracted = false;
             p.AttractTime = 0f;
             p.Transform.position = position;
+            if (kind == PickupKind.Gold) SetSize(p, coinSize);
             p.Transform.gameObject.SetActive(true);
 
             p.ActiveIndex = active.Count;
             active.Add(p);
             activeByKind[(int)kind]++;
+            return p;
         }
+
+        static void SetSize(Pickup p, float size) => p.Transform.localScale = new Vector3(size, size, 1f);
 
         // Quita en O(1) intercambiando con el último y devuelve la instancia a su pool.
         void Release(Pickup p)

@@ -16,16 +16,16 @@ MonoBehaviour:
     xpBase: 5
     xpFactor: 4
     xpExponent: 1.5
-    startingGold: 15
+    startingGold: 38
     inflationPerLevel: 0.04
-    commonPrice: 15
-    uncommonPrice: 22
-    rarePrice: 35
+    commonPrice: 38
+    uncommonPrice: 55
+    rarePrice: 88
     commonWeight: 60
     uncommonWeight: 30
     rareWeight: 10
     rareMinTime: 300
-    refreshPriceStep: 5
+    refreshPriceStep: 12
     removalEveryLevels: 5
     removalBasePrice: 5
     removalStep: 5
