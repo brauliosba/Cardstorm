@@ -16,6 +16,9 @@ namespace Cardstorm.Progression
         public RunState State { get; private set; }
         public int Seed { get; private set; }
 
+        // La partida ha terminado con victoria: no se abren más tiendas.
+        public bool Won { get; private set; }
+
         double Now => clock != null ? clock.Elapsed : Time.timeSinceLevelLoad;
 
         void Awake()
@@ -46,6 +49,13 @@ namespace Cardstorm.Progression
             RunEvents.RaiseXpGained(now, State.Levels.TotalXp - before);
             for (int i = 1; i <= levelUps; i++)
                 RunEvents.RaiseLevelUp(now, startLevel + i);
+        }
+
+        public void Win()
+        {
+            if (Won) return;
+            Won = true;
+            RunEvents.RaiseRunWon(Now, State != null ? State.Level : 1);
         }
 
         public void AddGold(int amount, GoldSource source)

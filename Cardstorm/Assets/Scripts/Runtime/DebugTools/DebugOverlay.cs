@@ -221,7 +221,7 @@ namespace Cardstorm.DebugTools
 
         void OnBossTimeReached(BossEvent boss)
         {
-            bossNotice = $"{boss.name} (pendiente)";
+            bossNotice = boss.name;
             bossNoticeUntil = Time.unscaledTime + bossNoticeTime;
         }
     }

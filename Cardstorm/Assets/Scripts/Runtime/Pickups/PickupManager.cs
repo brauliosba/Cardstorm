@@ -149,7 +149,8 @@ namespace Cardstorm.Pickups
             {
                 float angle = (float)(state.Random.NextDouble() * Mathf.PI * 2.0);
                 Vector2 offset = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * coinOffset;
-                var coin = Spawn(PickupKind.Gold, position + offset, gold, GoldSource.Enemy);
+                var source = definition.isBoss ? GoldSource.Boss : GoldSource.Enemy;
+                var coin = Spawn(PickupKind.Gold, position + offset, gold, source);
                 if (gold > definition.coinValue) SetSize(coin, coinSize * dimeScale);
             }
         }

@@ -34,6 +34,15 @@ namespace Cardstorm.Progression
         // Tiempo, oro gastado, motivo.
         public static event Action<double, int, SpendReason> GoldSpent;
 
+        // Tiempo, id del jefe.
+        public static event Action<double, string> BossSpawned;
+
+        // Tiempo, id del jefe.
+        public static event Action<double, string> BossKilled;
+
+        // Tiempo, nivel alcanzado.
+        public static event Action<double, int> RunWon;
+
         public static void RaiseXpGained(double time, float xp) => XpGained?.Invoke(time, xp);
 
         public static void RaiseGoldGained(double time, int gold, GoldSource source) => GoldGained?.Invoke(time, gold, source);
@@ -49,5 +58,11 @@ namespace Cardstorm.Progression
         public static void RaiseCardRemoved(double time, string cardId, int price) => CardRemoved?.Invoke(time, cardId, price);
 
         public static void RaiseGoldSpent(double time, int amount, SpendReason reason) => GoldSpent?.Invoke(time, amount, reason);
+
+        public static void RaiseBossSpawned(double time, string bossId) => BossSpawned?.Invoke(time, bossId);
+
+        public static void RaiseBossKilled(double time, string bossId) => BossKilled?.Invoke(time, bossId);
+
+        public static void RaiseRunWon(double time, int level) => RunWon?.Invoke(time, level);
     }
 }

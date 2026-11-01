@@ -3,7 +3,7 @@ using UnityEngine.Serialization;
 
 namespace Cardstorm.Enemies
 {
-    public enum EnemyShape { Circle, Square, Triangle }
+    public enum EnemyShape { Circle, Square, Triangle, Diamond, Ring }
 
     // Solo Chase está implementado; KeepDistance y Charge quedan para los comportamientos propios de cada tipo.
     public enum EnemyBehaviour { Chase, KeepDistance, Charge }
@@ -35,6 +35,10 @@ namespace Cardstorm.Enemies
         [Min(0.05f)] public float radius = 0.4f;
         [Min(0.01f)] public float mass = 1f;
         public EnemyBehaviour behaviour = EnemyBehaviour.Chase;
+
+        [Header("Jefe")]
+        [Tooltip("Un jefe no se recicla por distancia, atraviesa los obstáculos y persigue en línea recta.")]
+        public bool isBoss;
 
         [Header("Aspecto")]
         [Tooltip("Se distinguen por forma además de por color.")]

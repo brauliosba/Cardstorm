@@ -17,12 +17,13 @@ MonoBehaviour:
   maxHealth: 120
   contactDamage: 20
   xp: 10
-  coinValue: 2
+  coinValue: 1
   doubleCoinChance: 1
   moveSpeed: 1.8
   radius: 1
   mass: 20
   behaviour: 0
+  isBoss: 0
   shape: 0
   color: {r: 0.54509807, g: 0.3529412, b: 0.16862746, a: 1}
   poolPrewarm: 10

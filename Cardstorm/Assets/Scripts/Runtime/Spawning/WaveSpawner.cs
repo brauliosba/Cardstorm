@@ -212,7 +212,7 @@ namespace Cardstorm.Spawning
         void OnBossTimeReached(BossEvent boss)
         {
             LastBoss = boss;
-            Debug.Log($"[WaveSpawner] {GameClock.Format(scheduler.Time)} · {boss.name} (pendiente de implementar)");
+            Debug.Log($"[WaveSpawner] {GameClock.Format(scheduler.Time)} · {boss.name}");
             BossTimeReached?.Invoke(boss);
         }
     }

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 27ca86ed9d3f70242b1af2e1479a4e24, type: 3}
+  m_Name: EnemyDefinition_OjoTormenta
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Enemies.EnemyDefinition
+  id: ojo_tormenta
+  displayName: Ojo de la tormenta
+  maxHealth: 2000
+  contactDamage: 40
+  xp: 0
+  coinValue: 0
+  doubleCoinChance: 0
+  moveSpeed: 1.26
+  radius: 3
+  mass: 200
+  behaviour: 0
+  isBoss: 0
+  shape: 4
+  color: {r: 0.24705882, g: 0.44705883, b: 0.9490196, a: 1}
+  poolPrewarm: 1

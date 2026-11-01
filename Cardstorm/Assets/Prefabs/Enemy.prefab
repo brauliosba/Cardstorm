@@ -172,3 +172,5 @@ MonoBehaviour:
   circleSprite: {fileID: 21300000, guid: 3ba14ff62f572404b951690219d7db4d, type: 3}
   squareSprite: {fileID: 21300000, guid: ff771ce775659304f84fbecef4bb4a44, type: 3}
   triangleSprite: {fileID: 21300000, guid: d8246baa1a4b28e429f4bed0eea6daf8, type: 3}
+  diamondSprite: {fileID: 21300000, guid: 214e193b49cab5d44a88e7ba750c3d36, type: 3}
+  ringSprite: {fileID: 21300000, guid: e1b4d8f2f1be41642bccf3a8986dc7b1, type: 3}

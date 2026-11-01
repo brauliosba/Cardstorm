@@ -660,8 +660,9 @@ GameObject:
   - component: {fileID: 200822255}
   - component: {fileID: 200822254}
   - component: {fileID: 200822256}
+  - component: {fileID: 200822257}
   m_Layer: 0
-  m_Name: RunManager
+  m_Name: Run
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -719,6 +720,31 @@ MonoBehaviour:
   removalScreen: {fileID: 398906490}
   catalog: {fileID: 11400000, guid: d64d6d638a9c9c840956d1a2359218d6, type: 2}
   resumeInvulnerability: 0.5
+--- !u!114 &200822257
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 200822253}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc106fc9cb8f3ce4e94e40328d77c0d4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Spawning.BossSpawner
+  spawner: {fileID: 829606317}
+  enemies: {fileID: 350652524}
+  run: {fileID: 200822254}
+  clock: {fileID: 829606318}
+  map: {fileID: 1816950341}
+  bosses:
+  - name: Heraldo
+    definition: {fileID: 11400000, guid: 023635c8c93829d42a6c06c0c799b663, type: 2}
+    isFinal: 0
+  - name: Ojo de la tormenta
+    definition: {fileID: 11400000, guid: 2656403701fa51043a2bb79b806105d9, type: 2}
+    isFinal: 1
+  spawnMargin: 2
 --- !u!1 &204030061
 GameObject:
   m_ObjectHideFlags: 0
@@ -1570,6 +1596,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: a074a7a9acb43a84e94e34b38b71b5cb, type: 2}
   - {fileID: 11400000, guid: db1a024588a1657499642882e25a42a9, type: 2}
   - {fileID: 11400000, guid: c300d01d7e04d624196b682656444df1, type: 2}
+  - {fileID: 11400000, guid: 023635c8c93829d42a6c06c0c799b663, type: 2}
+  - {fileID: 11400000, guid: 2656403701fa51043a2bb79b806105d9, type: 2}
   maxSize: 600
 --- !u!4 &350652527
 Transform:
@@ -1803,6 +1831,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 180648574204952851, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
+      propertyPath: m_overflowMode
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 290750729124677566, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1979,6 +2011,34 @@ PrefabInstance:
       propertyPath: m_overflowMode
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 2089260873998069079, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2089260873998069079, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2089260873998069079, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2089260873998069079, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2161512496738072610, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
+      propertyPath: clock
+      value: 
+      objectReference: {fileID: 829606318}
+    - target: {fileID: 2161512496738072610, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
+      propertyPath: input
+      value: 
+      objectReference: {fileID: 2031495639}
+    - target: {fileID: 2161512496738072610, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
+      propertyPath: health
+      value: 
+      objectReference: {fileID: 478590293}
     - target: {fileID: 2163288207392449204, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
@@ -1994,6 +2054,10 @@ PrefabInstance:
     - target: {fileID: 2163288207392449204, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
       propertyPath: m_AnchoredPosition.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2586413628740560541, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
+      propertyPath: m_overflowMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2650573328587884707, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
       propertyPath: m_overflowMode
@@ -2030,6 +2094,10 @@ PrefabInstance:
     - target: {fileID: 3490732597999445249, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
       propertyPath: m_overflowMode
       value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 3779374084600790855, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
+      propertyPath: m_fontColor32.rgba
+      value: 4285230079
       objectReference: {fileID: 0}
     - target: {fileID: 3809635822165831234, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
       propertyPath: m_Name
@@ -2124,6 +2192,10 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 7166382332814589023, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
+      propertyPath: m_overflowMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 7230645582251430497, guid: 33ee54ee28fa25e4ebce8289c01b78ee, type: 3}
       propertyPath: m_overflowMode
       value: 3
       objectReference: {fileID: 0}
@@ -2980,6 +3052,10 @@ PrefabInstance:
       propertyPath: m_TextStyleHashCode
       value: -1183493901
       objectReference: {fileID: 0}
+    - target: {fileID: 3799555496729374165, guid: 21fb2759f753c6149a7fc2caa444673f, type: 3}
+      propertyPath: bosses
+      value: 
+      objectReference: {fileID: 200822257}
     - target: {fileID: 5000576870109878020, guid: 21fb2759f753c6149a7fc2caa444673f, type: 3}
       propertyPath: m_Pivot.x
       value: 0
@@ -3464,6 +3540,7 @@ MonoBehaviour:
   chestColor: {r: 0.55, g: 0.33, b: 0.15, a: 1}
   xpSize: 0.35
   coinSize: 0.4
+  dimeScale: 1.35
   chestSize: 1
   sortingOrder: -5
   xpPrewarm: 400

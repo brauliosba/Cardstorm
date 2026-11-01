@@ -103,6 +103,7 @@ namespace Cardstorm.Progression
 
         void OnLevelUp(double time, int level)
         {
+            if (run.Won) return;
             EnsureCreated();
             queue.Enqueue(level);
 

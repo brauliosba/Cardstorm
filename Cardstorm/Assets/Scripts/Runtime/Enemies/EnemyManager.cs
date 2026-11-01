@@ -87,7 +87,8 @@ namespace Cardstorm.Enemies
                 var body = enemy.Body;
                 Vector2 pos = body.position;
 
-                if ((playerPos - pos).sqrMagnitude > despawnDistanceSqr)
+                bool boss = enemy.IsBoss;
+                if (!boss && (playerPos - pos).sqrMagnitude > despawnDistanceSqr)
                 {
                     enemy.FarTimer += dt;
                     if (enemy.FarTimer > despawnTime)
@@ -108,7 +109,7 @@ namespace Cardstorm.Enemies
                 }
 
                 // En la greybox todos persiguen; los demás comportamientos se enchufan aquí.
-                Vector2 dir = flowField != null ? flowField.GetDirection(pos) : (playerPos - pos).normalized;
+                Vector2 dir = flowField != null && !boss ? flowField.GetDirection(pos) : (playerPos - pos).normalized;
                 body.linearVelocity = dir * enemy.Speed;
             }
         }

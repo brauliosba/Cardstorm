@@ -196,6 +196,8 @@ namespace Cardstorm.DebugTools
         // R
         void Restart()
         {
+            // La escala de tiempo sobrevive a la carga: si se reinicia desde una pausa, la escena empezaría congelada.
+            Time.timeScale = 1f;
             var scene = SceneManager.GetActiveScene();
             if (scene.buildIndex >= 0) SceneManager.LoadScene(scene.buildIndex);
             else SceneManager.LoadScene(scene.name);

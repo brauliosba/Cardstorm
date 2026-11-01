@@ -12,11 +12,14 @@ namespace Cardstorm.Enemies
         [SerializeField] Sprite circleSprite;
         [SerializeField] Sprite squareSprite;
         [SerializeField] Sprite triangleSprite;
+        [SerializeField] Sprite diamondSprite;
+        [SerializeField] Sprite ringSprite;
 
         const float HitFlashTime = 0.08f;
 
         Rigidbody2D rb;
         SpriteRenderer spriteRenderer;
+        CircleCollider2D circle;
 
         public EnemyDefinition Definition { get; private set; }
         public Rigidbody2D Body => rb;
@@ -24,6 +27,7 @@ namespace Cardstorm.Enemies
         public float MaxHealth { get; private set; }
         public float Health { get; private set; }
         public bool IsAlive { get; private set; }
+        public bool IsBoss => Definition != null && Definition.isBoss;
 
         // La experiencia se multiplica por el refuerzo del tramo; el oro no.
         public float XpMultiplier { get; private set; } = 1f;
@@ -50,7 +54,8 @@ namespace Cardstorm.Enemies
             rb.freezeRotation = true;
             rb.linearDamping = 0f;
             rb.interpolation = RigidbodyInterpolation2D.Interpolate;
-            GetComponent<CircleCollider2D>().radius = 0.5f;  // El sprite mide 1 unidad; el tamaño real lo da la escala.
+            circle = GetComponent<CircleCollider2D>();
+            circle.radius = 0.5f;  // El sprite mide 1 unidad; el tamaño real lo da la escala.
         }
 
         // Reinicia todo el estado: la instancia viene del pool y puede haber sido otro tipo de enemigo.
@@ -70,6 +75,9 @@ namespace Cardstorm.Enemies
             transform.localScale = new Vector3(diameter, diameter, 1f);
             spriteRenderer.sprite = SpriteFor(definition.shape);
             spriteRenderer.color = definition.color;
+
+            // Los jefes son demasiado grandes para el flow field: atraviesan los obstáculos.
+            circle.excludeLayers = definition.isBoss ? Layers.ObstacleMask : 0;
 
             rb.mass = definition.mass;
             rb.position = position;
@@ -114,6 +122,8 @@ namespace Cardstorm.Enemies
         {
             EnemyShape.Square => squareSprite,
             EnemyShape.Triangle => triangleSprite,
+            EnemyShape.Diamond => diamondSprite,
+            EnemyShape.Ring => ringSprite,
             _ => circleSprite,
         };
     }
