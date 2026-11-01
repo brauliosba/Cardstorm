@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Cards.CardDefinition
   id: codicia
   displayName: Codicia
-  description: "Obtienes un 10 % m\xE1s de oro."
+  description: "Por cada 10 de oro que recoges, ganas 1 m\xE1s."
   icon: {fileID: 21300000, guid: ff771ce775659304f84fbecef4bb4a44, type: 3}
   type: 4
   rarity: 3

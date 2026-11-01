@@ -4,8 +4,7 @@ using Cardstorm.Progression;
 
 namespace Cardstorm.UI
 {
-    // Nombre y valor de cada estadística tal como se muestran en el panel. Los multiplicadores se
-    // enseñan como porcentaje sobre la base; el resto, en sus unidades. Decimales con coma.
+    // Nombre y valor de cada estadística tal como se muestran en el panel.
     public static class StatFormat
     {
         public static string Label(StatType stat) => stat switch
@@ -31,6 +30,7 @@ namespace Cardstorm.UI
             StatType.HealthRegen => Number(value, "0.##") + "/s",
             StatType.MoveSpeed => Number(value, "0.0#") + " u/s",
             StatType.PickupRadius => Number(value, "0.0#") + " u",
+            StatType.GoldGain => ExtraPerTen(value, baseValue),
             _ when IsMultiplier(stat) => Percent(value, baseValue),
             _ => Number(value, "0.##"),
         };
@@ -41,6 +41,14 @@ namespace Cardstorm.UI
             float b = baseValue != 0f ? baseValue : 1f;
             int percent = (int)Math.Round((value / b - 1f) * 100f, MidpointRounding.AwayFromZero);
             return (percent >= 0 ? "+" : "") + percent.ToString(CultureInfo.InvariantCulture) + " %";
+        }
+
+        // Oro extra por cada 10 recogidos, como lo describe Codicia: ×1,1 → +1 cada 10.
+        static string ExtraPerTen(float value, float baseValue)
+        {
+            float b = baseValue != 0f ? baseValue : 1f;
+            float extra = (float)Math.Round((value / b - 1f) * 10f, 1, MidpointRounding.AwayFromZero);
+            return (extra >= 0f ? "+" : "") + Number(extra, "0.#") + " cada 10";
         }
 
         static string Number(float value, string format) =>
