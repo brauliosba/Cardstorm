@@ -17,6 +17,7 @@ namespace Cardstorm.Player
         InputAction moveAction;
         InputAction pauseAction;
         InputAction cardInfoAction;
+        InputAction statsAction;
         InputAction[] cardActions;
         Action<InputAction.CallbackContext>[] cardHandlers;
         bool waitCardRelease;
@@ -34,6 +35,7 @@ namespace Cardstorm.Player
         public bool GameplayEnabled => map != null && map.enabled;
 
         public event Action PausePressed;
+        public event Action StatsPressed;
         public event Action<int> CardPressed;
         public event Action DeviceChanged;
 
@@ -43,6 +45,7 @@ namespace Cardstorm.Player
             moveAction = map.FindAction("Move", true);
             pauseAction = map.FindAction("Pause", true);
             cardInfoAction = map.FindAction("CardInfo", true);
+            statsAction = map.FindAction("Stats", true);
 
             cardActions = new InputAction[CardActions.Length];
             cardHandlers = new Action<InputAction.CallbackContext>[CardActions.Length];
@@ -58,6 +61,7 @@ namespace Cardstorm.Player
         {
             map.Enable();
             pauseAction.performed += OnPausePerformed;
+            statsAction.performed += OnStatsPerformed;
             moveAction.performed += OnMovePerformed;
             for (int i = 0; i < cardActions.Length; i++)
                 cardActions[i].performed += cardHandlers[i];
@@ -66,6 +70,7 @@ namespace Cardstorm.Player
         void OnDisable()
         {
             pauseAction.performed -= OnPausePerformed;
+            statsAction.performed -= OnStatsPerformed;
             moveAction.performed -= OnMovePerformed;
             for (int i = 0; i < cardActions.Length; i++)
                 cardActions[i].performed -= cardHandlers[i];
@@ -134,6 +139,12 @@ namespace Cardstorm.Player
         {
             NoteDevice(ctx);
             PausePressed?.Invoke();
+        }
+
+        void OnStatsPerformed(InputAction.CallbackContext ctx)
+        {
+            NoteDevice(ctx);
+            StatsPressed?.Invoke();
         }
 
         void OnMovePerformed(InputAction.CallbackContext ctx) => NoteDevice(ctx);

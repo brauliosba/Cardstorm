@@ -4,6 +4,7 @@ using Cardstorm.Cards;
 using Cardstorm.Core;
 using Cardstorm.Enemies;
 using Cardstorm.Player;
+using Cardstorm.Progression;
 using Cardstorm.Spawning;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -23,6 +24,11 @@ namespace Cardstorm.DebugTools
         [SerializeField] MapBounds map;
         [SerializeField] DebugOverlay overlay;
         [SerializeField] FrameTimeRecorder recorder;
+        [SerializeField] RunManager run;
+        [SerializeField] LevelUpController levelUp;
+
+        [Header("Mayús+F8 · Oro")]
+        [SerializeField, Min(1)] int debugGold = 50;
 
         [Header("F5 · Matar enemigos cercanos")]
         [SerializeField, Min(0.5f)] float killRadius = 6f;
@@ -57,6 +63,8 @@ namespace Cardstorm.DebugTools
             if (map == null) map = FindFirstObjectByType<MapBounds>();
             if (overlay == null) overlay = FindFirstObjectByType<DebugOverlay>();
             if (recorder == null) recorder = FindFirstObjectByType<FrameTimeRecorder>();
+            if (run == null) run = FindFirstObjectByType<RunManager>();
+            if (levelUp == null) levelUp = FindFirstObjectByType<LevelUpController>();
         }
 
         void Start()
@@ -97,9 +105,15 @@ namespace Cardstorm.DebugTools
             if (k.f5Key.wasPressedThisFrame) KillNearby();
             if (k.f6Key.wasPressedThisFrame && player != null) ToggleGodMode();
             if (k.f7Key.wasPressedThisFrame) ToggleInfiniteEnergy();
+            if (k.f8Key.wasPressedThisFrame)
+            {
+                if (k.shiftKey.isPressed) AddGold();
+                else LevelUp();
+            }
             if (k.f9Key.wasPressedThisFrame) LoadTest();
             if (k.f10Key.wasPressedThisFrame && enemies != null) DespawnAll();
             if (k.f11Key.wasPressedThisFrame && recorder != null) recorder.StartRecording();
+            if (k.f12Key.wasPressedThisFrame) ForceRemovalShop();
             if (k.rKey.wasPressedThisFrame) Restart();
         }
 
@@ -159,6 +173,33 @@ namespace Cardstorm.DebugTools
             if (cards == null || cards.Energy == null) return;
             cards.Energy.Infinite = !cards.Energy.Infinite;
             Debug.Log($"[DebugCheats] Energía infinita: {(cards.Energy.Infinite ? "sí" : "no")}");
+        }
+
+        // F8: la experiencia justa para subir un nivel, pasando por la recogida normal (abre la tienda).
+        void LevelUp()
+        {
+            var state = run != null ? run.State : null;
+            if (state == null) return;
+            float multiplier = Mathf.Max(0.01f, state.Stats.Value(StatType.XpGain));
+            float missing = state.Levels.XpNeeded - state.Levels.Xp;
+            run.AddXp(missing / multiplier + 0.001f);
+            Debug.Log($"[DebugCheats] Subida al nivel {state.Level}");
+        }
+
+        // Mayús+F8
+        void AddGold()
+        {
+            if (run == null || run.State == null) return;
+            run.AddGold(debugGold, GoldSource.Debug);
+            Debug.Log($"[DebugCheats] +{debugGold} de oro · {run.State.Gold}");
+        }
+
+        // F12: tienda del nivel actual con Eliminar carta.
+        void ForceRemovalShop()
+        {
+            if (levelUp == null) return;
+            levelUp.OpenShopWithRemoval();
+            Debug.Log("[DebugCheats] Tienda con Eliminar carta");
         }
 
         // F9: loadTestCount enemigos en anillos alrededor del jugador, fuera de la vista; pausa las apariciones normales.

@@ -31,6 +31,7 @@ namespace Cardstorm.Progression
         int entryCount;
         int actionCards;
         float previousTimeScale = 1f;
+        bool forceRemoval;
 
         public bool IsOpen { get; private set; }
         public LevelUpQueue Queue => queue;
@@ -111,6 +112,16 @@ namespace Cardstorm.Progression
             else Open();
         }
 
+        // Depuración: abre una tienda del nivel actual con Eliminar carta, sin subir de nivel.
+        public void OpenShopWithRemoval()
+        {
+            if (IsOpen || run.State == null || run.Won) return;
+            EnsureCreated();
+            forceRemoval = true;
+            queue.Enqueue(run.State.Level);
+            Open();
+        }
+
         void Open()
         {
             IsOpen = true;
@@ -124,7 +135,9 @@ namespace Cardstorm.Progression
         void ShowCurrent()
         {
             offer.Open(queue.CurrentLevel, Now);
-            removal.Open(queue.CurrentLevel, queue.CurrentOffersRemoval && removalScreen != null);
+            bool offersRemoval = queue.CurrentOffersRemoval || forceRemoval;
+            forceRemoval = false;
+            removal.Open(queue.CurrentLevel, offersRemoval && removalScreen != null);
             shop.Show(queue.CurrentLevel, queue.Position, queue.Total, offer, removal);
         }
 

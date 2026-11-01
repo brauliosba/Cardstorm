@@ -15,6 +15,8 @@ namespace Cardstorm.UI
         public static readonly Color Energy = new Color32(0xFF, 0xC8, 0x3D, 0xFF);
         public static readonly Color EnergyEmpty = new Color32(0x4A, 0x43, 0x34, 0xFF);
         public static readonly Color NotEnough = new Color32(0xFF, 0x6B, 0x6B, 0xFF);
+        public static readonly Color Xp = new Color32(0x5B, 0x8C, 0xFF, 0xFF);
+        public static readonly Color Gold = new Color32(0xFF, 0xD1, 0x26, 0xFF);
 
         public static string TypeName(CardType type) => type switch
         {

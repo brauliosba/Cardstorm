@@ -35,13 +35,13 @@ namespace Cardstorm.Progression
         // Aplica el multiplicador de experiencia. Devuelve cuántos niveles se han subido.
         public int AddXp(float xp) => Levels.AddXp(xp * Stats.Value(StatType.XpGain));
 
-        // Aplica el multiplicador de oro y guarda la fracción para la siguiente moneda.
-        // Devuelve el oro que se ha sumado de verdad.
-        public int AddGold(int amount)
+        // Aplica el multiplicador de oro (salvo que applyMultiplier sea false) y guarda la fracción para la
+        // siguiente moneda. Devuelve el oro que se ha sumado de verdad.
+        public int AddGold(int amount, bool applyMultiplier = true)
         {
             if (amount <= 0) return 0;
 
-            goldFraction += amount * Stats.Value(StatType.GoldGain);
+            goldFraction += applyMultiplier ? amount * Stats.Value(StatType.GoldGain) : amount;
             int whole = (int)Math.Floor(goldFraction + GoldEpsilon);
             goldFraction = Math.Max(0f, goldFraction - whole);
             Gold += whole;

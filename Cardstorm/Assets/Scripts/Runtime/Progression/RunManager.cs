@@ -62,7 +62,8 @@ namespace Cardstorm.Progression
         {
             if (State == null) return;
 
-            int gained = State.AddGold(amount);
+            // El oro de depuración no pasa por Codicia: se suma lo que se pide.
+            int gained = State.AddGold(amount, source != GoldSource.Debug);
             if (gained > 0) RunEvents.RaiseGoldGained(Now, gained, source);
         }
     }

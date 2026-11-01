@@ -2,7 +2,7 @@ using System;
 
 namespace Cardstorm.Progression
 {
-    public enum GoldSource { Enemy, Chest, Boss }
+    public enum GoldSource { Enemy, Chest, Boss, Debug }
 
     public enum SpendReason { Buy, Refresh, Remove }
 
