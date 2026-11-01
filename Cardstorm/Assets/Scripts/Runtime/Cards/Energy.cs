@@ -52,6 +52,17 @@ namespace Cardstorm.Cards
             }
         }
 
+        public bool IsFull => Current + Epsilon >= Max;
+
+        public void Refill() => Current = Max;
+
+        // Orbes de energía. Sin pasar del máximo.
+        public void Add(float amount)
+        {
+            if (amount <= 0f) return;
+            Current = Mathf.Min(Max, Current + amount);
+        }
+
         public bool CanAfford(float cost) => Infinite || Current + Epsilon >= cost;
 
         public bool TrySpend(float cost)

@@ -29,8 +29,12 @@ namespace Cardstorm.UI
 
         public void OnDeselect(BaseEventData eventData) => ScaleTo(1f);
 
+        // Solo si el ratón se ha movido: el módulo de UI también lanza PointerEnter con el ratón quieto cuando
+        // cambia lo que hay debajo (abrir la tienda, el escalado de la selección, una ranura que se oculta),
+        // y eso le robaba la selección al teclado o al mando.
         public void OnPointerEnter(PointerEventData eventData)
         {
+            if (eventData.delta.sqrMagnitude < 0.01f) return;
             var es = EventSystem.current;
             if (es != null && selectable.IsInteractable() && es.currentSelectedGameObject != gameObject)
                 es.SetSelectedGameObject(gameObject);

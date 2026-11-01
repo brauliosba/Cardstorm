@@ -1,20 +1,23 @@
 using System.Collections.Generic;
+using Cardstorm.Cards;
 using Cardstorm.Core;
 using Cardstorm.Enemies;
 using Cardstorm.Progression;
+using Cardstorm.UI;
 using UnityEngine;
 
 namespace Cardstorm.Pickups
 {
-    public enum PickupKind { Xp, Gold, Chest }
+    public enum PickupKind { Xp, Gold, Chest, Energy }
 
-    // Orbes de experiencia, monedas y cofres. Sin física: un único Update los atrae hacia el jugador y los
+    // Orbes de experiencia y de energía, monedas y cofres. Sin física: un único Update los atrae hacia el jugador y los
     // recoge por distancia. Las instancias salen de pools precalentados y avanzan con GameClock.DeltaTime.
     public class PickupManager : MonoBehaviour
     {
         [SerializeField] RunManager run;
         [SerializeField] EnemyManager enemies;
         [SerializeField] GameClock clock;
+        [SerializeField] PlayerCards cards;
         [Tooltip("Por defecto, el jugador de EnemyManager.")]
         [SerializeField] Transform player;
 
@@ -22,16 +25,20 @@ namespace Cardstorm.Pickups
         [SerializeField] Sprite xpSprite;
         [SerializeField] Sprite coinSprite;
         [SerializeField] Sprite chestSprite;
+        [SerializeField] Sprite energySprite;
         [Tooltip("Sprite-Unlit-Default, como el resto del greybox.")]
         [SerializeField] Material spriteMaterial;
         [SerializeField] Color xpColor = new(0.55f, 0.85f, 1f);
         [SerializeField] Color coinColor = new(1f, 0.82f, 0.15f);
         [SerializeField] Color chestColor = new(0.55f, 0.33f, 0.15f);
+        [Tooltip("Por defecto, el de la barra de energía.")]
+        [SerializeField] Color energyColor = HudColors.Energy;
         [SerializeField, Min(0.05f)] float xpSize = 0.35f;
         [SerializeField, Min(0.05f)] float coinSize = 0.4f;
         [Tooltip("Escala del dime (moneda que vale el doble) respecto a la moneda normal.")]
         [SerializeField, Min(1f)] float dimeScale = 1.35f;
         [SerializeField, Min(0.05f)] float chestSize = 1f;
+        [SerializeField, Min(0.05f)] float energySize = 0.4f;
         [Tooltip("Por debajo de los enemigos y por encima del suelo.")]
         [SerializeField] int sortingOrder = -5;
 
@@ -39,6 +46,11 @@ namespace Cardstorm.Pickups
         [SerializeField, Min(0)] int xpPrewarm = 400;
         [SerializeField, Min(0)] int coinPrewarm = 400;
         [SerializeField, Min(0)] int chestPrewarm = 4;
+        [SerializeField, Min(0)] int energyPrewarm = 60;
+
+        [Header("Energía")]
+        [Tooltip("Energía que da cada orbe.")]
+        [SerializeField, Min(0f)] float energyPerOrb = 1f;
 
         [Header("Atracción y recogida")]
         [SerializeField, Min(0f)] float attractStartSpeed = 6f;
@@ -54,7 +66,7 @@ namespace Cardstorm.Pickups
         [SerializeField, Min(0)] int mergeAbove = 300;
         [SerializeField, Min(0f)] float mergeDistance = 1.5f;
 
-        [Tooltip("Separación entre el orbe y la moneda que suelta un mismo enemigo.")]
+        [Tooltip("Separación entre el orbe de experiencia y la moneda o el orbe de energía que suelta un mismo enemigo.")]
         [SerializeField, Min(0f)] float coinOffset = 0.3f;
 
         sealed class Pickup
@@ -69,10 +81,10 @@ namespace Cardstorm.Pickups
             public int ActiveIndex = -1;
         }
 
-        const int KindCount = 3;
+        const int KindCount = 4;
 
         readonly List<Pickup> active = new(512);
-        readonly Stack<Pickup>[] pools = { new(400), new(400), new(4) };
+        readonly Stack<Pickup>[] pools = { new(400), new(400), new(4), new(60) };
         readonly int[] activeByKind = new int[KindCount];
 
         public int ActiveCount => active.Count;
@@ -88,10 +100,13 @@ namespace Cardstorm.Pickups
             if (run == null) run = FindFirstObjectByType<RunManager>();
             if (enemies == null) enemies = FindFirstObjectByType<EnemyManager>();
             if (player == null && enemies != null) player = enemies.Player;
+            if (cards == null) cards = FindFirstObjectByType<PlayerCards>();
+            if (energySprite == null) Debug.LogWarning("PickupManager no tiene sprite de energía: usa el de la experiencia.", this);
 
             Prewarm(PickupKind.Xp, xpPrewarm);
             Prewarm(PickupKind.Gold, coinPrewarm);
             Prewarm(PickupKind.Chest, chestPrewarm);
+            Prewarm(PickupKind.Energy, energyPrewarm);
         }
 
         void OnEnable()
@@ -153,6 +168,13 @@ namespace Cardstorm.Pickups
                 var coin = Spawn(PickupKind.Gold, position + offset, gold, source);
                 if (gold > definition.coinValue) SetSize(coin, coinSize * dimeScale);
             }
+
+            if (energyPerOrb > 0f && DropRoller.RollEnergy(definition.energyChance, state.Random))
+            {
+                float angle = (float)(state.Random.NextDouble() * Mathf.PI * 2.0);
+                Vector2 offset = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * coinOffset;
+                Spawn(PickupKind.Energy, position + offset, energyPerOrb, GoldSource.Enemy);
+            }
         }
 
         void Update()
@@ -167,6 +189,8 @@ namespace Cardstorm.Pickups
             float radius = state.Stats.Value(StatType.PickupRadius);
             float radiusSqr = radius * radius;
             float chestSqr = chestCollectDistance * chestCollectDistance;
+            // Con la barra llena, los orbes de energía se quedan en el suelo hasta que haya sitio.
+            bool energyFull = cards == null || cards.Energy == null || cards.Energy.IsFull;
 
             // Hacia atrás: Release intercambia con el último y no se salta ninguno.
             for (int i = active.Count - 1; i >= 0; i--)
@@ -178,6 +202,12 @@ namespace Cardstorm.Pickups
                 if (p.Kind == PickupKind.Chest)
                 {
                     if (distSqr <= chestSqr) Collect(p);
+                    continue;
+                }
+
+                if (p.Kind == PickupKind.Energy && energyFull)
+                {
+                    p.Attracted = false;
                     continue;
                 }
 
@@ -206,6 +236,7 @@ namespace Cardstorm.Pickups
         void Collect(Pickup p)
         {
             if (p.Kind == PickupKind.Xp) run.AddXp(p.Value);
+            else if (p.Kind == PickupKind.Energy) cards.Energy.Add(p.Value);
             else run.AddGold(Mathf.RoundToInt(p.Value), p.Source);
             Release(p);
         }
@@ -280,12 +311,18 @@ namespace Cardstorm.Pickups
         {
             var go = new GameObject($"{kind}_{InstanceCount:000}") { layer = Layers.Pickup };
             go.transform.SetParent(transform, false);
-            float size = kind switch { PickupKind.Gold => coinSize, PickupKind.Chest => chestSize, _ => xpSize };
+            float size = kind switch { PickupKind.Gold => coinSize, PickupKind.Chest => chestSize, PickupKind.Energy => energySize, _ => xpSize };
             go.transform.localScale = new Vector3(size, size, 1f);
 
             var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = kind switch { PickupKind.Gold => coinSprite, PickupKind.Chest => chestSprite, _ => xpSprite };
-            renderer.color = kind switch { PickupKind.Gold => coinColor, PickupKind.Chest => chestColor, _ => xpColor };
+            renderer.sprite = kind switch
+            {
+                PickupKind.Gold => coinSprite,
+                PickupKind.Chest => chestSprite,
+                PickupKind.Energy when energySprite != null => energySprite,
+                _ => xpSprite,
+            };
+            renderer.color = kind switch { PickupKind.Gold => coinColor, PickupKind.Chest => chestColor, PickupKind.Energy => energyColor, _ => xpColor };
             renderer.sortingOrder = kind == PickupKind.Chest ? sortingOrder - 1 : sortingOrder;
             if (spriteMaterial != null) renderer.sharedMaterial = spriteMaterial;
 

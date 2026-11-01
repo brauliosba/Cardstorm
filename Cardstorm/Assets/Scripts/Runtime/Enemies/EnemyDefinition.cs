@@ -28,6 +28,8 @@ namespace Cardstorm.Enemies
         [Tooltip("Probabilidad (0-1) de que la moneda sea un dime, que vale el doble.")]
         [FormerlySerializedAs("goldChance")]
         [Range(0f, 1f)] public float doubleCoinChance = 0.3f;
+        [Tooltip("Probabilidad (0-1) de soltar un orbe de energía.")]
+        [Range(0f, 1f)] public float energyChance = 0.1f;
 
         [Header("Movimiento y físicas")]
         [Tooltip("Unidades/s. El jugador va a 5.")]

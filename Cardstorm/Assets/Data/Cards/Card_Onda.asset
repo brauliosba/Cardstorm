@@ -34,5 +34,5 @@ MonoBehaviour:
       type: {class: ArcEffect, ns: Cardstorm.Cards.Effects, asm: Cardstorm.Runtime}
       data:
         damage: 14
-        range: 3.5
+        range: 5
         arcDegrees: 360

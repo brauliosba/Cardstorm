@@ -19,6 +19,7 @@ MonoBehaviour:
   xp: 10
   coinValue: 1
   doubleCoinChance: 1
+  energyChance: 1
   moveSpeed: 1.8
   radius: 1
   mass: 20

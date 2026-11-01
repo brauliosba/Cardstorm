@@ -19,11 +19,12 @@ MonoBehaviour:
   xp: 50
   coinValue: 40
   doubleCoinChance: 0
+  energyChance: 0
   moveSpeed: 1.26
   radius: 2.5
   mass: 200
   behaviour: 0
-  isBoss: 0
+  isBoss: 1
   shape: 3
   color: {r: 0.2, g: 0.7490196, b: 0.64705884, a: 1}
   poolPrewarm: 1

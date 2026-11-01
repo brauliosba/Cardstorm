@@ -17,6 +17,14 @@ namespace Cardstorm.Progression
             return random.NextDouble() < doubleChance ? coinValue * 2 : coinValue;
         }
 
+        // Con probabilidad chance suelta un orbe de energía.
+        public static bool RollEnergy(float chance, Random random)
+        {
+            if (chance <= 0f) return false;
+            if (chance >= 1f) return true;
+            return random.NextDouble() < chance;
+        }
+
         public static double ExpectedGold(int coinValue, float doubleChance) =>
             Math.Max(0, coinValue) * (1.0 + Math.Clamp(doubleChance, 0f, 1f));
     }

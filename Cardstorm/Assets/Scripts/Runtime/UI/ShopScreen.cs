@@ -5,6 +5,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 
 namespace Cardstorm.UI
@@ -32,6 +33,11 @@ namespace Cardstorm.UI
         [Tooltip("Segundos del fundido al abrir y cerrar. Usa tiempo real: el juego está en pausa.")]
         [SerializeField, Min(0f)] float fadeTime = 0.12f;
 
+        [Tooltip("Segundos en tiempo real tras abrir en los que la tienda ignora clics, Enviar y navegación, para que "
+               + "la pulsación de una carta justo al subir de nivel no compre nada. Después, la navegación espera "
+               + "además a que se suelte el stick o las flechas.")]
+        [SerializeField, Min(0f)] float inputDelay = 0.35f;
+
         CanvasGroup group;
         Selectable lastSelected;
         Tween fade;
@@ -45,6 +51,8 @@ namespace Cardstorm.UI
         int shownGold;
         CardRemoval removal;
         bool suspended;
+        float readyTime;
+        bool inputLocked;
 
         public event Action<int> BuyPressed;
         public event Action RefreshPressed;
@@ -68,12 +76,14 @@ namespace Cardstorm.UI
             for (int i = 0; i < slots.Length; i++)
             {
                 int index = i;
-                slots[i].Button.onClick.AddListener(() => BuyPressed?.Invoke(index));
+                slots[i].Button.onClick.AddListener(() => { if (AcceptsInput) BuyPressed?.Invoke(index); });
             }
             if (refreshButton != null) refreshButton.onClick.AddListener(OnRefreshClicked);
             if (removeButton != null) removeButton.onClick.AddListener(OnRemoveClicked);
             continueButton.onClick.AddListener(OnContinueClicked);
         }
+
+        void OnDisable() => UnlockInput();
 
         void OnDestroy()
         {
@@ -102,6 +112,7 @@ namespace Cardstorm.UI
             SetVisible(true, instant: false);
             lastSelected = DefaultSelection();
             Select(lastSelected.gameObject);
+            LockInput();
         }
 
         public void UpdateQueue(int position, int total)
@@ -183,12 +194,46 @@ namespace Cardstorm.UI
             lastSelected = null;
             suspended = false;
             removal = null;
+            UnlockInput();
             SetVisible(false, instant: false);
         }
 
         void Update()
         {
+            if (inputLocked && Time.unscaledTime >= readyTime && !NavigationHeld()) UnlockInput();
             if (IsVisible && !suspended) KeepFocus();
+        }
+
+        bool AcceptsInput => IsVisible && !suspended && !inputLocked;
+
+        // La tienda se abre en mitad del combate: el botón de una carta (A en el mando es también Enviar) o el
+        // stick de moverse pueden seguir pulsados. Durante el bloqueo, el EventSystem no envía navegación ni
+        // Enviar/Cancelar, y los clics se ignoran en los propios botones.
+        void LockInput()
+        {
+            readyTime = Time.unscaledTime + inputDelay;
+            if (inputLocked) return;
+            var es = EventSystem.current;
+            if (es == null) return;
+            inputLocked = true;
+            es.sendNavigationEvents = false;
+        }
+
+        void UnlockInput()
+        {
+            if (!inputLocked) return;
+            inputLocked = false;
+            if (EventSystem.current != null) EventSystem.current.sendNavigationEvents = true;
+        }
+
+        // Si se entra en la tienda con el stick inclinado, el módulo arrastra el contador de repetición de la
+        // partida y la selección saltaría sola hasta el final de la fila.
+        static bool NavigationHeld()
+        {
+            var es = EventSystem.current;
+            if (es == null || es.currentInputModule is not InputSystemUIInputModule module) return false;
+            var action = module.move != null ? module.move.action : null;
+            return action != null && action.ReadValue<Vector2>().sqrMagnitude > 0.01f;
         }
 
         // Si se pierde la selección (clic en el fondo, carta recién comprada) o sale de la tienda,
@@ -234,11 +279,11 @@ namespace Cardstorm.UI
 
         bool IsInside(GameObject go) => go != null && go.activeInHierarchy && go.transform.IsChildOf(root.transform);
 
-        void OnRefreshClicked() => RefreshPressed?.Invoke();
+        void OnRefreshClicked() { if (AcceptsInput) RefreshPressed?.Invoke(); }
 
-        void OnRemoveClicked() => RemovePressed?.Invoke();
+        void OnRemoveClicked() { if (AcceptsInput) RemovePressed?.Invoke(); }
 
-        void OnContinueClicked() => ContinuePressed?.Invoke();
+        void OnContinueClicked() { if (AcceptsInput) ContinuePressed?.Invoke(); }
 
         static void Select(GameObject target)
         {

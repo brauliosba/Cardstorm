@@ -18,4 +18,4 @@ MonoBehaviour:
   - card: {fileID: 11400000, guid: 149f3722634333f4cb040e912c870f0a, type: 2}
     copies: 2
   - card: {fileID: 11400000, guid: dfc502698038ab649bff302e108adbc0, type: 2}
-    copies: 2
+    copies: 1

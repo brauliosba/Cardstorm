@@ -180,6 +180,7 @@ namespace Cardstorm.DebugTools
             {
                 sb.Append("Recogibles: orbes ").Append(pickups.ActiveOf(PickupKind.Xp))
                   .Append(" · monedas ").Append(pickups.ActiveOf(PickupKind.Gold))
+                  .Append(" · energía ").Append(pickups.ActiveOf(PickupKind.Energy))
                   .Append(" · cofres ").Append(pickups.ActiveOf(PickupKind.Chest))
                   .Append(" · Pool ").Append(pickups.InstanceCount).AppendLine();
             }

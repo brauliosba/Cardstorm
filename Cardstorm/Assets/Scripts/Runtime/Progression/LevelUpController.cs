@@ -23,6 +23,9 @@ namespace Cardstorm.Progression
         [Tooltip("Invulnerabilidad al volver a la partida, para no recibir un golpe nada más cerrar la tienda.")]
         [SerializeField, Min(0f)] float resumeInvulnerability = 0.5f;
 
+        [Tooltip("Fracción de la vida máxima que se cura en cada subida de nivel.")]
+        [SerializeField, Range(0f, 1f)] float levelUpHealFraction = 0.5f;
+
         LevelUpQueue queue;
         ShopOffer<CardDefinition> offer;
         CardRemoval removal;
@@ -32,6 +35,7 @@ namespace Cardstorm.Progression
         int actionCards;
         float previousTimeScale = 1f;
         bool forceRemoval;
+        bool refillEnergyOnClose;
 
         public bool IsOpen { get; private set; }
         public LevelUpQueue Queue => queue;
@@ -105,6 +109,9 @@ namespace Cardstorm.Progression
         void OnLevelUp(double time, int level)
         {
             if (run.Won) return;
+            if (health != null) health.Heal(health.MaxHealth * levelUpHealFraction);
+            // La energía se rellena al cerrar la tienda, para incluir la Reserva que se compre en ella.
+            refillEnergyOnClose = true;
             EnsureCreated();
             queue.Enqueue(level);
 
@@ -272,6 +279,9 @@ namespace Cardstorm.Progression
             IsOpen = false;
             shop.Hide();
             Time.timeScale = previousTimeScale;
+
+            if (refillEnergyOnClose && cards != null) cards.Energy.Refill();
+            refillEnergyOnClose = false;
 
             // La derrota también usa Paused: si el jugador ha muerto, el reloj sigue parado.
             if (health == null || !health.IsDead)
