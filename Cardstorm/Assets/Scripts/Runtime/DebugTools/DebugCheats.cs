@@ -8,7 +8,6 @@ using Cardstorm.Progression;
 using Cardstorm.Spawning;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 
 namespace Cardstorm.DebugTools
 {
@@ -235,14 +234,7 @@ namespace Cardstorm.DebugTools
         }
 
         // R
-        void Restart()
-        {
-            // La escala de tiempo sobrevive a la carga: si se reinicia desde una pausa, la escena empezaría congelada.
-            Time.timeScale = 1f;
-            var scene = SceneManager.GetActiveScene();
-            if (scene.buildIndex >= 0) SceneManager.LoadScene(scene.buildIndex);
-            else SceneManager.LoadScene(scene.name);
-        }
+        static void Restart() => SceneReload.ReloadActive();
 
         // Derrota en la greybox: se congela el reloj y el overlay muestra el aviso.
         void OnPlayerDied()
