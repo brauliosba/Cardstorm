@@ -6540,6 +6540,12 @@ MonoBehaviour:
   recorder: {fileID: 1626020806}
   run: {fileID: 0}
   levelUp: {fileID: 0}
+  chargeEnemy: {fileID: 11400000, guid: c300d01d7e04d624196b682656444df1, type: 2}
+  chargeSpawnDistance: 8
+  debugCards:
+  - {fileID: 11400000, guid: cb75ce94f7e32e54a8b15613a778203f, type: 2}
+  - {fileID: 11400000, guid: a0fc0af0e27e49b4d8212fe64dd8178c, type: 2}
+  - {fileID: 11400000, guid: 5ef0c0bc43852e84482754b16322df51, type: 2}
   debugGold: 50
   killRadius: 6
   loadTestEnemy: {fileID: 0}

@@ -26,6 +26,15 @@ namespace Cardstorm.DebugTools
         [SerializeField] RunManager run;
         [SerializeField] LevelUpController levelUp;
 
+        [Header("Mayús+F4 · Coloso")]
+        [Tooltip("Por defecto, el primer tipo de la curva que embiste.")]
+        [SerializeField] EnemyDefinition chargeEnemy;
+        [SerializeField, Min(1f)] float chargeSpawnDistance = 8f;
+
+        [Header("Mayús+F7 · Cartas de prueba")]
+        [Tooltip("Se añade una copia de cada una al mazo de robo.")]
+        [SerializeField] CardDefinition[] debugCards;
+
         [Header("Mayús+F8 · Oro")]
         [SerializeField, Min(1)] int debugGold = 50;
 
@@ -72,6 +81,15 @@ namespace Cardstorm.DebugTools
             if (map != null) picker = new SpawnPositionPicker(map.Rect, Layers.ObstacleMask);
             if (loadTestEnemy == null && spawner != null && spawner.Curve.enemyTypes.Length > 0)
                 loadTestEnemy = spawner.Curve.enemyTypes[0];
+            if (chargeEnemy == null && spawner != null)
+            {
+                foreach (var type in spawner.Curve.enemyTypes)
+                {
+                    if (type == null || type.behaviour != EnemyBehaviour.Charge) continue;
+                    chargeEnemy = type;
+                    break;
+                }
+            }
 
             // Momentos a los que salta F3: inicio de cada oleada y hora de cada jefe.
             if (spawner != null)
@@ -100,10 +118,18 @@ namespace Cardstorm.DebugTools
             if (k.f1Key.wasPressedThisFrame && overlay != null) overlay.Visible = !overlay.Visible;
             if (k.f2Key.wasPressedThisFrame && clock != null) clock.CycleTimeScale();
             if (k.f3Key.wasPressedThisFrame) JumpToNextEvent();
-            if (k.f4Key.wasPressedThisFrame && spawner != null) TogglePauseSpawning();
+            if (k.f4Key.wasPressedThisFrame)
+            {
+                if (k.shiftKey.isPressed) SpawnChargeEnemy();
+                else if (spawner != null) TogglePauseSpawning();
+            }
             if (k.f5Key.wasPressedThisFrame) KillNearby();
             if (k.f6Key.wasPressedThisFrame && player != null) ToggleGodMode();
-            if (k.f7Key.wasPressedThisFrame) ToggleInfiniteEnergy();
+            if (k.f7Key.wasPressedThisFrame)
+            {
+                if (k.shiftKey.isPressed) AddDebugCards();
+                else ToggleInfiniteEnergy();
+            }
             if (k.f8Key.wasPressedThisFrame)
             {
                 if (k.shiftKey.isPressed) AddGold();
@@ -136,6 +162,17 @@ namespace Cardstorm.DebugTools
         {
             spawner.SpawningPaused = !spawner.SpawningPaused;
             Debug.Log($"[DebugCheats] Apariciones {(spawner.SpawningPaused ? "en pausa" : "reanudadas")}");
+        }
+
+        // Mayús+F4: un coloso a chargeSpawnDistance del jugador, en una dirección al azar.
+        void SpawnChargeEnemy()
+        {
+            if (enemies == null || enemies.Player == null || chargeEnemy == null) return;
+            Vector2 center = enemies.Player.position;
+            Vector2 desired = center + Random.insideUnitCircle.normalized * chargeSpawnDistance;
+            Vector2 position = picker != null ? picker.Resolve(desired, chargeEnemy.radius, center) : desired;
+            enemies.Spawn(chargeEnemy, position);
+            Debug.Log($"[DebugCheats] {chargeEnemy.displayName} a {Vector2.Distance(center, position):0.#} u");
         }
 
         // F5: mata a los enemigos a menos de killRadius del jugador (cuenta como muerte, no como reciclado).
@@ -172,6 +209,20 @@ namespace Cardstorm.DebugTools
             if (cards == null || cards.Energy == null) return;
             cards.Energy.Infinite = !cards.Energy.Infinite;
             Debug.Log($"[DebugCheats] Energía infinita: {(cards.Energy.Infinite ? "sí" : "no")}");
+        }
+
+        // Mayús+F7: una copia de cada carta de prueba al mazo de robo.
+        void AddDebugCards()
+        {
+            if (cards == null || cards.Cycle == null || debugCards == null) return;
+            int added = 0;
+            foreach (var card in debugCards)
+            {
+                if (card == null) continue;
+                cards.Cycle.Add(new CardInstance(card));
+                added++;
+            }
+            Debug.Log($"[DebugCheats] {added} cartas añadidas al mazo · mazo {cards.Cycle.DrawCount}");
         }
 
         // F8: la experiencia justa para subir un nivel, pasando por la recogida normal (abre la tienda).

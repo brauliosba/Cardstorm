@@ -13,12 +13,18 @@ MonoBehaviour:
   m_Name: ShopCatalog
   m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Progression.ShopCatalog
   actionCards:
+  - {fileID: 11400000, guid: f4e323a4dee770343bc894093b810d10, type: 2}
   - {fileID: 11400000, guid: 52b75a7495ad6b2459fc1b76c5bd7f49, type: 2}
-  - {fileID: 11400000, guid: 4fef54a50a64bb4418d50c48f5c5adde, type: 2}
+  - {fileID: 11400000, guid: d82800f53e6c04e428cd39f3993a54ac, type: 2}
+  - {fileID: 11400000, guid: a0fc0af0e27e49b4d8212fe64dd8178c, type: 2}
   - {fileID: 11400000, guid: dfc502698038ab649bff302e108adbc0, type: 2}
+  - {fileID: 11400000, guid: d5f68f1061df6494a97c0e1dc5befa13, type: 2}
+  - {fileID: 11400000, guid: 4fef54a50a64bb4418d50c48f5c5adde, type: 2}
+  - {fileID: 11400000, guid: cb75ce94f7e32e54a8b15613a778203f, type: 2}
   - {fileID: 11400000, guid: ca62abba4124277468e84ed8c236d68c, type: 2}
   - {fileID: 11400000, guid: 3160989dc9a40b849b81760b99fc34ce, type: 2}
   - {fileID: 11400000, guid: 149f3722634333f4cb040e912c870f0a, type: 2}
+  - {fileID: 11400000, guid: 5ef0c0bc43852e84482754b16322df51, type: 2}
   powerCards:
   - {fileID: 11400000, guid: 18010f4fb0c67064d9ea68061edf7d32, type: 2}
   - {fileID: 11400000, guid: 6f6e38f73bcbd2f48affc33ab0402e2a, type: 2}
