@@ -47,7 +47,9 @@ namespace Cardstorm.Enemies
             s.Windup > 0f ? System.Math.Min(Timer / s.Windup, 1f) : 1f;
 
         // clearPath solo importa en Approach y blocked solo en Charging.
-        public ChargeState Step(float dt, float distance, bool clearPath, bool blocked, in ChargeSettings s)
+        // speedFactor es la ralentización: embiste más despacio, pero recorre la misma distancia.
+        public ChargeState Step(float dt, float distance, bool clearPath, bool blocked, in ChargeSettings s,
+            float speedFactor = 1f)
         {
             switch (State)
             {
@@ -72,7 +74,7 @@ namespace Cardstorm.Enemies
                         Enter(ChargeState.Recover);
                         break;
                     }
-                    Travelled += s.Speed * dt;
+                    Travelled += s.Speed * speedFactor * dt;
                     if (Travelled >= s.Distance) Enter(ChargeState.Recover);
                     break;
 

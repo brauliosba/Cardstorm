@@ -17,6 +17,10 @@ namespace Cardstorm.Cards
         [SerializeField] EnemyManager enemies;
         [SerializeField] ProjectileManager projectiles;
         [SerializeField] ArcFlash arcFlash;
+        [Tooltip("Impactos con aviso. Si se deja vacío, se busca en la escena.")]
+        [SerializeField] StrikeManager strikes;
+        [Tooltip("Destellos en el mundo. Si se deja vacío, se busca en la escena.")]
+        [SerializeField] FlashManager flashes;
 
         [Tooltip("Radio con el que se cuentan los vecinos al buscar la zona más densa.")]
         [Min(0.1f)] [SerializeField] float densityRadius = 2f;
@@ -31,6 +35,8 @@ namespace Cardstorm.Cards
         public EnemyManager Enemies => enemies;
         public ProjectileManager Projectiles => projectiles;
         public ArcFlash ArcFlash => arcFlash;
+        public StrikeManager Strikes => strikes;
+        public FlashManager Flashes => flashes;
 
         // null si el jugador no tiene PlayerStatsBinder.
         public PlayerStats Stats => statsBinder != null ? statsBinder.Stats : null;
@@ -47,6 +53,8 @@ namespace Cardstorm.Cards
             if (enemies == null) enemies = FindFirstObjectByType<EnemyManager>();
             if (projectiles == null) projectiles = FindFirstObjectByType<ProjectileManager>();
             if (arcFlash == null) arcFlash = GetComponentInChildren<ArcFlash>(true);
+            if (strikes == null) strikes = FindFirstObjectByType<StrikeManager>();
+            if (flashes == null) flashes = FindFirstObjectByType<FlashManager>();
         }
 
         public void Cast(CardDefinition card)

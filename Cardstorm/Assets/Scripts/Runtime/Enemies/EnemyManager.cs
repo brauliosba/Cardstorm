@@ -120,6 +120,8 @@ namespace Cardstorm.Enemies
                     if (enemy.FlashTimer <= 0f) enemy.RestoreColor();
                 }
 
+                enemy.TickSlow(dt);
+
                 Vector2 chaseDir = flowField != null && !boss ? flowField.GetDirection(pos) : (playerPos - pos).normalized;
 
                 var behaviour = enemy.Definition.behaviour;
@@ -128,7 +130,7 @@ namespace Cardstorm.Enemies
                 else if (behaviour == EnemyBehaviour.Charge)
                     body.linearVelocity = Charge(enemy, pos, playerPos, chaseDir, dt);
                 else
-                    body.linearVelocity = chaseDir * enemy.Speed;
+                    body.linearVelocity = chaseDir * enemy.CurrentSpeed;
             }
         }
 
@@ -141,6 +143,7 @@ namespace Cardstorm.Enemies
             Vector2 toPlayer = playerPos - pos;
             float distance = toPlayer.magnitude;
             var before = charge.State;
+            float chargeSpeed = settings.Speed * enemy.SlowFactor;
 
             // La línea de visión solo se comprueba cuando puede empezar el aviso.
             bool clearPath = before == ChargeState.Approach && charge.Cooldown <= 0f
@@ -149,9 +152,9 @@ namespace Cardstorm.Enemies
 
             // Mira el tramo de este paso: si hay un obstáculo delante, se para contra él.
             bool blocked = before == ChargeState.Charging && !enemy.IsBoss
-                && Physics2D.CircleCast(pos, def.radius, enemy.ChargeDirection, settings.Speed * dt, Layers.ObstacleMask);
+                && Physics2D.CircleCast(pos, def.radius, enemy.ChargeDirection, chargeSpeed * dt, Layers.ObstacleMask);
 
-            var state = charge.Step(dt, distance, clearPath, blocked, settings);
+            var state = charge.Step(dt, distance, clearPath, blocked, settings, enemy.SlowFactor);
 
             if (state == ChargeState.Windup && before != ChargeState.Windup)
                 enemy.ChargeDirection = distance > 1e-4f ? toPlayer / distance : Vector2.right;
@@ -170,13 +173,13 @@ namespace Cardstorm.Enemies
                         enemy.HideChargeTelegraph();
                         enemy.SetBlink(false);
                     }
-                    return enemy.ChargeDirection * settings.Speed;
+                    return enemy.ChargeDirection * chargeSpeed;
 
                 case ChargeState.Recover:
                     return Vector2.zero;
 
                 default:
-                    return chaseDir * enemy.Speed;
+                    return chaseDir * enemy.CurrentSpeed;
             }
         }
 
@@ -211,9 +214,9 @@ namespace Cardstorm.Enemies
 
             // Sin línea de visión se acerca rodeando obstáculos con el flow field.
             if (!clearShot || distance > def.preferredDistance + def.distanceTolerance)
-                return chaseDir * enemy.Speed;
+                return chaseDir * enemy.CurrentSpeed;
             if (distance < def.preferredDistance - def.distanceTolerance)
-                return -aim * enemy.Speed;
+                return -aim * enemy.CurrentSpeed;
             return Vector2.zero;
         }
 

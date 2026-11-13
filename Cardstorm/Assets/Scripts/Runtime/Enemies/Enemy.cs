@@ -21,14 +21,20 @@ namespace Cardstorm.Enemies
         const float HitFlashTime = 0.08f;
         const float TelegraphMinAlpha = 0.15f;
         const float TelegraphMaxAlpha = 0.5f;
+        const float SlowTintAmount = 0.4f;
+        static readonly Color SlowTint = new(0.604f, 0.843f, 1f);  // #9AD7FF
 
         Rigidbody2D rb;
         SpriteRenderer spriteRenderer;
         CircleCollider2D circle;
+        Slow slow;
 
         public EnemyDefinition Definition { get; private set; }
         public Rigidbody2D Body => rb;
         public float Speed { get; private set; }
+        public float SlowFactor => slow.Factor;
+        public float CurrentSpeed => Speed * slow.Factor;
+        public bool IsSlowed => slow.Active;
         public float MaxHealth { get; private set; }
         public float Health { get; private set; }
         public bool IsAlive { get; private set; }
@@ -82,6 +88,7 @@ namespace Cardstorm.Enemies
             IsAlive = true;
             FarTimer = 0f;
             FlashTimer = 0f;
+            slow = default;
             // Desfase aleatorio para que los tiradores de una misma oleada no disparen a la vez.
             FireTimer = definition.fireInterval * Random.Range(0.5f, 1.5f);
             Charge.Reset();
@@ -131,17 +138,44 @@ namespace Cardstorm.Enemies
             FlashTimer = HitFlashTime;
         }
 
+        // Los jefes se ralentizan a la mitad.
+        public void ApplySlow(float factor, float duration)
+        {
+            if (!IsAlive) return;
+            if (IsBoss) factor = Slow.ForBoss(factor);
+
+            bool wasSlowed = slow.Active;
+            slow.Apply(factor, duration);
+            if (!wasSlowed && slow.Active) ApplyBaseColor();
+        }
+
+        internal void TickSlow(float dt)
+        {
+            if (!slow.Active) return;
+            slow.Tick(dt);
+            if (!slow.Active) ApplyBaseColor();
+        }
+
         internal void RestoreColor()
         {
             FlashTimer = 0f;
-            if (Definition != null) spriteRenderer.color = Definition.color;
+            ApplyBaseColor();
         }
 
         // Parpadeo del aviso. El destello de daño tiene prioridad.
         internal void SetBlink(bool white)
         {
             if (FlashTimer > 0f || Definition == null) return;
-            spriteRenderer.color = white ? Color.white : Definition.color;
+            spriteRenderer.color = white ? Color.white : BaseColor;
+        }
+
+        // Color de la definición, teñido de azul mientras está ralentizado.
+        Color BaseColor => slow.Active ? Color.Lerp(Definition.color, SlowTint, SlowTintAmount) : Definition.color;
+
+        void ApplyBaseColor()
+        {
+            if (FlashTimer > 0f || Definition == null) return;
+            spriteRenderer.color = BaseColor;
         }
 
         // Franja de largo length y ancho igual al diámetro, desde el centro hacia dir.
