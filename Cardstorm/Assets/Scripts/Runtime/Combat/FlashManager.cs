@@ -4,8 +4,8 @@ using UnityEngine;
 
 namespace Cardstorm.Combat
 {
-    // Destellos en el mundo (áreas y avisos) con un pool fijo de SpriteRenderer y un único Update.
-    // Si el pool se llena, el destello no se dibuja: el daño se aplica igual.
+    // Destellos en el mundo (áreas, avisos y rayos) con pools fijos y un único Update.
+    // Si un pool se llena, el destello no se dibuja: el daño se aplica igual.
     public class FlashManager : MonoBehaviour
     {
         [SerializeField] GameClock clock;
@@ -26,7 +26,17 @@ namespace Cardstorm.Combat
         [SerializeField, Range(0f, 1f)] float telegraphRingAlpha = 0.7f;
         [SerializeField, Range(0f, 1f)] float telegraphFillAlpha = 0.3f;
 
-        enum Kind { Area, Telegraph }
+        [Header("Rayo")]
+        [Tooltip("Si se deja vacío, se usa el de los sprites.")]
+        [SerializeField] Material lineMaterial;
+        [Tooltip("Por encima de los enemigos.")]
+        [SerializeField] int beamSortingOrder = 3;
+        [Tooltip("Segmentos creados al empezar. No crece.")]
+        [SerializeField, Min(1)] int beamCapacity = 12;
+        [SerializeField, Min(0.01f)] float beamWidth = 0.12f;
+        [SerializeField, Min(0.01f)] float beamDuration = 0.15f;
+
+        enum Kind { Area, Telegraph, Beam }
 
         struct Flash
         {
@@ -34,6 +44,7 @@ namespace Cardstorm.Combat
             public Kind Kind;
             public SpriteRenderer Main;
             public SpriteRenderer Fill;  // Solo en los avisos: el círculo que crece
+            public LineRenderer Line;    // Solo en los rayos
             public Color Color;
             public float Radius;
             public float Timer;
@@ -41,6 +52,7 @@ namespace Cardstorm.Combat
         }
 
         Stack<SpriteRenderer> free;
+        Stack<LineRenderer> freeLines;
         List<Flash> active;
         float circleSize = 1f;
         float ringSize = 1f;
@@ -58,6 +70,10 @@ namespace Cardstorm.Combat
             free = new Stack<SpriteRenderer>(capacity);
             active = new List<Flash>(capacity);
             for (int i = 0; i < capacity; i++) free.Push(Create());
+
+            freeLines = new Stack<LineRenderer>(beamCapacity);
+            active.Capacity = capacity + beamCapacity;
+            for (int i = 0; i < beamCapacity; i++) freeLines.Push(CreateLine(i));
         }
 
         // Círculo que se desvanece.
@@ -83,6 +99,19 @@ namespace Cardstorm.Combat
             SetAlpha(ring, color, telegraphRingAlpha);
             SetAlpha(fill, color, telegraphFillAlpha);
             return id;
+        }
+
+        // Segmento recto que se desvanece.
+        public void Beam(Vector2 from, Vector2 to, Color color)
+        {
+            if (freeLines.Count < 1) return;
+
+            var line = freeLines.Pop();
+            line.SetPosition(0, from);
+            line.SetPosition(1, to);
+            SetAlpha(line, color, 1f);
+            line.gameObject.SetActive(true);
+            active.Add(new Flash { Id = nextId++, Kind = Kind.Beam, Line = line, Color = color, Duration = beamDuration });
         }
 
         public void Cancel(int id)
@@ -121,8 +150,10 @@ namespace Cardstorm.Combat
 
                 if (f.Kind == Kind.Area)
                     SetAlpha(f.Main, f.Color, areaAlpha * (1f - t));
-                else
+                else if (f.Kind == Kind.Telegraph)
                     SetRadius(f.Fill, circleSize, f.Radius * t);
+                else
+                    SetAlpha(f.Line, f.Color, 1f - t);
 
                 active[i] = f;
             }
@@ -143,8 +174,13 @@ namespace Cardstorm.Combat
         void Release(int index)
         {
             var f = active[index];
-            Return(f.Main);
+            if (f.Main != null) Return(f.Main);
             if (f.Fill != null) Return(f.Fill);
+            if (f.Line != null)
+            {
+                f.Line.gameObject.SetActive(false);
+                freeLines.Push(f.Line);
+            }
 
             int last = active.Count - 1;
             if (index != last) active[index] = active[last];
@@ -169,6 +205,13 @@ namespace Cardstorm.Combat
             r.color = color;
         }
 
+        static void SetAlpha(LineRenderer line, Color color, float alpha)
+        {
+            color.a = alpha;
+            line.startColor = color;
+            line.endColor = color;
+        }
+
         SpriteRenderer Create()
         {
             var go = new GameObject($"Flash_{InstanceCount:000}");
@@ -178,6 +221,24 @@ namespace Cardstorm.Combat
             go.SetActive(false);
             InstanceCount++;
             return r;
+        }
+
+        LineRenderer CreateLine(int index)
+        {
+            var go = new GameObject($"Beam_{index:00}");
+            go.transform.SetParent(transform, false);
+            var line = go.AddComponent<LineRenderer>();
+            line.sharedMaterial = lineMaterial != null ? lineMaterial : spriteMaterial;
+            line.useWorldSpace = true;
+            line.positionCount = 2;
+            line.startWidth = beamWidth;
+            line.endWidth = beamWidth;
+            line.numCapVertices = 2;
+            line.sortingOrder = beamSortingOrder;
+            line.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            line.receiveShadows = false;
+            go.SetActive(false);
+            return line;
         }
     }
 }

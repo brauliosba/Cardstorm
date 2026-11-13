@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f2de0a350ae8ff4da1f4b9b6c70f1f7, type: 3}
+  m_Name: Card_Cadena
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Cards.CardDefinition
+  id: cadena
+  displayName: "Cadena el\xE9ctrica"
+  description: "Rayo que salta entre hasta 4 enemigos cercanos e inflige 12 de da\xF1o
+    a cada uno."
+  icon: {fileID: 21300000, guid: d8246baa1a4b28e429f4bed0eea6daf8, type: 3}
+  type: 0
+  rarity: 2
+  cost: 3
+  targeting: 0
+  targetRange: 10
+  powerValue: 40.8
+  maxCopiesPerRun: 0
+  basePrice: 0
+  priceMultiplierPerCopy: 1
+  effects:
+  - rid: 2452526965350727746
+  references:
+    version: 2
+    RefIds:
+    - rid: 2452526965350727746
+      type: {class: ChainEffect, ns: Cardstorm.Cards.Effects, asm: Cardstorm.Runtime}
+      data:
+        damage: 12
+        maxTargets: 4
+        jumpRange: 4
