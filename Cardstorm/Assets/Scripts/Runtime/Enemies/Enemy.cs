@@ -40,10 +40,14 @@ namespace Cardstorm.Enemies
         public bool IsAlive { get; private set; }
         public bool IsBoss => Definition != null && Definition.isBoss;
 
+        // Huye sin recibir ni hacer daño y se desvanece. Al terminar, EnemyManager lo recicla.
+        public bool IsRetreating { get; private set; }
+        public bool RetreatFinished => IsRetreating && RetreatTimer >= RetreatDuration;
+
         // La experiencia se multiplica por el refuerzo del tramo; el oro no.
         public float XpMultiplier { get; private set; } = 1f;
 
-        public float ContactDamage => Definition != null ? Definition.contactDamage : 0f;
+        public float ContactDamage => Definition != null && !IsRetreating ? Definition.contactDamage : 0f;
 
         public float Radius => Definition != null ? Definition.radius : 0.5f;
 
@@ -62,9 +66,21 @@ namespace Cardstorm.Enemies
         internal ChargeLogic Charge { get; private set; }
         internal Vector2 ChargeDirection { get; set; }
 
+        // Patrones (Patterns). RingTurn es el giro en radianes del siguiente anillo.
+        internal BossPatternLogic Patterns { get; private set; }
+        internal float RingTurn { get; set; }
+
+        internal float RetreatTimer { get; set; }
+        internal float RetreatDuration { get; private set; }
+        internal float RetreatSpeed { get; private set; }
+
+        // Opacidad del sprite, de 1 a 0 durante la retirada.
+        float fade = 1f;
+
         void Awake()
         {
             Charge = new ChargeLogic();
+            Patterns = new BossPatternLogic();
             rb = GetComponent<Rigidbody2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
 
@@ -94,6 +110,11 @@ namespace Cardstorm.Enemies
             Charge.Reset();
             ChargeDirection = Vector2.zero;
             HideChargeTelegraph();
+            Patterns.Reset(definition.PatternSettings);
+            RingTurn = 0f;
+            IsRetreating = false;
+            RetreatTimer = 0f;
+            fade = 1f;
 
             float diameter = definition.radius * 2f;
             transform.SetPositionAndRotation(position, Quaternion.identity);
@@ -121,9 +142,29 @@ namespace Cardstorm.Enemies
             gameObject.SetActive(false);
         }
 
+        public void BeginRetreat(float duration, float speed)
+        {
+            if (!IsAlive || IsRetreating) return;
+
+            IsRetreating = true;
+            RetreatTimer = 0f;
+            RetreatDuration = Mathf.Max(duration, 0.01f);
+            RetreatSpeed = speed;
+            Patterns.BeginRetreat();
+            Charge.Reset();
+            HideChargeTelegraph();
+            RestoreColor();
+        }
+
+        internal void SetFade(float alpha)
+        {
+            fade = Mathf.Clamp01(alpha);
+            ApplyBaseColor();
+        }
+
         public void TakeDamage(float amount)
         {
-            if (!IsAlive || amount <= 0f) return;
+            if (!IsAlive || IsRetreating || amount <= 0f) return;
 
             Health -= amount;
             if (Health <= 0f)
@@ -166,11 +207,19 @@ namespace Cardstorm.Enemies
         internal void SetBlink(bool white)
         {
             if (FlashTimer > 0f || Definition == null) return;
-            spriteRenderer.color = white ? Color.white : BaseColor;
+            spriteRenderer.color = white ? new Color(1f, 1f, 1f, fade) : BaseColor;
         }
 
         // Color de la definición, teñido de azul mientras está ralentizado.
-        Color BaseColor => slow.Active ? Color.Lerp(Definition.color, SlowTint, SlowTintAmount) : Definition.color;
+        Color BaseColor
+        {
+            get
+            {
+                Color c = slow.Active ? Color.Lerp(Definition.color, SlowTint, SlowTintAmount) : Definition.color;
+                c.a *= fade;
+                return c;
+            }
+        }
 
         void ApplyBaseColor()
         {

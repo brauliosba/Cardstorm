@@ -4,6 +4,7 @@ using Cardstorm.Combat;
 using Cardstorm.Core;
 using Cardstorm.Navigation;
 using Cardstorm.Pooling;
+using Cardstorm.Spawning;
 using UnityEngine;
 
 namespace Cardstorm.Enemies
@@ -16,6 +17,8 @@ namespace Cardstorm.Enemies
         [SerializeField] FlowFieldProvider flowField;
         [Tooltip("Para los disparos de los tiradores. Si se deja vacío, se busca en la escena.")]
         [SerializeField] ProjectileManager projectiles;
+        [Tooltip("Para que las invocaciones no caigan en obstáculos. Si se deja vacío, se busca en la escena.")]
+        [SerializeField] MapBounds map;
 
         [Header("Despawn de seguridad")]
         [Tooltip("Si un enemigo pasa más de despawnTime segundos a más de esta distancia del jugador, se recicla.")]
@@ -27,6 +30,7 @@ namespace Cardstorm.Enemies
 
         readonly List<Enemy> active = new(600);
         readonly Dictionary<EnemyDefinition, int> aliveByType = new();
+        SpawnPositionPicker picker;
 
         public event Action<Enemy> EnemySpawned;
         public event Action<Enemy, Vector2> EnemyKilled;
@@ -44,6 +48,12 @@ namespace Cardstorm.Enemies
         void Awake()
         {
             if (projectiles == null) projectiles = FindFirstObjectByType<ProjectileManager>();
+            if (map == null) map = FindFirstObjectByType<MapBounds>();
+        }
+
+        void Start()
+        {
+            if (map != null) picker = new SpawnPositionPicker(map.Rect, Layers.ObstacleMask);
         }
 
         public int AliveOf(EnemyDefinition definition) => aliveByType.TryGetValue(definition, out int n) ? n : 0;
@@ -122,6 +132,12 @@ namespace Cardstorm.Enemies
 
                 enemy.TickSlow(dt);
 
+                if (enemy.IsRetreating)
+                {
+                    if (Retreat(enemy, pos, playerPos, dt)) Despawn(enemy);
+                    continue;
+                }
+
                 Vector2 chaseDir = flowField != null && !boss ? flowField.GetDirection(pos) : (playerPos - pos).normalized;
 
                 var behaviour = enemy.Definition.behaviour;
@@ -129,8 +145,99 @@ namespace Cardstorm.Enemies
                     body.linearVelocity = KeepDistance(enemy, pos, playerPos, chaseDir, dt);
                 else if (behaviour == EnemyBehaviour.Charge)
                     body.linearVelocity = Charge(enemy, pos, playerPos, chaseDir, dt);
+                else if (behaviour == EnemyBehaviour.Patterns)
+                    body.linearVelocity = Patterns(enemy, pos, playerPos, chaseDir, dt);
                 else
                     body.linearVelocity = chaseDir * enemy.CurrentSpeed;
+            }
+        }
+
+        // Se aleja del jugador y se desvanece. Devuelve true al terminar.
+        bool Retreat(Enemy enemy, Vector2 pos, Vector2 playerPos, float dt)
+        {
+            enemy.RetreatTimer += dt;
+            enemy.SetFade(1f - enemy.RetreatTimer / enemy.RetreatDuration);
+
+            Vector2 away = pos - playerPos;
+            float distance = away.magnitude;
+            enemy.Body.linearVelocity = distance > 1e-4f ? away / distance * enemy.RetreatSpeed : Vector2.zero;
+            return enemy.RetreatFinished;
+        }
+
+        // Persigue y alterna invocar, embestir y disparar un anillo. Quieto y parpadeando durante cada aviso.
+        Vector2 Patterns(Enemy enemy, Vector2 pos, Vector2 playerPos, Vector2 chaseDir, float dt)
+        {
+            var def = enemy.Definition;
+            var patterns = enemy.Patterns;
+            var settings = def.PatternSettings;
+
+            // La embestida del patrón solo avanza mientras dura: en Approach empezaría sola.
+            bool chargeFinished = enemy.Charge.State == ChargeState.Approach;
+            if (patterns.State == PatternState.Busy && !chargeFinished)
+                return Charge(enemy, pos, playerPos, chaseDir, dt);
+
+            switch (patterns.Step(dt, chargeFinished, settings))
+            {
+                case PatternAction.StartCharge:
+                    Vector2 toPlayer = playerPos - pos;
+                    float distance = toPlayer.magnitude;
+                    enemy.ChargeDirection = distance > 1e-4f ? toPlayer / distance : Vector2.right;
+                    enemy.Charge.Begin();
+                    enemy.ShowChargeTelegraph(enemy.ChargeDirection, def.chargeDistance + def.radius, 0f);
+                    enemy.SetBlink(true);
+                    return Vector2.zero;
+
+                case PatternAction.Fire:
+                    enemy.SetBlink(false);
+                    if (patterns.Current == BossPattern.Summon) Summon(enemy, pos, playerPos);
+                    else if (patterns.Current == BossPattern.Ring) Ring(enemy, pos);
+                    return Vector2.zero;
+            }
+
+            if (patterns.State == PatternState.Windup)
+            {
+                float elapsed = patterns.WindupProgress * settings.WindupOf(patterns.Current);
+                enemy.SetBlink((int)(elapsed / ChargeBlinkInterval) % 2 == 0);
+                return Vector2.zero;
+            }
+            return chaseDir * enemy.CurrentSpeed;
+        }
+
+        // Enemigos en círculo alrededor del jefe, con un desfase al azar y fuera de los obstáculos.
+        // Se añaden al final de active: el bucle hacia atrás no los mueve en este paso.
+        void Summon(Enemy boss, Vector2 pos, Vector2 playerPos)
+        {
+            var def = boss.Definition;
+            var summon = def.summonDefinition;
+            if (summon == null || def.summonCount <= 0) return;
+
+            float distance = def.radius + def.summonRadius;
+            float step = 2f * Mathf.PI / def.summonCount;
+            float phase = UnityEngine.Random.value * step;
+            for (int i = 0; i < def.summonCount; i++)
+            {
+                float angle = phase + i * step;
+                Vector2 point = pos + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
+                if (picker != null) point = picker.Resolve(point, summon.radius, playerPos);
+                Spawn(summon, point);
+            }
+        }
+
+        // Proyectiles repartidos en 360° desde el borde. Cada anillo gira medio hueco respecto al anterior.
+        void Ring(Enemy boss, Vector2 pos)
+        {
+            var def = boss.Definition;
+            if (projectiles == null || def.ringCount <= 0) return;
+
+            float step = 2f * Mathf.PI / def.ringCount;
+            float start = boss.RingTurn;
+            boss.RingTurn = (start + step * 0.5f) % step;
+            for (int i = 0; i < def.ringCount; i++)
+            {
+                float angle = start + i * step;
+                Vector2 dir = new(Mathf.Cos(angle), Mathf.Sin(angle));
+                projectiles.LaunchHostile(pos + dir * (def.radius + def.ringRadius), dir, def.ringSpeed,
+                    def.ringRange, def.ringRadius, def.ringDamage, def.ringColor);
             }
         }
 

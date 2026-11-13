@@ -20,6 +20,10 @@ namespace Cardstorm.Spawning
             public EnemyDefinition definition;
             [Tooltip("Matarlo gana la partida.")]
             public bool isFinal;
+            [Tooltip("Segundos para derrotarlo; después huye sin dar nada. 0 = sin límite.")]
+            [Min(0f)] public float timeLimit;
+            [Tooltip("Al derrotarlo se elige una carta rara.")]
+            public bool rareReward;
         }
 
         [SerializeField] WaveSpawner spawner;
@@ -33,14 +37,24 @@ namespace Cardstorm.Spawning
         [Tooltip("Distancia fuera de la vista a la que aparece, además de su radio.")]
         [SerializeField, Min(0f)] float spawnMargin = 2f;
 
+        [Header("Retirada")]
+        [Tooltip("Segundos que tarda en desvanecerse al agotarse su tiempo.")]
+        [SerializeField, Min(0.1f)] float retreatDuration = 1.5f;
+        [Tooltip("Unidades/s a las que se aleja del jugador.")]
+        [SerializeField, Min(0f)] float retreatSpeed = 6f;
+
         readonly List<Enemy> alive = new(2);
         readonly List<BossEntry> aliveEntries = new(2);
+        readonly List<double> spawnTimes = new(2);
         SpawnPositionPicker picker;
         Camera cam;
 
         // El último jefe que sigue vivo, o null.
         public Enemy Current => alive.Count > 0 ? alive[^1] : null;
         public string CurrentName => aliveEntries.Count > 0 ? DisplayName(aliveEntries[^1]) : null;
+
+        // Segundos que le quedan al jefe actual, o -1 si no tiene límite.
+        public float CurrentTimeLeft => alive.Count > 0 ? TimeLeft(alive.Count - 1) : -1f;
 
         double Now => clock != null ? clock.Elapsed : Time.timeSinceLevelLoad;
 
@@ -112,7 +126,26 @@ namespace Cardstorm.Spawning
             var enemy = enemies.Spawn(definition, position, 1f);
             alive.Add(enemy);
             aliveEntries.Add(entry);
+            spawnTimes.Add(Now);
             RunEvents.RaiseBossSpawned(Now, definition.id);
+        }
+
+        // El reloj de la partida se para en pausa, así que el límite también.
+        void Update()
+        {
+            for (int i = alive.Count - 1; i >= 0; i--)
+            {
+                var enemy = alive[i];
+                if (enemy.IsRetreating || TimeLeft(i) != 0f) continue;
+                enemy.BeginRetreat(retreatDuration, retreatSpeed);
+            }
+        }
+
+        float TimeLeft(int index)
+        {
+            float limit = aliveEntries[index].timeLimit;
+            if (limit <= 0f) return -1f;
+            return Mathf.Max(0f, limit - (float)(Now - spawnTimes[index]));
         }
 
         void OnEnemyKilled(Enemy enemy, Vector2 position)
@@ -126,17 +159,23 @@ namespace Cardstorm.Spawning
             if (entry.isFinal && run != null) run.Win();
         }
 
-        // Con F10 también se retira a los jefes.
+        // Al terminar la retirada. Con F10 también se retira a los jefes, pero sin el evento.
         void OnEnemyDespawned(Enemy enemy)
         {
             int index = alive.IndexOf(enemy);
-            if (index >= 0) RemoveAt(index);
+            if (index < 0) return;
+
+            var entry = aliveEntries[index];
+            bool retreated = enemy.RetreatFinished;
+            RemoveAt(index);
+            if (retreated) RunEvents.RaiseBossRetreated(Now, entry.definition.id);
         }
 
         void RemoveAt(int index)
         {
             alive.RemoveAt(index);
             aliveEntries.RemoveAt(index);
+            spawnTimes.RemoveAt(index);
         }
 
         BossEntry Find(string bossName)

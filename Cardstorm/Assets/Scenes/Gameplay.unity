@@ -754,10 +754,16 @@ MonoBehaviour:
   - name: Heraldo
     definition: {fileID: 11400000, guid: 023635c8c93829d42a6c06c0c799b663, type: 2}
     isFinal: 0
+    timeLimit: 300
+    rareReward: 1
   - name: Ojo de la tormenta
     definition: {fileID: 11400000, guid: 2656403701fa51043a2bb79b806105d9, type: 2}
     isFinal: 1
+    timeLimit: 0
+    rareReward: 0
   spawnMargin: 2
+  retreatDuration: 1.5
+  retreatSpeed: 6
 --- !u!1 &204030061
 GameObject:
   m_ObjectHideFlags: 0
@@ -1570,6 +1576,7 @@ MonoBehaviour:
   pool: {fileID: 350652526}
   flowField: {fileID: 350652525}
   projectiles: {fileID: 0}
+  map: {fileID: 0}
   despawnDistance: 60
   despawnTime: 5
 --- !u!114 &350652525

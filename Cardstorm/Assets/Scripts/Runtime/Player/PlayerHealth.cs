@@ -84,7 +84,8 @@ namespace Cardstorm.Player
             int count = Physics2D.OverlapCircle(transform.position, radius, enemyFilter, contacts);
             for (int i = 0; i < count; i++)
             {
-                if (contacts[i].TryGetComponent(out IContactDamageSource source))
+                // Sin daño (un jefe que huye) no cuenta como golpe.
+                if (contacts[i].TryGetComponent(out IContactDamageSource source) && source.ContactDamage > 0f)
                 {
                     TakeDamage(source.ContactDamage);
                     break;  // Un solo golpe por contacto; después, invulnerabilidad.

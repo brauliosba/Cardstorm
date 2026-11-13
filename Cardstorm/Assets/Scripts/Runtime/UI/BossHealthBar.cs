@@ -15,10 +15,16 @@ namespace Cardstorm.UI
         [Tooltip("Image en modo Filled, horizontal, desde la izquierda.")]
         [SerializeField] Image fill;
         [SerializeField] TMP_Text nameText;
+        [Tooltip("Tiempo que le queda (1:30). Opcional; se oculta si el jefe no tiene límite.")]
+        [SerializeField] TMP_Text timerText;
+        [Tooltip("En los últimos segundos el tiempo se pone en rojo.")]
+        [SerializeField, Min(0f)] float warningTime = 10f;
 
         CanvasGroup group;
         string shownName;
         float shownFraction = -1f;
+        int shownSeconds = int.MinValue;
+        Color timerColor;
 
         void Awake()
         {
@@ -28,12 +34,13 @@ namespace Cardstorm.UI
             group.interactable = false;
             group.blocksRaycasts = false;
             group.alpha = 0f;
+            if (timerText != null) timerColor = timerText.color;
         }
 
         void LateUpdate()
         {
             var boss = bosses != null ? bosses.Current : null;
-            bool visible = boss != null && boss.IsAlive;
+            bool visible = boss != null && boss.IsAlive && !boss.IsRetreating;
             group.alpha = visible ? 1f : 0f;
             if (!visible)
             {
@@ -54,6 +61,25 @@ namespace Cardstorm.UI
                 shownFraction = fraction;
                 fill.fillAmount = fraction;
             }
+
+            UpdateTimer(bosses.CurrentTimeLeft);
+        }
+
+        // Solo reescribe el texto cuando cambia el segundo.
+        void UpdateTimer(float timeLeft)
+        {
+            if (timerText == null) return;
+
+            int seconds = timeLeft < 0f ? -1 : Mathf.CeilToInt(timeLeft);
+            if (seconds == shownSeconds) return;
+            shownSeconds = seconds;
+
+            bool show = seconds >= 0;
+            if (timerText.gameObject.activeSelf != show) timerText.gameObject.SetActive(show);
+            if (!show) return;
+
+            timerText.SetText("{0}:{1:00}", seconds / 60, seconds % 60);
+            timerText.color = seconds <= warningTime ? HudColors.NotEnough : timerColor;
         }
     }
 }

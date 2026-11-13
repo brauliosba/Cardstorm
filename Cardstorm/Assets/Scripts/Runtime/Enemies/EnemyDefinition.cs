@@ -7,7 +7,8 @@ namespace Cardstorm.Enemies
 
     // Chase: persigue. KeepDistance: se mantiene a distancia y dispara (Tirador).
     // Charge: embiste tras un aviso cuando el jugador está cerca (Coloso).
-    public enum EnemyBehaviour { Chase, KeepDistance, Charge }
+    // Patterns: persigue y alterna invocar, embestir y disparar un anillo (jefes).
+    public enum EnemyBehaviour { Chase, KeepDistance, Charge, Patterns }
 
     // Datos de un tipo de enemigo. Se editan en el inspector.
     [CreateAssetMenu(fileName = "EnemyDefinition_", menuName = "Cardstorm/Enemy Definition")]
@@ -74,6 +75,35 @@ namespace Cardstorm.Enemies
 
         public ChargeSettings ChargeSettings =>
             new(chargeTriggerRange, chargeWindup, chargeSpeed, chargeDistance, chargeRecover, chargeCooldown);
+
+        [Header("Patrones (solo Patterns)")]
+        [Tooltip("Segundos entre el inicio de un patrón y el del siguiente.")]
+        [Min(0.5f)] public float patternInterval = 8f;
+        [Tooltip("Segundos desde que aparece hasta el primer patrón.")]
+        [Min(0f)] public float patternFirstDelay = 3f;
+        [Tooltip("Enemigo que invoca. Vacío o summonCount 0: no invoca.")]
+        public EnemyDefinition summonDefinition;
+        [Tooltip("Enemigos por invocación.")]
+        [Min(0)] public int summonCount = 8;
+        [Tooltip("Distancia a su borde a la que aparecen.")]
+        [Min(0f)] public float summonRadius = 1.5f;
+        [Tooltip("Segundos de aviso antes de invocar.")]
+        [Min(0f)] public float summonWindup = 0.6f;
+        [Tooltip("Proyectiles del anillo. 0: no dispara anillos.")]
+        [Min(0)] public int ringCount = 16;
+        [Tooltip("Segundos de aviso antes del anillo.")]
+        [Min(0f)] public float ringWindup = 0.8f;
+        [Min(0f)] public float ringDamage = 10f;
+        [Tooltip("Unidades/s.")]
+        [Min(0.1f)] public float ringSpeed = 5f;
+        [Tooltip("Distancia máxima que recorre cada proyectil.")]
+        [Min(0.1f)] public float ringRange = 14f;
+        [Min(0.02f)] public float ringRadius = 0.2f;
+        public Color ringColor = new(0.2f, 0.75f, 0.647f, 1f);
+
+        public PatternSettings PatternSettings =>
+            new(patternInterval, patternFirstDelay, summonWindup, ringWindup,
+                summonEnabled: summonDefinition != null && summonCount > 0, ringEnabled: ringCount > 0);
 
         [Header("Jefe")]
         [Tooltip("Un jefe no se recicla por distancia, atraviesa los obstáculos y persigue en línea recta.")]

@@ -24,6 +24,34 @@ MonoBehaviour:
   radius: 0.3
   mass: 0.7
   behaviour: 0
+  preferredDistance: 6
+  distanceTolerance: 1
+  fireInterval: 2
+  fireRange: 9
+  projectileDamage: 8
+  projectileSpeed: 7
+  projectileRange: 12
+  projectileRadius: 0.15
+  projectileColor: {r: 1, g: 0.55, b: 0.9, a: 1}
+  chargeTriggerRange: 6
+  chargeWindup: 0.9
+  chargeSpeed: 12
+  chargeDistance: 9
+  chargeRecover: 0.6
+  chargeCooldown: 3
+  patternInterval: 8
+  patternFirstDelay: 3
+  summonDefinition: {fileID: 0}
+  summonCount: 8
+  summonRadius: 1.5
+  summonWindup: 0.6
+  ringCount: 16
+  ringWindup: 0.8
+  ringDamage: 10
+  ringSpeed: 5
+  ringRange: 14
+  ringRadius: 0.2
+  ringColor: {r: 0.2, g: 0.75, b: 0.647, a: 1}
   isBoss: 0
   shape: 2
   color: {r: 0.9411765, g: 0.6784314, b: 0.30588236, a: 1}

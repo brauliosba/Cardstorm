@@ -42,6 +42,12 @@ namespace Cardstorm.Enemies
             Cooldown = 0f;
         }
 
+        // Empieza el aviso sin mirar distancia, línea de visión ni enfriamiento. Solo desde Approach.
+        public void Begin()
+        {
+            if (State == ChargeState.Approach) Enter(ChargeState.Windup);
+        }
+
         // De 0 a 1 durante el aviso.
         public float WindupProgress(in ChargeSettings s) =>
             s.Windup > 0f ? System.Math.Min(Timer / s.Windup, 1f) : 1f;

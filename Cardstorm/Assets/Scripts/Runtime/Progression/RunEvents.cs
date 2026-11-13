@@ -40,6 +40,9 @@ namespace Cardstorm.Progression
         // Tiempo, id del jefe.
         public static event Action<double, string> BossKilled;
 
+        // Tiempo, id del jefe. Se acabó su tiempo y huyó sin dar nada.
+        public static event Action<double, string> BossRetreated;
+
         // Tiempo, nivel alcanzado.
         public static event Action<double, int> RunWon;
 
@@ -62,6 +65,8 @@ namespace Cardstorm.Progression
         public static void RaiseBossSpawned(double time, string bossId) => BossSpawned?.Invoke(time, bossId);
 
         public static void RaiseBossKilled(double time, string bossId) => BossKilled?.Invoke(time, bossId);
+
+        public static void RaiseBossRetreated(double time, string bossId) => BossRetreated?.Invoke(time, bossId);
 
         public static void RaiseRunWon(double time, int level) => RunWon?.Invoke(time, level);
     }
