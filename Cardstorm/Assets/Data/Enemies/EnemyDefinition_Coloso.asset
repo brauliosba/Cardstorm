@@ -23,7 +23,22 @@ MonoBehaviour:
   moveSpeed: 1.8
   radius: 1
   mass: 20
-  behaviour: 0
+  behaviour: 2
+  preferredDistance: 6
+  distanceTolerance: 1
+  fireInterval: 2
+  fireRange: 9
+  projectileDamage: 8
+  projectileSpeed: 7
+  projectileRange: 12
+  projectileRadius: 0.15
+  projectileColor: {r: 1, g: 0.55, b: 0.9, a: 1}
+  chargeTriggerRange: 6
+  chargeWindup: 0.9
+  chargeSpeed: 12
+  chargeDistance: 9
+  chargeRecover: 0.6
+  chargeCooldown: 3
   isBoss: 0
   shape: 0
   color: {r: 0.54509807, g: 0.3529412, b: 0.16862746, a: 1}

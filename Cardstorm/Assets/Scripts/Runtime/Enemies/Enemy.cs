@@ -15,7 +15,12 @@ namespace Cardstorm.Enemies
         [SerializeField] Sprite diamondSprite;
         [SerializeField] Sprite ringSprite;
 
+        [Tooltip("Franja que marca la trayectoria de la embestida. Hijo desactivado del prefab.")]
+        [SerializeField] SpriteRenderer chargeTelegraph;
+
         const float HitFlashTime = 0.08f;
+        const float TelegraphMinAlpha = 0.15f;
+        const float TelegraphMaxAlpha = 0.5f;
 
         Rigidbody2D rb;
         SpriteRenderer spriteRenderer;
@@ -47,8 +52,13 @@ namespace Cardstorm.Enemies
         // Tiempo que queda del destello blanco al recibir daño.
         internal float FlashTimer { get; set; }
 
+        // Embestida (Charge). La dirección se fija al empezar el aviso.
+        internal ChargeLogic Charge { get; private set; }
+        internal Vector2 ChargeDirection { get; set; }
+
         void Awake()
         {
+            Charge = new ChargeLogic();
             rb = GetComponent<Rigidbody2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
 
@@ -74,6 +84,9 @@ namespace Cardstorm.Enemies
             FlashTimer = 0f;
             // Desfase aleatorio para que los tiradores de una misma oleada no disparen a la vez.
             FireTimer = definition.fireInterval * Random.Range(0.5f, 1.5f);
+            Charge.Reset();
+            ChargeDirection = Vector2.zero;
+            HideChargeTelegraph();
 
             float diameter = definition.radius * 2f;
             transform.SetPositionAndRotation(position, Quaternion.identity);
@@ -97,6 +110,7 @@ namespace Cardstorm.Enemies
             Manager = null;
             ActiveIndex = -1;
             rb.linearVelocity = Vector2.zero;
+            HideChargeTelegraph();
             gameObject.SetActive(false);
         }
 
@@ -121,6 +135,37 @@ namespace Cardstorm.Enemies
         {
             FlashTimer = 0f;
             if (Definition != null) spriteRenderer.color = Definition.color;
+        }
+
+        // Parpadeo del aviso. El destello de daño tiene prioridad.
+        internal void SetBlink(bool white)
+        {
+            if (FlashTimer > 0f || Definition == null) return;
+            spriteRenderer.color = white ? Color.white : Definition.color;
+        }
+
+        // Franja de largo length y ancho igual al diámetro, desde el centro hacia dir.
+        // El hijo hereda la escala del enemigo: se compensa dividiendo por el diámetro.
+        internal void ShowChargeTelegraph(Vector2 dir, float length, float progress)
+        {
+            if (chargeTelegraph == null || Definition == null) return;
+
+            float diameter = Definition.radius * 2f;
+            var t = chargeTelegraph.transform;
+            t.localPosition = dir * (length * 0.5f / diameter);
+            t.localRotation = Quaternion.Euler(0f, 0f, Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg);
+            t.localScale = new Vector3(length / diameter, 1f, 1f);
+
+            Color c = Definition.color;
+            c.a = Mathf.Lerp(TelegraphMinAlpha, TelegraphMaxAlpha, progress);
+            chargeTelegraph.color = c;
+            if (!chargeTelegraph.gameObject.activeSelf) chargeTelegraph.gameObject.SetActive(true);
+        }
+
+        internal void HideChargeTelegraph()
+        {
+            if (chargeTelegraph != null && chargeTelegraph.gameObject.activeSelf)
+                chargeTelegraph.gameObject.SetActive(false);
         }
 
         Sprite SpriteFor(EnemyShape shape) => shape switch

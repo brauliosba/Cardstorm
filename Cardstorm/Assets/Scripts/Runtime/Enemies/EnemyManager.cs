@@ -22,6 +22,9 @@ namespace Cardstorm.Enemies
         [SerializeField, Min(1f)] float despawnDistance = 60f;
         [SerializeField, Min(0f)] float despawnTime = 5f;
 
+        // Segundos entre parpadeos durante el aviso de la embestida.
+        const float ChargeBlinkInterval = 0.1f;
+
         readonly List<Enemy> active = new(600);
         readonly Dictionary<EnemyDefinition, int> aliveByType = new();
 
@@ -119,10 +122,61 @@ namespace Cardstorm.Enemies
 
                 Vector2 chaseDir = flowField != null && !boss ? flowField.GetDirection(pos) : (playerPos - pos).normalized;
 
-                if (enemy.Definition.behaviour == EnemyBehaviour.KeepDistance)
+                var behaviour = enemy.Definition.behaviour;
+                if (behaviour == EnemyBehaviour.KeepDistance)
                     body.linearVelocity = KeepDistance(enemy, pos, playerPos, chaseDir, dt);
+                else if (behaviour == EnemyBehaviour.Charge)
+                    body.linearVelocity = Charge(enemy, pos, playerPos, chaseDir, dt);
                 else
                     body.linearVelocity = chaseDir * enemy.Speed;
+            }
+        }
+
+        // Persigue; cerca del jugador y con línea de visión se para, avisa y embiste en línea recta.
+        Vector2 Charge(Enemy enemy, Vector2 pos, Vector2 playerPos, Vector2 chaseDir, float dt)
+        {
+            var def = enemy.Definition;
+            var charge = enemy.Charge;
+            var settings = def.ChargeSettings;
+            Vector2 toPlayer = playerPos - pos;
+            float distance = toPlayer.magnitude;
+            var before = charge.State;
+
+            // La línea de visión solo se comprueba cuando puede empezar el aviso.
+            bool clearPath = before == ChargeState.Approach && charge.Cooldown <= 0f
+                && distance <= settings.TriggerRange
+                && !Physics2D.Linecast(pos, playerPos, Layers.ObstacleMask);
+
+            // Mira el tramo de este paso: si hay un obstáculo delante, se para contra él.
+            bool blocked = before == ChargeState.Charging && !enemy.IsBoss
+                && Physics2D.CircleCast(pos, def.radius, enemy.ChargeDirection, settings.Speed * dt, Layers.ObstacleMask);
+
+            var state = charge.Step(dt, distance, clearPath, blocked, settings);
+
+            if (state == ChargeState.Windup && before != ChargeState.Windup)
+                enemy.ChargeDirection = distance > 1e-4f ? toPlayer / distance : Vector2.right;
+
+            switch (state)
+            {
+                case ChargeState.Windup:
+                    enemy.ShowChargeTelegraph(enemy.ChargeDirection, def.chargeDistance + def.radius,
+                        charge.WindupProgress(settings));
+                    enemy.SetBlink((int)(charge.Timer / ChargeBlinkInterval) % 2 == 0);
+                    return Vector2.zero;
+
+                case ChargeState.Charging:
+                    if (before == ChargeState.Windup)
+                    {
+                        enemy.HideChargeTelegraph();
+                        enemy.SetBlink(false);
+                    }
+                    return enemy.ChargeDirection * settings.Speed;
+
+                case ChargeState.Recover:
+                    return Vector2.zero;
+
+                default:
+                    return chaseDir * enemy.Speed;
             }
         }
 

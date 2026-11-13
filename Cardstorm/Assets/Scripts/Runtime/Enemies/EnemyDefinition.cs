@@ -5,7 +5,8 @@ namespace Cardstorm.Enemies
 {
     public enum EnemyShape { Circle, Square, Triangle, Diamond, Ring }
 
-    // Chase: persigue. KeepDistance: se mantiene a distancia y dispara (Tirador). Charge: sin implementar.
+    // Chase: persigue. KeepDistance: se mantiene a distancia y dispara (Tirador).
+    // Charge: embiste tras un aviso cuando el jugador está cerca (Coloso).
     public enum EnemyBehaviour { Chase, KeepDistance, Charge }
 
     // Datos de un tipo de enemigo. Se editan en el inspector.
@@ -56,6 +57,23 @@ namespace Cardstorm.Enemies
         [Min(0.1f)] public float projectileRange = 12f;
         [Min(0.02f)] public float projectileRadius = 0.15f;
         public Color projectileColor = new(1f, 0.55f, 0.9f, 1f);
+
+        [Header("Embestida (solo Charge)")]
+        [Tooltip("Empieza el aviso si el jugador está a esta distancia o menos y sin obstáculos en medio.")]
+        [Min(0f)] public float chargeTriggerRange = 6f;
+        [Tooltip("Segundos de aviso: se queda quieto y muestra la trayectoria.")]
+        [Min(0f)] public float chargeWindup = 0.9f;
+        [Tooltip("Unidades/s durante la embestida.")]
+        [Min(0.1f)] public float chargeSpeed = 12f;
+        [Tooltip("Recorrido máximo de la embestida.")]
+        [Min(0.1f)] public float chargeDistance = 9f;
+        [Tooltip("Segundos quieto después de embestir.")]
+        [Min(0f)] public float chargeRecover = 0.6f;
+        [Tooltip("Segundos desde el final de la recuperación hasta que puede volver a avisar.")]
+        [Min(0f)] public float chargeCooldown = 3f;
+
+        public ChargeSettings ChargeSettings =>
+            new(chargeTriggerRange, chargeWindup, chargeSpeed, chargeDistance, chargeRecover, chargeCooldown);
 
         [Header("Jefe")]
         [Tooltip("Un jefe no se recicla por distancia, atraviesa los obstáculos y persigue en línea recta.")]
