@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Cardstorm.Cards;
 using Cardstorm.Core;
@@ -36,8 +37,23 @@ namespace Cardstorm.Progression
         float previousTimeScale = 1f;
         bool forceRemoval;
         bool refillEnergyOnClose;
+        bool held;
 
         public bool IsOpen { get; private set; }
+
+        // Al cerrar la última tienda de la tanda.
+        public event Action Closed;
+
+        // Mientras otra pantalla congela la partida, las subidas esperan en la cola y se abren al soltarla.
+        public bool Held
+        {
+            get => held;
+            set
+            {
+                held = value;
+                if (!held && !IsOpen && queue != null && !queue.IsEmpty) Open();
+            }
+        }
         public LevelUpQueue Queue => queue;
         public ShopOffer<CardDefinition> Offer => offer;
         public CardRemoval Removal => removal;
@@ -116,13 +132,13 @@ namespace Cardstorm.Progression
             queue.Enqueue(level);
 
             if (IsOpen) shop.UpdateQueue(queue.Position, queue.Total);
-            else Open();
+            else if (!held) Open();
         }
 
         // Depuración: abre una tienda del nivel actual con Eliminar carta, sin subir de nivel.
         public void OpenShopWithRemoval()
         {
-            if (IsOpen || run.State == null || run.Won) return;
+            if (IsOpen || held || run.State == null || run.Won) return;
             EnsureCreated();
             forceRemoval = true;
             queue.Enqueue(run.State.Level);
@@ -290,6 +306,7 @@ namespace Cardstorm.Progression
                 if (health != null) health.GrantInvulnerability(resumeInvulnerability);
             }
             input.SetGameplayEnabled(true);
+            Closed?.Invoke();
         }
     }
 }

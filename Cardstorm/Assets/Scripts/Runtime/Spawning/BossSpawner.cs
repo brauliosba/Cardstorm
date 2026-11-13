@@ -24,6 +24,9 @@ namespace Cardstorm.Spawning
             [Min(0f)] public float timeLimit;
             [Tooltip("Al derrotarlo se elige una carta rara.")]
             public bool rareReward;
+
+            public string DisplayName =>
+                definition != null && !string.IsNullOrEmpty(definition.displayName) ? definition.displayName : name;
         }
 
         [SerializeField] WaveSpawner spawner;
@@ -51,10 +54,13 @@ namespace Cardstorm.Spawning
 
         // El último jefe que sigue vivo, o null.
         public Enemy Current => alive.Count > 0 ? alive[^1] : null;
-        public string CurrentName => aliveEntries.Count > 0 ? DisplayName(aliveEntries[^1]) : null;
+        public string CurrentName => aliveEntries.Count > 0 ? aliveEntries[^1].DisplayName : null;
 
         // Segundos que le quedan al jefe actual, o -1 si no tiene límite.
         public float CurrentTimeLeft => alive.Count > 0 ? TimeLeft(alive.Count - 1) : -1f;
+
+        // Al matar a un jefe, después de la victoria si era el final.
+        public event Action<BossEntry> BossDefeated;
 
         double Now => clock != null ? clock.Elapsed : Time.timeSinceLevelLoad;
 
@@ -141,6 +147,15 @@ namespace Cardstorm.Spawning
             }
         }
 
+        // Depuración: deja «seconds» al límite del jefe actual. Devuelve false si no hay jefe o no tiene límite.
+        public bool SetCurrentTimeLeft(float seconds)
+        {
+            int index = alive.Count - 1;
+            if (index < 0 || aliveEntries[index].timeLimit <= 0f || alive[index].IsRetreating) return false;
+            spawnTimes[index] = Now - (aliveEntries[index].timeLimit - seconds);
+            return true;
+        }
+
         float TimeLeft(int index)
         {
             float limit = aliveEntries[index].timeLimit;
@@ -157,6 +172,7 @@ namespace Cardstorm.Spawning
             RemoveAt(index);
             RunEvents.RaiseBossKilled(Now, entry.definition.id);
             if (entry.isFinal && run != null) run.Win();
+            BossDefeated?.Invoke(entry);
         }
 
         // Al terminar la retirada. Con F10 también se retira a los jefes, pero sin el evento.
@@ -185,8 +201,5 @@ namespace Cardstorm.Spawning
                     return entry;
             return null;
         }
-
-        static string DisplayName(BossEntry entry) =>
-            entry.definition != null && !string.IsNullOrEmpty(entry.definition.displayName) ? entry.definition.displayName : entry.name;
     }
 }

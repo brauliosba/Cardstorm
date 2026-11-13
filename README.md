@@ -56,6 +56,8 @@ Este repositorio contiene el prototipo desarrollado como **Trabajo Final de Más
 
 Jefes: Heraldo (minijefe, minuto 5) y Ojo de la tormenta (jefe final, minuto 15).
 
+El Heraldo persigue al jugador y cada 8 s alterna dos patrones, ambos con aviso: una embestida en línea recta y un anillo de proyectiles que gira entre un anillo y el siguiente. Si no se le derrota en 5 minutos, huye y se desvanece sin dar nada. Al derrotarlo, la partida se pausa para elegir una carta rara.
+
 ---
 
 ## Requisitos
@@ -126,6 +128,7 @@ Solo en el editor y en *development build*.
 | F4 | Pausar o reanudar las apariciones |
 | Mayús+F4 | Hacer aparecer un coloso a 8 u del jugador |
 | F5 | Matar a los enemigos cercanos |
+| Mayús+F5 | Quitar el 25 % de la vida al jefe actual |
 | F6 | Invulnerabilidad |
 | F7 | Energía infinita |
 | Mayús+F7 | Añadir al mazo una copia de cada carta de prueba |
@@ -133,6 +136,7 @@ Solo en el editor y en *development build*.
 | Mayús+F8 | Añadir oro |
 | F9 | Prueba de carga (300 enemigos) |
 | F10 | Reciclar todos los enemigos |
+| Mayús+F10 | Dejar 5 s al límite del jefe actual |
 | F11 | Grabar tiempos de fotograma |
 | F12 | Abrir la tienda con Eliminar carta |
 | R | Reiniciar la partida |

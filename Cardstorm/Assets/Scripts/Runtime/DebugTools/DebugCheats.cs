@@ -25,6 +25,7 @@ namespace Cardstorm.DebugTools
         [SerializeField] FrameTimeRecorder recorder;
         [SerializeField] RunManager run;
         [SerializeField] LevelUpController levelUp;
+        [SerializeField] BossSpawner bosses;
 
         [Header("Mayús+F4 · Coloso")]
         [Tooltip("Por defecto, el primer tipo de la curva que embiste.")]
@@ -73,6 +74,7 @@ namespace Cardstorm.DebugTools
             if (recorder == null) recorder = FindFirstObjectByType<FrameTimeRecorder>();
             if (run == null) run = FindFirstObjectByType<RunManager>();
             if (levelUp == null) levelUp = FindFirstObjectByType<LevelUpController>();
+            if (bosses == null) bosses = FindFirstObjectByType<BossSpawner>();
         }
 
         void Start()
@@ -123,7 +125,11 @@ namespace Cardstorm.DebugTools
                 if (k.shiftKey.isPressed) SpawnChargeEnemy();
                 else if (spawner != null) TogglePauseSpawning();
             }
-            if (k.f5Key.wasPressedThisFrame) KillNearby();
+            if (k.f5Key.wasPressedThisFrame)
+            {
+                if (k.shiftKey.isPressed) DamageBoss();
+                else KillNearby();
+            }
             if (k.f6Key.wasPressedThisFrame && player != null) ToggleGodMode();
             if (k.f7Key.wasPressedThisFrame)
             {
@@ -136,7 +142,11 @@ namespace Cardstorm.DebugTools
                 else LevelUp();
             }
             if (k.f9Key.wasPressedThisFrame) LoadTest();
-            if (k.f10Key.wasPressedThisFrame && enemies != null) DespawnAll();
+            if (k.f10Key.wasPressedThisFrame)
+            {
+                if (k.shiftKey.isPressed) ShortenBossTime();
+                else if (enemies != null) DespawnAll();
+            }
             if (k.f11Key.wasPressedThisFrame && recorder != null) recorder.StartRecording();
             if (k.f12Key.wasPressedThisFrame) ForceRemovalShop();
             if (k.rKey.wasPressedThisFrame) Restart();
@@ -173,6 +183,15 @@ namespace Cardstorm.DebugTools
             Vector2 position = picker != null ? picker.Resolve(desired, chargeEnemy.radius, center) : desired;
             enemies.Spawn(chargeEnemy, position);
             Debug.Log($"[DebugCheats] {chargeEnemy.displayName} a {Vector2.Distance(center, position):0.#} u");
+        }
+
+        // Mayús+F5: quita el 25 % de la vida máxima al jefe actual.
+        void DamageBoss()
+        {
+            var boss = bosses != null ? bosses.Current : null;
+            if (boss == null) return;
+            boss.TakeDamage(boss.MaxHealth * 0.25f);
+            Debug.Log($"[DebugCheats] {bosses.CurrentName}: {Mathf.Max(0f, boss.Health):0} de vida");
         }
 
         // F5: mata a los enemigos a menos de killRadius del jugador (cuenta como muerte, no como reciclado).
@@ -274,6 +293,13 @@ namespace Cardstorm.DebugTools
                 remaining -= count;
             }
             Debug.Log($"[DebugCheats] Prueba de carga: {loadTestCount} × {loadTestEnemy.displayName}. Apariciones en pausa (F4 para reanudar).");
+        }
+
+        // Mayús+F10: deja 5 s al límite del jefe actual.
+        void ShortenBossTime()
+        {
+            if (bosses == null || !bosses.SetCurrentTimeLeft(5f)) return;
+            Debug.Log($"[DebugCheats] {bosses.CurrentName}: 5 s para huir");
         }
 
         // F10

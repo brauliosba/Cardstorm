@@ -44,7 +44,32 @@ namespace Cardstorm.UI
         {
             if (button == null) Awake();
             gameObject.SetActive(true);
+            Draw(card);
 
+            priceText.gameObject.SetActive(!bought);
+            priceText.SetText("{0} oro", price);
+            priceText.color = affordable ? HudColors.Text : HudColors.NotEnough;
+            if (boughtLabel != null) boughtLabel.SetActive(bought);
+
+            button.interactable = !bought;
+            SetVeil(bought ? BoughtVeil : affordable ? 0f : UnaffordableVeil);
+        }
+
+        // Carta de recompensa: sin precio y siempre se puede coger.
+        public void ShowReward(CardDefinition card)
+        {
+            if (button == null) Awake();
+            gameObject.SetActive(true);
+            Draw(card);
+
+            priceText.gameObject.SetActive(false);
+            if (boughtLabel != null) boughtLabel.SetActive(false);
+            button.interactable = true;
+            SetVeil(0f);
+        }
+
+        void Draw(CardDefinition card)
+        {
             if (card != shownCard)
             {
                 shownCard = card;
@@ -60,14 +85,6 @@ namespace Cardstorm.UI
                 rarityText.text = HudColors.RarityName(card.rarity);
                 descriptionText.text = card.description;
             }
-
-            priceText.gameObject.SetActive(!bought);
-            priceText.SetText("{0} oro", price);
-            priceText.color = affordable ? HudColors.Text : HudColors.NotEnough;
-            if (boughtLabel != null) boughtLabel.SetActive(bought);
-
-            button.interactable = !bought;
-            SetVeil(bought ? BoughtVeil : affordable ? 0f : UnaffordableVeil);
         }
 
         // Se ha intentado comprar sin oro suficiente.
