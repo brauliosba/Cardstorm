@@ -25,7 +25,9 @@ namespace Cardstorm.Player
         ContactFilter2D enemyFilter;
         CircleCollider2D body;
         float invulnerableUntil;
+        float shieldGuardUntil;
         float maxHealthBonus;
+        Shield shield;
 
         public float BaseMaxHealth => maxHealth;
         public float MaxHealth => maxHealth + maxHealthBonus;
@@ -51,8 +53,18 @@ namespace Cardstorm.Player
 
         public bool IsInvulnerable => Time.time < invulnerableUntil;
 
+        public float ShieldAmount => shield.Amount;
+        public float ShieldFraction => shield.Fraction;
+        public float ShieldRemaining => shield.Remaining;
+        public bool HasShield => shield.Active;
+
+        // Tras un golpe absorbido entero se ignoran los siguientes durante un momento, sin parpadeo.
+        bool IsShieldGuarded => Time.time < shieldGuardUntil;
+
         public event Action<float> Damaged;
         public event Action Died;
+        public event Action ShieldHit;
+        public event Action ShieldBroken;
 
         void Awake()
         {
@@ -66,7 +78,7 @@ namespace Cardstorm.Player
 
         void FixedUpdate()
         {
-            if (IsDead || IsInvulnerable) return;
+            if (IsDead || IsInvulnerable || IsShieldGuarded) return;
 
             float radius = body.radius * Mathf.Max(transform.lossyScale.x, transform.lossyScale.y) + ContactMargin;
             int count = Physics2D.OverlapCircle(transform.position, radius, enemyFilter, contacts);
@@ -83,6 +95,7 @@ namespace Cardstorm.Player
         void Update()
         {
             if (RegenPerSecond > 0f) Heal(RegenPerSecond * Time.deltaTime);
+            shield.Tick(Time.deltaTime);
 
             bool visible = !IsInvulnerable || Mathf.FloorToInt((invulnerableUntil - Time.time) / blinkInterval) % 2 == 0;
             for (int i = 0; i < blinkRenderers.Length; i++)
@@ -91,7 +104,21 @@ namespace Cardstorm.Player
 
         public void TakeDamage(float amount)
         {
-            if (IsDead || IsInvulnerable || GodMode || amount <= 0f) return;
+            if (IsDead || IsInvulnerable || IsShieldGuarded || GodMode || amount <= 0f) return;
+
+            if (shield.Active)
+            {
+                amount = shield.Absorb(amount);
+                if (shield.Active) ShieldHit?.Invoke();
+                else ShieldBroken?.Invoke();
+
+                // Absorbido entero: protección sin parpadeo para que el contacto no vacíe el escudo de golpe.
+                if (amount <= 0f)
+                {
+                    shieldGuardUntil = Time.time + invulnerabilityTime;
+                    return;
+                }
+            }
 
             Current = Mathf.Max(0f, Current - amount);
             invulnerableUntil = Time.time + invulnerabilityTime;
@@ -118,11 +145,20 @@ namespace Cardstorm.Player
             invulnerableUntil = Mathf.Max(invulnerableUntil, Time.time + seconds);
         }
 
+        // Carta Escudo. Si ya hay uno, se queda el mayor y se renueva la duración.
+        public void GrantShield(float amount, float duration)
+        {
+            if (IsDead) return;
+            shield.Grant(amount, duration);
+        }
+
         public void ResetHealth()
         {
             Current = MaxHealth;
             IsDead = false;
             invulnerableUntil = 0f;
+            shieldGuardUntil = 0f;
+            shield.Clear();
         }
     }
 }
