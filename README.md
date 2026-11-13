@@ -7,7 +7,7 @@ Este repositorio contiene el prototipo desarrollado como **Trabajo Final de Más
 - **Autor:** Braulio Baldeón
 - **Motor:** Unity 6 (6000.3.11f1), Universal Render Pipeline
 - **Plataforma objetivo:** Windows (PC), teclado y ratón o mando
-- **Estado:** preproducción y greybox (Sprint 2)
+- **Estado:** vertical slice (Sprint 3)
 
 ---
 
@@ -23,6 +23,38 @@ Este repositorio contiene el prototipo desarrollado como **Trabajo Final de Más
 ### Alcance previsto (MVP)
 
 1 personaje, 1 mapa, 20–25 cartas, 4–5 tipos de enemigo, 1 minijefe y 1 jefe final, con una progresión mínima entre partidas. Quedan fuera de alcance el multijugador, varios biomas, la narrativa y las consolas.
+
+### Contenido actual
+
+**Cartas de acción (12)**
+
+| Carta | Tipo | Rareza | Coste | Efecto |
+|---|---|---|---|---|
+| Disparo | Ataque | Básica | 1 | Proyectil al enemigo más cercano. |
+| Tajo | Ataque | Básica | 2 | Golpe en arco de 120° hacia el enemigo más cercano. |
+| Esquivar | Movilidad | Básica | 1 | Desplazamiento rápido con invulnerabilidad breve. |
+| Ráfaga | Ataque | Común | 2 | Tres proyectiles en abanico. |
+| Lanza | Ataque | Común | 2 | Proyectil que atraviesa dos enemigos. |
+| Granada | Ataque | Común | 2 | Explosión en el grupo más denso. |
+| Escudo | Defensa | Común | 2 | Absorbe 25 de daño durante 4 s. |
+| Torreta | Invocación | Común | 3 | Torreta fija que dispara al enemigo más cercano durante 6 s. |
+| Onda | Ataque | Poco común | 3 | Daño a los enemigos alrededor del jugador. |
+| Cadena eléctrica | Ataque | Poco común | 3 | Rayo que salta entre hasta 4 enemigos. |
+| Escarcha | Ataque | Poco común | 3 | Daño en área y ralentiza un 50 % durante 3 s. |
+| Meteoro | Ataque | Rara | 5 | Tras 1 s de aviso, gran daño en área. |
+
+**Cartas de poder (9):** Atracción, Reserva, Vitalidad, Zancada, Regeneración, Erudición, Furia, Recarga rápida y Codicia.
+
+**Enemigos de horda (4)**
+
+| Enemigo | Comportamiento |
+|---|---|
+| Rondador | Persigue al jugador. |
+| Corredor | Persigue al jugador, rápido y frágil. |
+| Tirador | Mantiene la distancia y dispara. |
+| Coloso | Lento y resistente; avisa con una franja y embiste en línea recta. |
+
+Jefes: Heraldo (minijefe, minuto 5) y Ojo de la tormenta (jefe final, minuto 15).
 
 ---
 
@@ -81,6 +113,29 @@ Las versiones compiladas de cada entrega (PEC) se publican en la sección **[Rel
 | Pausa | Esc | Start |
 
 *Los controles pueden cambiar durante el desarrollo.*
+
+### Teclas de depuración
+
+Solo en el editor y en *development build*.
+
+| Tecla | Acción |
+|---|---|
+| F1 | Mostrar u ocultar el panel de depuración |
+| F2 | Cambiar la velocidad del tiempo |
+| F3 | Saltar a la siguiente oleada o jefe |
+| F4 | Pausar o reanudar las apariciones |
+| Mayús+F4 | Hacer aparecer un coloso a 8 u del jugador |
+| F5 | Matar a los enemigos cercanos |
+| F6 | Invulnerabilidad |
+| F7 | Energía infinita |
+| Mayús+F7 | Añadir al mazo una copia de cada carta de prueba |
+| F8 | Subir un nivel |
+| Mayús+F8 | Añadir oro |
+| F9 | Prueba de carga (300 enemigos) |
+| F10 | Reciclar todos los enemigos |
+| F11 | Grabar tiempos de fotograma |
+| F12 | Abrir la tienda con Eliminar carta |
+| R | Reiniciar la partida |
 
 ---
 
