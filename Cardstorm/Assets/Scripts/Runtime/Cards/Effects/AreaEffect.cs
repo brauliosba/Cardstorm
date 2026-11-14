@@ -23,21 +23,25 @@ namespace Cardstorm.Cards.Effects
         [Range(0.05f, 1f)] public float slowFactor = 1f;
         [Min(0f)] public float slowDuration;
 
+        public override CardTraits Traits =>
+            CardTraits.Damage | CardTraits.Area | (center == AreaCenter.Target ? CardTraits.Targeted : CardTraits.None);
+
         public override void Apply(in CardContext context)
         {
             var caster = context.Caster;
             Vector2 point = center == AreaCenter.Self ? context.Origin : context.TargetPoint;
-            float finalDamage = damage * caster.DamageMultiplier;
+            float finalDamage = damage * context.DamageMultiplier;
+            float finalRadius = radius * context.AreaMultiplier;
             Color color = CardPalette.For(context.Card.type);
 
             if (delay > 0f && caster.Strikes != null)
             {
-                caster.Strikes.Schedule(point, radius, finalDamage, delay, color, slowFactor, slowDuration);
+                caster.Strikes.Schedule(point, finalRadius, finalDamage, delay, color, slowFactor, slowDuration);
                 return;
             }
 
-            AreaDamage.Apply(point, radius, finalDamage, slowFactor, slowDuration);
-            if (caster.Flashes != null) caster.Flashes.Area(point, radius, color);
+            AreaDamage.Apply(point, finalRadius, finalDamage, slowFactor, slowDuration);
+            if (caster.Flashes != null) caster.Flashes.Area(point, finalRadius, color);
         }
     }
 }

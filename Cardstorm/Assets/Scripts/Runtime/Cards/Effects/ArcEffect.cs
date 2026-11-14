@@ -23,6 +23,9 @@ namespace Cardstorm.Cards.Effects
 
         [Range(1f, 360f)] public float arcDegrees = 120f;
 
+        public override CardTraits Traits =>
+            CardTraits.Damage | CardTraits.Area | (arcDegrees < 360f ? CardTraits.Targeted : CardTraits.None);
+
         public override void Apply(in CardContext context)
         {
             if (!filterReady)
@@ -32,9 +35,11 @@ namespace Cardstorm.Cards.Effects
                 filterReady = true;
             }
 
-            float finalDamage = damage * context.Caster.DamageMultiplier;
+            float finalDamage = damage * context.DamageMultiplier;
+            float finalRange = range * context.AreaMultiplier;
+            float finalArc = Mathf.Min(360f, arcDegrees * context.AreaMultiplier);
             Vector2 origin = context.Origin;
-            int count = Physics2D.OverlapCircle(origin, range + SearchMargin, filter, Buffer);
+            int count = Physics2D.OverlapCircle(origin, finalRange + SearchMargin, filter, Buffer);
 
             // Un collider por enemigo: cada uno se golpea como mucho una vez.
             for (int i = 0; i < count; i++)
@@ -42,8 +47,8 @@ namespace Cardstorm.Cards.Effects
                 if (!Buffer[i].TryGetComponent(out Enemy enemy) || !enemy.IsAlive) continue;
 
                 Vector2 pos = enemy.Body.position;
-                if (Vector2.Distance(origin, pos) - enemy.Radius > range) continue;
-                if (!Targeting.InArc(origin, context.Aim, pos, arcDegrees)) continue;
+                if (Vector2.Distance(origin, pos) - enemy.Radius > finalRange) continue;
+                if (!Targeting.InArc(origin, context.Aim, pos, finalArc)) continue;
 
                 enemy.TakeDamage(finalDamage);
             }
@@ -51,7 +56,7 @@ namespace Cardstorm.Cards.Effects
             Array.Clear(Buffer, 0, count);
 
             var flash = context.Caster.ArcFlash;
-            if (flash != null) flash.Show(context.Aim, range, arcDegrees, CardPalette.For(context.Card.type));
+            if (flash != null) flash.Show(context.Aim, finalRange, finalArc, CardPalette.For(context.Card.type));
         }
     }
 }

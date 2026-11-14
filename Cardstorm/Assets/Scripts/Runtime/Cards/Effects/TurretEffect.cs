@@ -21,13 +21,15 @@ namespace Cardstorm.Cards.Effects
         [Min(0.01f)] public float projectileRadius = 0.15f;
         [Min(0.1f)] public float projectileDistance = 10f;
 
+        public override CardTraits Traits => CardTraits.Damage | CardTraits.Area;
+
         public override void Apply(in CardContext context)
         {
             var caster = context.Caster;
             if (caster.Turrets == null) return;
 
             // El daño se fija al ponerla: una Furia posterior no la cambia.
-            caster.Turrets.Place(context.Origin, duration, fireInterval, damage * caster.DamageMultiplier, range,
+            caster.Turrets.Place(context.Origin, duration, fireInterval, damage * context.DamageMultiplier, range * context.AreaMultiplier,
                 projectileSpeed, projectileRadius, projectileDistance, CardPalette.For(context.Card.type));
         }
     }

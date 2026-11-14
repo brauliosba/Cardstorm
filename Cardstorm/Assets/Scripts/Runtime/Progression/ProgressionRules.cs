@@ -65,6 +65,10 @@ namespace Cardstorm.Progression
         [Tooltip("Refrescar cuesta paso · k, con k = 1, 2, 3… en cada tienda.")]
         [Min(0)] public int refreshPriceStep = 12;
 
+        [Header("Mejorar carta")]
+        [Tooltip("Refrescar las gemas cuesta paso · k, con k = 1, 2, 3… en cada nivel.")]
+        [Min(0)] public int gemRefreshPriceStep = 12;
+
         [Header("Eliminar carta")]
         [Min(1)] public int removalEveryLevels = 5;
         [Tooltip("Precio de la primera eliminación. No lleva inflación.")]

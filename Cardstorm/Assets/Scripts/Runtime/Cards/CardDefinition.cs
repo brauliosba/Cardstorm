@@ -26,9 +26,6 @@ namespace Cardstorm.Cards
         [Tooltip("Distancia máxima a la que busca objetivo.")]
         [Min(0f)] public float targetRange = 12f;
 
-        [Tooltip("Valor V del presupuesto de poder. Solo informativo.")]
-        public float powerValue;
-
         [Header("Tienda")]
         [Tooltip("Copias que se pueden comprar en una partida. 0 = sin límite.")]
         [Min(0)] public int maxCopiesPerRun;
@@ -46,6 +43,38 @@ namespace Cardstorm.Cards
         // Las cartas de poder no van al descarte: salen del mazo.
         public bool ExhaustOnPlay => type == CardType.Power;
 
+        [System.NonSerialized] bool traitsReady;
+        [System.NonSerialized] CardTraits traits;
+
+        // Lo que hacen sus efectos, para saber qué gemas admite. Se recalcula al editarla.
+        public CardTraits Traits
+        {
+            get
+            {
+                if (!traitsReady)
+                {
+                    traits = ComputeTraits();
+                    traitsReady = true;
+                }
+                return traits;
+            }
+        }
+
+        CardTraits ComputeTraits()
+        {
+            var result = CardTraits.None;
+            if (effects != null)
+                foreach (var effect in effects)
+                    if (effect != null) result |= effect.Traits;
+
+            if (cost > 0f) result |= CardTraits.HasCost;
+
+            // Ya apunta al de más vida o no apunta a nadie.
+            if (targeting == TargetPriority.HighestHealth || targeting == TargetPriority.MoveDirection)
+                result &= ~CardTraits.Targeted;
+            return result;
+        }
+
         string IShopItem.Id => id;
         CardRarity IShopItem.Rarity => rarity;
         int IShopItem.BasePrice => basePrice;
@@ -54,6 +83,8 @@ namespace Cardstorm.Cards
 
         void OnValidate()
         {
+            traitsReady = false;
+
             if (string.IsNullOrWhiteSpace(id))
                 Debug.LogWarning($"La carta {name} no tiene id.", this);
 

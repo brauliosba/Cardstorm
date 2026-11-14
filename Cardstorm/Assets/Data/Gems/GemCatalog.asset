@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3504a0ad6f1ce0b4fa70855124b16ccf, type: 3}
+  m_Name: GemCatalog
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Progression.GemCatalog
+  gems:
+  - {fileID: 11400000, guid: d8494bf0fba4300448340d408f51690c, type: 2}
+  - {fileID: 11400000, guid: 3a37b53d41cf6a043b76d3b1355e8cb4, type: 2}
+  - {fileID: 11400000, guid: 25c5aff4dbfea064b840bca636da1bf5, type: 2}
+  - {fileID: 11400000, guid: 10fb52896fdd64f4092f524cfdc67d38, type: 2}
+  - {fileID: 11400000, guid: 6a6523c834d5eda458e75d72c9e47249, type: 2}
+  - {fileID: 11400000, guid: 6bb1d1b8dfe79e44c8ec7fbe275dec07, type: 2}

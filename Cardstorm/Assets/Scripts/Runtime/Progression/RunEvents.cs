@@ -4,7 +4,7 @@ namespace Cardstorm.Progression
 {
     public enum GoldSource { Enemy, Chest, Boss, Debug }
 
-    public enum SpendReason { Buy, Refresh, Remove }
+    public enum SpendReason { Buy, Refresh, Remove, GemRefresh }
 
     // Eventos de la partida para la interfaz y la telemetría. Todos llevan los segundos de partida.
     // Los suscriptores se dan de baja en su OnDisable: los eventos estáticos sobreviven a la escena.
@@ -30,6 +30,12 @@ namespace Cardstorm.Progression
 
         // Tiempo, id de la carta, precio pagado.
         public static event Action<double, string, int> CardRemoved;
+
+        // Tiempo, nivel de las gemas ofrecidas.
+        public static event Action<double, int> GemsOffered;
+
+        // Tiempo, precio pagado.
+        public static event Action<double, int> GemsRefreshed;
 
         // Tiempo, oro gastado, motivo.
         public static event Action<double, int, SpendReason> GoldSpent;
@@ -62,6 +68,10 @@ namespace Cardstorm.Progression
         public static void RaiseShopRefreshed(double time, int price) => ShopRefreshed?.Invoke(time, price);
 
         public static void RaiseCardRemoved(double time, string cardId, int price) => CardRemoved?.Invoke(time, cardId, price);
+
+        public static void RaiseGemsOffered(double time, int level) => GemsOffered?.Invoke(time, level);
+
+        public static void RaiseGemsRefreshed(double time, int price) => GemsRefreshed?.Invoke(time, price);
 
         public static void RaiseGoldSpent(double time, int amount, SpendReason reason) => GoldSpent?.Invoke(time, amount, reason);
 

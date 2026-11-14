@@ -3,13 +3,14 @@ using UnityEngine;
 
 namespace Cardstorm.Cards
 {
-    // Lo que necesita un efecto para aplicarse: quién la lanza, desde dónde y hacia dónde.
+    // Lo que necesita un efecto para aplicarse: quién la lanza, desde dónde, hacia dónde y con qué gema.
     public readonly struct CardContext
     {
-        public CardContext(CardCaster caster, CardDefinition card, Vector2 origin, Vector2 aim, Enemy target, Vector2 targetPoint)
+        public CardContext(CardCaster caster, CardDefinition card, in GemModifiers modifiers, Vector2 origin, Vector2 aim, Enemy target, Vector2 targetPoint)
         {
             Caster = caster;
             Card = card;
+            Modifiers = modifiers;
             Origin = origin;
             Aim = aim;
             Target = target;
@@ -18,6 +19,10 @@ namespace Cardstorm.Cards
 
         public CardCaster Caster { get; }
         public CardDefinition Card { get; }
+
+        // Los de la gema de la copia, o None.
+        public GemModifiers Modifiers { get; }
+
         public Vector2 Origin { get; }
 
         // Dirección normalizada hacia el objetivo, o la del movimiento si no hay.
@@ -28,5 +33,11 @@ namespace Cardstorm.Cards
 
         // Posición del objetivo; sin objetivo, el punto a distancia de búsqueda en la dirección de apuntado.
         public Vector2 TargetPoint { get; }
+
+        // Daño del personaje (Furia) por el de la gema.
+        public float DamageMultiplier => (Caster != null ? Caster.DamageMultiplier : 1f) * Modifiers.damageMultiplier;
+
+        // Radios, alcances y arcos.
+        public float AreaMultiplier => Modifiers.areaMultiplier;
     }
 }

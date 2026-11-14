@@ -25,19 +25,24 @@ namespace Cardstorm.Cards.Effects
         [Tooltip("Ángulo total del abanico cuando hay más de un proyectil.")]
         [Range(0f, 360f)] public float spreadDegrees;
 
+        public override CardTraits Traits => CardTraits.Damage | CardTraits.Projectile | CardTraits.Targeted;
+
         public override void Apply(in CardContext context)
         {
             var projectiles = context.Caster.Projectiles;
             if (projectiles == null) return;
 
-            float finalDamage = damage * context.Caster.DamageMultiplier;
+            var m = context.Modifiers;
+            float finalDamage = damage * context.DamageMultiplier;
+            int finalPierce = GemRules.Pierce(pierce, m);
             Color color = CardPalette.For(context.Card.type);
 
             for (int i = 0; i < count; i++)
             {
                 float angle = count > 1 ? -spreadDegrees * 0.5f + spreadDegrees * i / (count - 1) : 0f;
                 Vector2 dir = Quaternion.Euler(0f, 0f, angle) * context.Aim;
-                projectiles.Launch(context.Origin, dir, speed, maxDistance, radius, finalDamage, pierce, color);
+                projectiles.Launch(context.Origin, dir, speed, maxDistance, radius, finalDamage, finalPierce, color,
+                    pierce + 1, m.extraPierceDamage);
             }
         }
     }

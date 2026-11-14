@@ -19,6 +19,10 @@ namespace Cardstorm.Progression
         public static int RefreshPrice(ProgressionRules rules, int level, int k) =>
             Round(rules.refreshPriceStep * Math.Max(1, k) * Inflation(rules, level));
 
+        // Refrescar las gemas por k-ésima vez en el mismo nivel: paso · k · inflación.
+        public static int GemRefreshPrice(ProgressionRules rules, int level, int k) =>
+            Round(rules.gemRefreshPriceStep * Math.Max(1, k) * Inflation(rules, level));
+
         // Eliminar una carta: base + paso · eliminaciones anteriores, sin inflación.
         public static int RemovalPrice(ProgressionRules rules, int previousRemovals) =>
             rules.removalBasePrice + rules.removalStep * Math.Max(0, previousRemovals);

@@ -21,6 +21,9 @@ namespace Cardstorm.Combat
         internal float Radius { get; private set; }
         internal float Damage { get; private set; }
         internal int PierceLeft { get; set; }
+        // Impactos con el daño completo; los siguientes hacen Damage · ExtraHitDamage.
+        internal int FullHits { get; private set; }
+        internal float ExtraHitDamage { get; private set; }
         // Disparado por un enemigo: daña al jugador en vez de a los enemigos.
         internal bool Hostile { get; private set; }
         internal int ActiveIndex { get; set; } = -1;
@@ -31,7 +34,8 @@ namespace Cardstorm.Combat
         }
 
         // Reinicia todo el estado: la instancia viene del pool.
-        internal void Launch(Vector2 origin, Vector2 direction, float speed, float maxDistance, float radius, float damage, int pierce, Color color, bool hostile = false)
+        internal void Launch(Vector2 origin, Vector2 direction, float speed, float maxDistance, float radius, float damage, int pierce, Color color, bool hostile = false,
+            int fullHits = -1, float extraHitDamage = 1f)
         {
             Position = origin;
             Direction = direction;
@@ -41,6 +45,8 @@ namespace Cardstorm.Combat
             Radius = radius;
             Damage = damage;
             PierceLeft = pierce;
+            FullHits = fullHits < 0 ? pierce + 1 : fullHits;
+            ExtraHitDamage = extraHitDamage;
             Hostile = hostile;
             Hit.Clear();
 

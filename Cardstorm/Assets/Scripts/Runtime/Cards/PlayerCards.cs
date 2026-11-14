@@ -85,7 +85,7 @@ namespace Cardstorm.Cards
                 return;
             }
 
-            caster.Cast(card.Definition);
+            caster.Cast(card);
             CardsPlayed++;
             CardPlayed?.Invoke(slot, card);
         }

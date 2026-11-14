@@ -24,6 +24,8 @@ namespace Cardstorm.Cards.Effects
         [Tooltip("Distancia máxima entre un enemigo alcanzado y el siguiente.")]
         [Min(0.1f)] public float jumpRange = 4f;
 
+        public override CardTraits Traits => CardTraits.Damage | CardTraits.Area | CardTraits.Targeted;
+
         public override void Apply(in CardContext context)
         {
             var caster = context.Caster;
@@ -42,7 +44,7 @@ namespace Cardstorm.Cards.Effects
                 Candidates.Add(e);
             }
 
-            Targeting.Chain(start, Positions, jumpRange, maxTargets, Hits);
+            Targeting.Chain(start, Positions, jumpRange * context.AreaMultiplier, maxTargets, Hits);
 
             // Primero se guardan los alcanzados: al morir, un enemigo sale de la lista de activos.
             HitEnemies.Clear();
@@ -50,7 +52,7 @@ namespace Cardstorm.Cards.Effects
 
             var flashes = caster.Flashes;
             Color color = CardPalette.For(context.Card.type);
-            float finalDamage = damage * caster.DamageMultiplier;
+            float finalDamage = damage * context.DamageMultiplier;
             Vector2 from = context.Origin;
             for (int i = 0; i < Hits.Count; i++)
             {

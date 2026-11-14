@@ -6,6 +6,9 @@ namespace Cardstorm.Cards.Effects
     [Serializable]
     public abstract class CardEffect
     {
+        // Lo que aporta a la carta para saber qué gemas admite.
+        public virtual CardTraits Traits => CardTraits.None;
+
         public abstract void Apply(in CardContext context);
     }
 }

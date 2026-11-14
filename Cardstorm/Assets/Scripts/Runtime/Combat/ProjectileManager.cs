@@ -51,19 +51,22 @@ namespace Cardstorm.Combat
             foreach (var p in buffer) pool.Release(p);
         }
 
-        public void Launch(Vector2 origin, Vector2 dir, float speed, float maxDistance, float radius, float damage, int pierce, Color color)
-            => Launch(origin, dir, speed, maxDistance, radius, damage, pierce, color, false);
+        // fullHits: impactos con el daño completo (por defecto, todos); los siguientes hacen damage · extraHitDamage.
+        public void Launch(Vector2 origin, Vector2 dir, float speed, float maxDistance, float radius, float damage, int pierce, Color color,
+            int fullHits = -1, float extraHitDamage = 1f)
+            => Spawn(origin, dir, speed, maxDistance, radius, damage, pierce, color, false, fullHits, extraHitDamage);
 
         // Proyectil enemigo: daña al jugador y se destruye contra obstáculos.
         public void LaunchHostile(Vector2 origin, Vector2 dir, float speed, float maxDistance, float radius, float damage, Color color)
-            => Launch(origin, dir, speed, maxDistance, radius, damage, 0, color, true);
+            => Spawn(origin, dir, speed, maxDistance, radius, damage, 0, color, true, -1, 1f);
 
-        void Launch(Vector2 origin, Vector2 dir, float speed, float maxDistance, float radius, float damage, int pierce, Color color, bool hostile)
+        void Spawn(Vector2 origin, Vector2 dir, float speed, float maxDistance, float radius, float damage, int pierce, Color color, bool hostile,
+            int fullHits, float extraHitDamage)
         {
             if (dir.sqrMagnitude < 1e-6f || speed <= 0f || maxDistance <= 0f) return;
 
             var projectile = pool.Get();
-            projectile.Launch(origin, dir.normalized, speed, maxDistance, radius, damage, pierce, color, hostile);
+            projectile.Launch(origin, dir.normalized, speed, maxDistance, radius, damage, pierce, color, hostile, fullHits, extraHitDamage);
             projectile.ActiveIndex = active.Count;
             active.Add(projectile);
         }
@@ -109,8 +112,10 @@ namespace Cardstorm.Combat
 
                 if (!collider.TryGetComponent(out Enemy enemy) || !enemy.IsAlive || p.Hit.Contains(enemy)) continue;
 
+                // Los impactos que añade Perforación hacen menos daño.
+                float damage = p.Hit.Count < p.FullHits ? p.Damage : p.Damage * p.ExtraHitDamage;
                 p.Hit.Add(enemy);
-                enemy.TakeDamage(p.Damage);
+                enemy.TakeDamage(damage);
                 p.PierceLeft--;
                 if (p.PierceLeft < 0) return false;
             }
