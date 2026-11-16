@@ -17,7 +17,251 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: 215eb9349280a0a4db45cb5ca88a5e64, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 2642183852032
+    m_Localized: "Energ\xEDa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642267738112
+    m_Localized: "Estad\xEDsticas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642267738113
+    m_Localized: Tab / LB
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642267738114
+    m_Localized: Mazo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932416
+    m_Localized: "Barajando\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932417
+    m_Localized: Descarte
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932418
+    m_Localized: Agotadas {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932419
+    m_Localized: Nv. {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932420
+    m_Localized: Oro {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932421
+    m_Localized: '{0} oro'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932422
+    m_Localized: Refrescar ({0} oro)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932423
+    m_Localized: Nivel {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932424
+    m_Localized: '{0} de {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932425
+    m_Localized: Continuar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932426
+    m_Localized: Volver
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932427
+    m_Localized: Reiniciar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932428
+    m_Localized: Nueva carta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932429
+    m_Localized: Mejorar carta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932430
+    m_Localized: Eliminar carta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932431
+    m_Localized: "Despu\xE9s podr\xE1s eliminar cartas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932432
+    m_Localized: Comprada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932433
+    m_Localized: Cuesta {0} oro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932434
+    m_Localized: "Deben quedar al menos {0} cartas de acci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932435
+    m_Localized: Sustituye a {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932436
+    m_Localized: Elige una gema
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932437
+    m_Localized: Engarzar {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932438
+    m_Localized: Ninguna carta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932439
+    m_Localized: 1 carta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932440
+    m_Localized: '{0} cartas'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932441
+    m_Localized: Recompensa del {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932442
+    m_Localized: Elige una carta rara
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932443
+    m_Localized: Victoria
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932444
+    m_Localized: Derrota
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932445
+    m_Localized: Tiempo {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932446
+    m_Localized: Pulsa Enter / A para reiniciar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932447
+    m_Localized: PAUSA
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932448
+    m_Localized: Esc / Start para continuar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932449
+    m_Localized: Salir
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932450
+    m_Localized: "Idioma: Espa\xF1ol"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932451
+    m_Localized: Ataque
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932452
+    m_Localized: Defensa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932453
+    m_Localized: Movilidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932454
+    m_Localized: "Invocaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932455
+    m_Localized: Poder
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932456
+    m_Localized: "B\xE1sica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932457
+    m_Localized: "Com\xFAn"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932458
+    m_Localized: "Poco com\xFAn"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932459
+    m_Localized: Rara
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932460
+    m_Localized: "Vida m\xE1xima"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932461
+    m_Localized: "Regeneraci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932462
+    m_Localized: "Da\xF1o"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932463
+    m_Localized: "Recarga de energ\xEDa"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932464
+    m_Localized: "Energ\xEDa m\xE1xima"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932465
+    m_Localized: Velocidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932466
+    m_Localized: Radio de recogida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932467
+    m_Localized: Experiencia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932468
+    m_Localized: Oro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932469
+    m_Localized: "{0} (m\xE1x.)"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932470
+    m_Localized: '{0} %'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932471
+    m_Localized: '{0} cada 10'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932472
+    m_Localized: ','
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

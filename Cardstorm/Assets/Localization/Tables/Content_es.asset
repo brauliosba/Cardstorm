@@ -17,7 +17,260 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: bf97131838c2d664c923ac1bb237bd73, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 2783745806336
+    m_Localized: "Cadena el\xE9ctrica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332288
+    m_Localized: "Rayo que salta entre hasta 4 enemigos cercanos e inflige 12 de
+      da\xF1o a cada uno."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332289
+    m_Localized: Disparo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332290
+    m_Localized: "Lanza un proyectil al enemigo m\xE1s cercano que inflige 10 de
+      da\xF1o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332291
+    m_Localized: Escarcha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332292
+    m_Localized: "Helada sobre el grupo de enemigos m\xE1s denso: 5 de da\xF1o en
+      un radio de 3 u y los ralentiza un 50 % durante 3 s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332293
+    m_Localized: Escudo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332294
+    m_Localized: "Absorbe hasta 25 de da\xF1o durante 4 s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332295
+    m_Localized: Esquivar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332296
+    m_Localized: "Desplazamiento r\xE1pido de 4 unidades en la direcci\xF3n del movimiento,
+      con 0,3 s de invulnerabilidad."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332297
+    m_Localized: Granada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332298
+    m_Localized: "Explosi\xF3n en el grupo de enemigos m\xE1s denso: 12 de da\xF1o
+      en un radio de 2 u."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332299
+    m_Localized: Lanza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332300
+    m_Localized: "Un proyectil que atraviesa dos enemigos e inflige 12 de da\xF1o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332301
+    m_Localized: Meteoro
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332302
+    m_Localized: "Tras 1 s de aviso, cae sobre el grupo m\xE1s denso: 60 de da\xF1o
+      en un radio de 3 u."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332303
+    m_Localized: Onda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332304
+    m_Localized: "Onda a tu alrededor: 14 de da\xF1o a todos los enemigos a 3,5 u."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332305
+    m_Localized: "R\xE1faga"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332306
+    m_Localized: "Tres proyectiles en abanico de 30\xB0 que infligen 10 de da\xF1o
+      cada uno."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332307
+    m_Localized: Tajo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332308
+    m_Localized: "Golpe en arco de 120\xB0 hacia el enemigo m\xE1s cercano: 18 de
+      da\xF1o a todos los alcanzados."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332309
+    m_Localized: Torreta
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332310
+    m_Localized: "Coloca una torreta fija que dispara al enemigo m\xE1s cercano:
+      5 de da\xF1o cada 0,5 s durante 6 s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332311
+    m_Localized: "Atracci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332312
+    m_Localized: Aumenta un 50 % el radio de recogida de orbes y monedas.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332313
+    m_Localized: Codicia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332314
+    m_Localized: "Por cada 10 de oro que recoges, ganas 1 m\xE1s."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332315
+    m_Localized: Eco
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332317
+    m_Localized: "Erudici\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332318
+    m_Localized: "Obtienes un 10 % m\xE1s de experiencia."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332319
+    m_Localized: Furia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332320
+    m_Localized: "Aumenta un 10 % el da\xF1o de todas las cartas."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332321
+    m_Localized: "Recarga r\xE1pida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332322
+    m_Localized: "Aumenta un 15 % la regeneraci\xF3n de energ\xEDa."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332323
+    m_Localized: "Regeneraci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332324
+    m_Localized: Regeneras 0,3 de vida por segundo.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332325
+    m_Localized: Reserva
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332326
+    m_Localized: "Aumenta en 2 la energ\xEDa m\xE1xima."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332327
+    m_Localized: Vitalidad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332328
+    m_Localized: "Aumenta en 15 la vida m\xE1xima y cura 15 de vida."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332329
+    m_Localized: Zancada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332330
+    m_Localized: Aumenta un 10 % la velocidad de movimiento.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332331
+    m_Localized: Amplitud
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332332
+    m_Localized: "+30 % de \xE1rea o alcance."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332333
+    m_Localized: Filo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332334
+    m_Localized: "+25 % de da\xF1o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332335
+    m_Localized: Ligereza
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332336
+    m_Localized: "\u221220 % de coste."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332337
+    m_Localized: "Perforaci\xF3n"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332338
+    m_Localized: "Atraviesa un enemigo m\xE1s, que recibe el 50 % del da\xF1o."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332339
+    m_Localized: "Prioridad: m\xE1s vida"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332340
+    m_Localized: "Apunta al enemigo con m\xE1s vida."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332341
+    m_Localized: Resonancia
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332342
+    m_Localized: 50 % de probabilidad de lanzarse dos veces.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332343
+    m_Localized: Corredor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332344
+    m_Localized: Rondador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332345
+    m_Localized: Tirador
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332346
+    m_Localized: Coloso
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332347
+    m_Localized: Heraldo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332348
+    m_Localized: Ojo de la tormenta
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

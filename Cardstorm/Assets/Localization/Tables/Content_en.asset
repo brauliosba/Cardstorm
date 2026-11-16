@@ -17,7 +17,256 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: bf97131838c2d664c923ac1bb237bd73, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 2783745806336
+    m_Localized: Chain lightning
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332288
+    m_Localized: Lightning that jumps between up to 4 nearby enemies, dealing 12
+      damage to each.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332289
+    m_Localized: Shot
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332290
+    m_Localized: Fires a projectile at the nearest enemy, dealing 10 damage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332291
+    m_Localized: Frost
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332292
+    m_Localized: 'Frost on the densest group of enemies: 5 damage in a 3 u radius
+      and slows them by 50% for 3 s.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332293
+    m_Localized: Shield
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332294
+    m_Localized: Absorbs up to 25 damage for 4 s.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332295
+    m_Localized: Dodge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332296
+    m_Localized: Quick 4-unit dash in the direction of movement, with 0.3 s of invulnerability.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332297
+    m_Localized: Grenade
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332298
+    m_Localized: 'Explosion on the densest group of enemies: 12 damage in a 2 u radius.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332299
+    m_Localized: Spear
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332300
+    m_Localized: A projectile that pierces two enemies, dealing 12 damage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332301
+    m_Localized: Meteor
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332302
+    m_Localized: 'After a 1 s warning, it strikes the densest group: 60 damage in
+      a 3 u radius.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332303
+    m_Localized: Wave
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332304
+    m_Localized: 'A wave around you: 14 damage to all enemies within 3.5 u.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332305
+    m_Localized: Burst
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332306
+    m_Localized: "Three projectiles in a 30\xB0 fan, dealing 10 damage each."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332307
+    m_Localized: Slash
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332308
+    m_Localized: "A 120\xB0 arc strike towards the nearest enemy: 18 damage to everyone
+      hit."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332309
+    m_Localized: Turret
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332310
+    m_Localized: 'Places a stationary turret that shoots the nearest enemy: 5 damage
+      every 0.5 s for 6 s.'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332311
+    m_Localized: Magnet
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332312
+    m_Localized: Increases the pickup radius for orbs and coins by 50%.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332313
+    m_Localized: Greed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332314
+    m_Localized: For every 10 gold you collect, you gain 1 more.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332315
+    m_Localized: Echo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332317
+    m_Localized: Erudition
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332318
+    m_Localized: You gain 10% more experience.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332319
+    m_Localized: Fury
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332320
+    m_Localized: Increases the damage of all cards by 10%.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332321
+    m_Localized: Quick recharge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332322
+    m_Localized: Increases energy regeneration by 15%.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332323
+    m_Localized: Regeneration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332324
+    m_Localized: You regenerate 0.3 health per second.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332325
+    m_Localized: Reserve
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332326
+    m_Localized: Increases maximum energy by 2.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332327
+    m_Localized: Vitality
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332328
+    m_Localized: Increases maximum health by 15 and heals 15 health.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332329
+    m_Localized: Stride
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332330
+    m_Localized: Increases movement speed by 10%.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332331
+    m_Localized: Amplitude
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332332
+    m_Localized: +30% area or range.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332333
+    m_Localized: Edge
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332334
+    m_Localized: +25% damage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332335
+    m_Localized: Lightness
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332336
+    m_Localized: "\u221220% cost."
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332337
+    m_Localized: Piercing
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332338
+    m_Localized: Pierces one more enemy, which takes 50% of the damage.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332339
+    m_Localized: 'Priority: most health'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332340
+    m_Localized: Targets the enemy with the most health.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332341
+    m_Localized: Resonance
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332342
+    m_Localized: 50% chance to cast twice.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332343
+    m_Localized: Runner
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332344
+    m_Localized: Prowler
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332345
+    m_Localized: Marksman
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332346
+    m_Localized: Colossus
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332347
+    m_Localized: Herald
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332348
+    m_Localized: Eye of the Storm
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

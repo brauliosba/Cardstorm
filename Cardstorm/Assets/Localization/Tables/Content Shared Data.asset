@@ -14,7 +14,255 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: Content
   m_TableCollectionNameGuidString: bf97131838c2d664c923ac1bb237bd73
-  m_Entries: []
+  m_Entries:
+  - m_Id: 2783745806336
+    m_Key: card.cadena.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332288
+    m_Key: card.cadena.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332289
+    m_Key: card.disparo.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332290
+    m_Key: card.disparo.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332291
+    m_Key: card.escarcha.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332292
+    m_Key: card.escarcha.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332293
+    m_Key: card.escudo.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332294
+    m_Key: card.escudo.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332295
+    m_Key: card.esquivar.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332296
+    m_Key: card.esquivar.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332297
+    m_Key: card.granada.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332298
+    m_Key: card.granada.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332299
+    m_Key: card.lanza.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332300
+    m_Key: card.lanza.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332301
+    m_Key: card.meteoro.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332302
+    m_Key: card.meteoro.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332303
+    m_Key: card.onda.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332304
+    m_Key: card.onda.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332305
+    m_Key: card.rafaga.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332306
+    m_Key: card.rafaga.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332307
+    m_Key: card.tajo.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332308
+    m_Key: card.tajo.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332309
+    m_Key: card.torreta.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332310
+    m_Key: card.torreta.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332311
+    m_Key: card.atraccion.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332312
+    m_Key: card.atraccion.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332313
+    m_Key: card.codicia.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332314
+    m_Key: card.codicia.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332315
+    m_Key: card.eco.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332316
+    m_Key: card.eco.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332317
+    m_Key: card.erudicion.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332318
+    m_Key: card.erudicion.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332319
+    m_Key: card.furia.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332320
+    m_Key: card.furia.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332321
+    m_Key: card.recarga_rapida.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332322
+    m_Key: card.recarga_rapida.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332323
+    m_Key: card.regeneracion.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332324
+    m_Key: card.regeneracion.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332325
+    m_Key: card.reserva.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332326
+    m_Key: card.reserva.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332327
+    m_Key: card.vitalidad.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332328
+    m_Key: card.vitalidad.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332329
+    m_Key: card.zancada.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332330
+    m_Key: card.zancada.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332331
+    m_Key: gem.amplitud.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332332
+    m_Key: gem.amplitud.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332333
+    m_Key: gem.filo.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332334
+    m_Key: gem.filo.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332335
+    m_Key: gem.ligereza.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332336
+    m_Key: gem.ligereza.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332337
+    m_Key: gem.perforacion.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332338
+    m_Key: gem.perforacion.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332339
+    m_Key: gem.prioridad_vida.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332340
+    m_Key: gem.prioridad_vida.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332341
+    m_Key: gem.resonancia.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332342
+    m_Key: gem.resonancia.description
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332343
+    m_Key: enemy.corredor.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332344
+    m_Key: enemy.rondador.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332345
+    m_Key: enemy.tirador.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332346
+    m_Key: enemy.coloso.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332347
+    m_Key: enemy.heraldo.name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2783800332348
+    m_Key: enemy.ojo_tormenta.name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -14,7 +14,251 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
   m_TableCollectionName: UI
   m_TableCollectionNameGuidString: 215eb9349280a0a4db45cb5ca88a5e64
-  m_Entries: []
+  m_Entries:
+  - m_Id: 2642183852032
+    m_Key: ui.hud.energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642267738112
+    m_Key: ui.hud.stats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642267738113
+    m_Key: ui.hud.stats_keys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642267738114
+    m_Key: ui.hud.deck
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932416
+    m_Key: ui.hud.reshuffling
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932417
+    m_Key: ui.hud.discard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932418
+    m_Key: ui.hud.exhausted
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932419
+    m_Key: ui.hud.level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932420
+    m_Key: ui.common.gold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932421
+    m_Key: ui.common.gold_price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932422
+    m_Key: ui.common.refresh
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932423
+    m_Key: ui.common.level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932424
+    m_Key: ui.common.queue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932425
+    m_Key: ui.common.continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932426
+    m_Key: ui.common.back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932427
+    m_Key: ui.common.restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932428
+    m_Key: ui.levelup.new_card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932429
+    m_Key: ui.levelup.upgrade_card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932430
+    m_Key: ui.levelup.remove_card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932431
+    m_Key: ui.levelup.removal_hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932432
+    m_Key: ui.shop.bought
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932433
+    m_Key: ui.removal.price
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932434
+    m_Key: ui.removal.min_action
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932435
+    m_Key: ui.removal.replaces
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932436
+    m_Key: ui.gem.pick_gem
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932437
+    m_Key: ui.gem.socket
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932438
+    m_Key: ui.gem.cards_none
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932439
+    m_Key: ui.gem.cards_one
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932440
+    m_Key: ui.gem.cards_many
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932441
+    m_Key: ui.reward.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932442
+    m_Key: ui.reward.pick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932443
+    m_Key: ui.end.victory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932444
+    m_Key: ui.end.defeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932445
+    m_Key: ui.end.time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932446
+    m_Key: ui.end.hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932447
+    m_Key: ui.pause.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932448
+    m_Key: ui.pause.hint
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932449
+    m_Key: ui.pause.quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932450
+    m_Key: ui.pause.language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932451
+    m_Key: ui.type.attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932452
+    m_Key: ui.type.defense
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932453
+    m_Key: ui.type.mobility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932454
+    m_Key: ui.type.summon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932455
+    m_Key: ui.type.power
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932456
+    m_Key: ui.rarity.basic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932457
+    m_Key: ui.rarity.common
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932458
+    m_Key: ui.rarity.uncommon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932459
+    m_Key: ui.rarity.rare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932460
+    m_Key: ui.stat.max_health
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932461
+    m_Key: ui.stat.health_regen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932462
+    m_Key: ui.stat.damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932463
+    m_Key: ui.stat.energy_regen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932464
+    m_Key: ui.stat.max_energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932465
+    m_Key: ui.stat.move_speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932466
+    m_Key: ui.stat.pickup_radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932467
+    m_Key: ui.stat.xp_gain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932468
+    m_Key: ui.stat.gold_gain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932469
+    m_Key: ui.stat.capped
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932470
+    m_Key: ui.stat.percent
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932471
+    m_Key: ui.stat.per_ten
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932472
+    m_Key: ui.fmt.decimal
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

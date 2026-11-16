@@ -17,7 +17,251 @@ MonoBehaviour:
   m_SharedData: {fileID: 11400000, guid: 215eb9349280a0a4db45cb5ca88a5e64, type: 2}
   m_Metadata:
     m_Items: []
-  m_TableData: []
+  m_TableData:
+  - m_Id: 2642183852032
+    m_Localized: Energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642267738112
+    m_Localized: Stats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642267738113
+    m_Localized: Tab / LB
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642267738114
+    m_Localized: Deck
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932416
+    m_Localized: "Shuffling\u2026"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932417
+    m_Localized: Discard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932418
+    m_Localized: Exhausted {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932419
+    m_Localized: Lv. {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932420
+    m_Localized: Gold {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932421
+    m_Localized: '{0} gold'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932422
+    m_Localized: Reroll ({0} gold)
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932423
+    m_Localized: Level {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932424
+    m_Localized: '{0} of {1}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932425
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932426
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932427
+    m_Localized: Restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932428
+    m_Localized: New card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932429
+    m_Localized: Upgrade card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932430
+    m_Localized: Remove card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932431
+    m_Localized: You can remove cards afterwards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932432
+    m_Localized: Bought
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932433
+    m_Localized: Costs {0} gold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932434
+    m_Localized: At least {0} action cards must remain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932435
+    m_Localized: Replaces {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932436
+    m_Localized: Choose a gem
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932437
+    m_Localized: Socket {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932438
+    m_Localized: No cards
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932439
+    m_Localized: 1 card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932440
+    m_Localized: '{0} cards'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932441
+    m_Localized: '{0}''s reward'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932442
+    m_Localized: Choose a rare card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932443
+    m_Localized: Victory
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932444
+    m_Localized: Defeat
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932445
+    m_Localized: Time {0}
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932446
+    m_Localized: Press Enter / A to restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932447
+    m_Localized: PAUSED
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932448
+    m_Localized: Esc / Start to resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932449
+    m_Localized: Quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932450
+    m_Localized: 'Language: English'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932451
+    m_Localized: Attack
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932452
+    m_Localized: Defense
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932453
+    m_Localized: Mobility
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932454
+    m_Localized: Summon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932455
+    m_Localized: Power
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932456
+    m_Localized: Basic
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932457
+    m_Localized: Common
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932458
+    m_Localized: Uncommon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932459
+    m_Localized: Rare
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932460
+    m_Localized: Max health
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932461
+    m_Localized: Regeneration
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932462
+    m_Localized: Damage
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932463
+    m_Localized: Energy regen
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932464
+    m_Localized: Max energy
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932465
+    m_Localized: Speed
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932466
+    m_Localized: Pickup radius
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932467
+    m_Localized: Experience
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932468
+    m_Localized: Gold
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932469
+    m_Localized: '{0} (max)'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932470
+    m_Localized: '{0}%'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932471
+    m_Localized: '{0} per 10'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932472
+    m_Localized: .
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
