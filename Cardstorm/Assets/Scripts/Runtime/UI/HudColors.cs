@@ -35,6 +35,10 @@ namespace Cardstorm.UI
             _ => "Común",
         };
 
+        // Tipo de la carta y, si la copia tiene gema, su nombre: «Ataque · Filo».
+        public static string TypeLine(CardType type, GemDefinition gem) =>
+            gem != null ? $"{TypeName(type)} · {gem.displayName}" : TypeName(type);
+
         // Sin decimales si el coste es entero.
         public static string CostLabel(float cost) =>
             cost == Mathf.Round(cost) ? ((int)cost).ToString() : cost.ToString("0.#");

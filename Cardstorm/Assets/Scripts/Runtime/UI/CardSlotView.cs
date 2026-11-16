@@ -41,9 +41,13 @@ namespace Cardstorm.UI
         [Tooltip("Velo que se retira de arriba abajo durante el robo.")]
         [SerializeField] Image drawVeil;
 
+        [Tooltip("Rombo del color de la gema; oculto si la copia no tiene.")]
+        [SerializeField] Image gemBadge;
+
         RectTransform rect;
         Vector2 basePosition;
         CardInstance shownCard;
+        GemDefinition shownGem;
         SlotState? shownState;
         bool? shownInfo;
         bool? shownCostRed;
@@ -73,10 +77,12 @@ namespace Cardstorm.UI
             var state = cycle.StateOf(slot);
             var card = cycle.CardIn(slot);
 
-            if (card != shownCard)
+            // La copia puede recibir una gema mientras está en la mano.
+            if (card != shownCard || (card != null && card.Gem != shownGem))
             {
                 shownCard = card;
-                if (card != null) ShowCard(card.Definition);
+                shownGem = card != null ? card.Gem : null;
+                if (card != null) ShowCard(card);
             }
 
             if (state != shownState)
@@ -137,17 +143,26 @@ namespace Cardstorm.UI
             rect.localScale = new Vector3(scale, scale, 1f);
         }
 
-        void ShowCard(CardDefinition definition)
+        void ShowCard(CardInstance card)
         {
+            var definition = card.Definition;
             Color color = CardPalette.For(definition.type);
             border.color = color;
             art.color = Color.Lerp(color, HudColors.Panel, 0.55f);
             icon.sprite = definition.icon;
             icon.enabled = definition.icon != null;
-            costText.text = HudColors.CostLabel(definition.cost);
+            costText.text = HudColors.CostLabel(card.Cost);
             nameText.text = definition.displayName;
-            typeText.text = HudColors.TypeName(definition.type);
-            descriptionText.text = definition.description;
+            typeText.text = HudColors.TypeLine(definition.type, card.Gem);
+            // Con gema, su efecto va debajo, en su color.
+            descriptionText.text = card.Gem != null
+                ? $"{definition.description}\n<color=#{ColorUtility.ToHtmlStringRGB(card.Gem.color)}>{card.Gem.description}</color>"
+                : definition.description;
+            if (gemBadge != null)
+            {
+                gemBadge.gameObject.SetActive(card.Gem != null);
+                if (card.Gem != null) gemBadge.color = card.Gem.color;
+            }
         }
 
         // Con la información pulsada, la descripción sustituye al dibujo y la carta se agranda.

@@ -6,6 +6,8 @@ namespace Cardstorm.Progression
 
     public enum SpendReason { Buy, Refresh, Remove, GemRefresh }
 
+    public enum LevelUpOption { Shop, Gem }
+
     // Eventos de la partida para la interfaz y la telemetría. Todos llevan los segundos de partida.
     // Los suscriptores se dan de baja en su OnDisable: los eventos estáticos sobreviven a la escena.
     public static class RunEvents
@@ -36,6 +38,15 @@ namespace Cardstorm.Progression
 
         // Tiempo, precio pagado.
         public static event Action<double, int> GemsRefreshed;
+
+        // Tiempo, id de la gema, id de la carta, id de la gema que tenía (null si no tenía).
+        public static event Action<double, string, string, string> GemApplied;
+
+        // Tiempo, nivel, opción elegida en la subida.
+        public static event Action<double, int, LevelUpOption> LevelUpChoice;
+
+        // Tiempo, id de la carta que Resonancia ha lanzado otra vez.
+        public static event Action<double, string> CardRepeated;
 
         // Tiempo, oro gastado, motivo.
         public static event Action<double, int, SpendReason> GoldSpent;
@@ -72,6 +83,14 @@ namespace Cardstorm.Progression
         public static void RaiseGemsOffered(double time, int level) => GemsOffered?.Invoke(time, level);
 
         public static void RaiseGemsRefreshed(double time, int price) => GemsRefreshed?.Invoke(time, price);
+
+        public static void RaiseGemApplied(double time, string gemId, string cardId, string previousGemId) =>
+            GemApplied?.Invoke(time, gemId, cardId, previousGemId);
+
+        public static void RaiseLevelUpChoice(double time, int level, LevelUpOption option) =>
+            LevelUpChoice?.Invoke(time, level, option);
+
+        public static void RaiseCardRepeated(double time, string cardId) => CardRepeated?.Invoke(time, cardId);
 
         public static void RaiseGoldSpent(double time, int amount, SpendReason reason) => GoldSpent?.Invoke(time, amount, reason);
 

@@ -19,7 +19,7 @@ namespace Cardstorm.Progression
         // La partida ha terminado con victoria: no se abren más tiendas.
         public bool Won { get; private set; }
 
-        double Now => clock != null ? clock.Elapsed : Time.timeSinceLevelLoad;
+        public double Now => clock != null ? clock.Elapsed : Time.timeSinceLevelLoad;
 
         void Awake()
         {

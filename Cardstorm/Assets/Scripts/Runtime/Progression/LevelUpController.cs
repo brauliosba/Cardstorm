@@ -8,18 +8,22 @@ using UnityEngine;
 
 namespace Cardstorm.Progression
 {
-    // Pausa la partida en cada subida de nivel y muestra la tienda; al cerrar la última, la reanuda.
-    // En los niveles que lo ofrecen, la tienda deja además eliminar una carta del mazo.
+    // Pausa la partida en cada subida de nivel.
     public class LevelUpController : MonoBehaviour
     {
+        enum Phase { None, Choice, Shop, Gems, Removal }
+
         [SerializeField] RunManager run;
         [SerializeField] GameClock clock;
         [SerializeField] PlayerInputReader input;
         [SerializeField] PlayerHealth health;
         [SerializeField] PlayerCards cards;
+        [SerializeField] LevelUpChoiceScreen choice;
         [SerializeField] ShopScreen shop;
+        [SerializeField] GemScreen gemScreen;
         [SerializeField] RemovalScreen removalScreen;
         [SerializeField] ShopCatalog catalog;
+        [SerializeField] GemCatalog gemCatalog;
 
         [Tooltip("Invulnerabilidad al volver a la partida, para no recibir un golpe nada más cerrar la tienda.")]
         [SerializeField, Min(0f)] float resumeInvulnerability = 0.5f;
@@ -29,19 +33,26 @@ namespace Cardstorm.Progression
 
         LevelUpQueue queue;
         ShopOffer<CardDefinition> offer;
+        GemOffer<GemDefinition> gemOffer;
         CardRemoval removal;
         readonly List<CardInstance> deckBuffer = new();
         readonly List<RemovalEntry> entries = new();
+        readonly int[] compatible = new int[GemOffer<GemDefinition>.SlotCount];
         int entryCount;
         int actionCards;
+        GemDefinition pickedGem;
+        Phase phase;
         float previousTimeScale = 1f;
         bool forceRemoval;
+        bool gemsOpened;
+        bool spentInShop;
+        bool lockNextScreen;
         bool refillEnergyOnClose;
         bool held;
 
         public bool IsOpen { get; private set; }
 
-        // Al cerrar la última tienda de la tanda.
+        // Al cerrar la última subida de la tanda.
         public event Action Closed;
 
         // Mientras otra pantalla congela la partida, las subidas esperan en la cola y se abren al soltarla.
@@ -56,9 +67,12 @@ namespace Cardstorm.Progression
         }
         public LevelUpQueue Queue => queue;
         public ShopOffer<CardDefinition> Offer => offer;
+        public GemOffer<GemDefinition> GemOffer => gemOffer;
         public CardRemoval Removal => removal;
 
         double Now => clock != null ? clock.Elapsed : Time.timeSinceLevelLoad;
+
+        bool GemsAvailable => gemScreen != null && gemCatalog != null && gemCatalog.gems.Count > 0;
 
         void Awake()
         {
@@ -67,46 +81,74 @@ namespace Cardstorm.Progression
             if (input == null) input = FindFirstObjectByType<PlayerInputReader>();
             if (health == null) health = FindFirstObjectByType<PlayerHealth>();
             if (cards == null) cards = FindFirstObjectByType<PlayerCards>();
+            if (choice == null) choice = FindFirstObjectByType<LevelUpChoiceScreen>(FindObjectsInactive.Include);
             if (shop == null) shop = FindFirstObjectByType<ShopScreen>(FindObjectsInactive.Include);
+            if (gemScreen == null) gemScreen = FindFirstObjectByType<GemScreen>(FindObjectsInactive.Include);
             if (removalScreen == null) removalScreen = FindFirstObjectByType<RemovalScreen>(FindObjectsInactive.Include);
             if (catalog == null) Debug.LogError("LevelUpController no tiene ShopCatalog: la tienda saldrá vacía.", this);
+            if (gemCatalog == null) Debug.LogWarning("LevelUpController no tiene GemCatalog: Mejorar carta no se podrá elegir.", this);
+            if (choice == null) Debug.LogWarning("LevelUpController no tiene LevelUpChoiceScreen: cada subida abre directamente la tienda.", this);
         }
 
         void OnEnable()
         {
             RunEvents.LevelUp += OnLevelUp;
+            if (choice != null)
+            {
+                choice.ShopChosen += OnShopChosen;
+                choice.GemsChosen += OnGemsChosen;
+            }
             if (shop != null)
             {
                 shop.BuyPressed += OnBuy;
                 shop.RefreshPressed += OnRefresh;
-                shop.RemovePressed += OnRemovePressed;
+                shop.BackPressed += OnShopBack;
                 shop.ContinuePressed += OnContinue;
+            }
+            if (gemScreen != null)
+            {
+                gemScreen.GemPicked += OnGemPicked;
+                gemScreen.CardPicked += OnGemCard;
+                gemScreen.RefreshPressed += OnGemRefresh;
+                gemScreen.BackPressed += OnGemBack;
             }
             if (removalScreen != null)
             {
                 removalScreen.EntryPressed += OnRemoveEntry;
-                removalScreen.BackPressed += CloseRemoval;
+                removalScreen.BackPressed += OnRemovalDone;
             }
         }
 
         void OnDisable()
         {
             RunEvents.LevelUp -= OnLevelUp;
+            if (choice != null)
+            {
+                choice.ShopChosen -= OnShopChosen;
+                choice.GemsChosen -= OnGemsChosen;
+            }
             if (shop != null)
             {
                 shop.BuyPressed -= OnBuy;
                 shop.RefreshPressed -= OnRefresh;
-                shop.RemovePressed -= OnRemovePressed;
+                shop.BackPressed -= OnShopBack;
                 shop.ContinuePressed -= OnContinue;
+            }
+            if (gemScreen != null)
+            {
+                gemScreen.GemPicked -= OnGemPicked;
+                gemScreen.CardPicked -= OnGemCard;
+                gemScreen.RefreshPressed -= OnGemRefresh;
+                gemScreen.BackPressed -= OnGemBack;
             }
             if (removalScreen != null)
             {
                 removalScreen.EntryPressed -= OnRemoveEntry;
-                removalScreen.BackPressed -= CloseRemoval;
+                removalScreen.BackPressed -= OnRemovalDone;
             }
         }
 
-        // RunManager crea el estado en su Start: la cola y la tienda se crean con la primera subida.
+        // RunManager crea el estado en su Start: la cola y las ofertas se crean con la primera subida.
         void EnsureCreated()
         {
             var state = run.State;
@@ -119,6 +161,7 @@ namespace Cardstorm.Progression
                     catalog != null ? catalog.powerCards : null);
                 offer = new ShopOffer<CardDefinition>(roller, state);
             }
+            gemOffer ??= new GemOffer<GemDefinition>(gemCatalog != null ? gemCatalog.gems : null, state);
             removal ??= new CardRemoval(state);
         }
 
@@ -126,47 +169,111 @@ namespace Cardstorm.Progression
         {
             if (run.Won) return;
             if (health != null) health.Heal(health.MaxHealth * levelUpHealFraction);
-            // La energía se rellena al cerrar la tienda, para incluir la Reserva que se compre en ella.
+            // La energía se rellena al cerrar, para incluir la Reserva que se compre en la tienda.
             refillEnergyOnClose = true;
             EnsureCreated();
             queue.Enqueue(level);
 
-            if (IsOpen) shop.UpdateQueue(queue.Position, queue.Total);
+            if (IsOpen)
+            {
+                if (choice != null) choice.UpdateQueue(queue.Position, queue.Total);
+                shop.UpdateQueue(queue.Position, queue.Total);
+            }
             else if (!held) Open();
         }
 
-        // Depuración: abre una tienda del nivel actual con Eliminar carta, sin subir de nivel.
-        public void OpenShopWithRemoval()
+        // Depuración: abre la elección del nivel actual con Eliminar carta al final, sin subir de nivel.
+        public void OpenWithRemoval()
         {
-            if (IsOpen || held || run.State == null || run.Won) return;
-            EnsureCreated();
+            if (!CanOpenForDebug()) return;
             forceRemoval = true;
             queue.Enqueue(run.State.Level);
             Open();
         }
 
-        void Open()
+        // Depuración: abre directamente Mejorar carta del nivel actual, sin subir de nivel.
+        public void OpenGems()
+        {
+            if (!CanOpenForDebug() || !GemsAvailable) return;
+            queue.Enqueue(run.State.Level);
+            Open(gemsFirst: true);
+        }
+
+        bool CanOpenForDebug()
+        {
+            if (IsOpen || held || run.State == null || run.Won) return false;
+            EnsureCreated();
+            return true;
+        }
+
+        void Open(bool gemsFirst = false)
         {
             IsOpen = true;
             clock.Paused = true;
             previousTimeScale = Time.timeScale;
             Time.timeScale = 0f;
             input.SetGameplayEnabled(false);
-            ShowCurrent();
+            lockNextScreen = true;
+            StartLevel(gemsFirst);
         }
 
-        void ShowCurrent()
+        // La primera pantalla después de la partida bloquea la entrada un momento; las siguientes no.
+        bool TakeInputLock()
         {
-            offer.Open(queue.CurrentLevel, Now);
+            bool value = lockNextScreen;
+            lockNextScreen = false;
+            return value;
+        }
+
+        // Las ofertas se sortean una vez por nivel: ir y volver de la elección no las cambia.
+        void StartLevel(bool gemsFirst = false)
+        {
+            int level = queue.CurrentLevel;
+            offer.Open(level, Now);
+            gemsOpened = false;
+            spentInShop = false;
             bool offersRemoval = queue.CurrentOffersRemoval || forceRemoval;
             forceRemoval = false;
-            removal.Open(queue.CurrentLevel, offersRemoval && removalScreen != null);
-            shop.Show(queue.CurrentLevel, queue.Position, queue.Total, offer, removal);
+            removal.Open(level, offersRemoval && removalScreen != null);
+
+            if (!gemsFirst)
+            {
+                ShowChoice();
+                return;
+            }
+            phase = Phase.Choice;
+            OnGemsChosen();
+        }
+
+        void ShowChoice()
+        {
+            if (choice == null)
+            {
+                OnShopChosen();
+                return;
+            }
+            phase = Phase.Choice;
+            choice.Show(queue.CurrentLevel, queue.Position, queue.Total, run.State.Gold, GemsAvailable,
+                removal.Offered, TakeInputLock());
+        }
+
+        void HideChoice()
+        {
+            if (choice != null && choice.IsVisible) choice.Hide();
+        }
+
+
+        void OnShopChosen()
+        {
+            if (!IsOpen || (phase != Phase.Choice && choice != null)) return;
+            HideChoice();
+            phase = Phase.Shop;
+            shop.Show(queue.CurrentLevel, queue.Position, queue.Total, offer, choice != null && !spentInShop, TakeInputLock());
         }
 
         void OnBuy(int slot)
         {
-            if (!IsOpen) return;
+            if (!IsOpen || phase != Phase.Shop) return;
             if (!offer.TryBuy(slot, Now, out var card))
             {
                 shop.BuyFailed(slot);
@@ -174,13 +281,16 @@ namespace Cardstorm.Progression
             }
 
             cards.Cycle.Add(new CardInstance(card));
+            // Comprar cierra la vuelta a la elección: no se puede comprar y además poner una gema.
+            spentInShop = true;
+            shop.SetBackAvailable(false);
             shop.UpdateOffer(offer);
             shop.Bought(slot);
         }
 
         void OnRefresh()
         {
-            if (!IsOpen) return;
+            if (!IsOpen || phase != Phase.Shop) return;
             if (!offer.TryRefresh(Now))
             {
                 shop.RefreshFailed();
@@ -189,29 +299,134 @@ namespace Cardstorm.Progression
             shop.UpdateOffer(offer);
         }
 
-        // Sin oro, el botón tambalea y no abre la lista.
-        void OnRemovePressed()
+        void OnShopBack()
         {
-            if (!IsOpen || removalScreen.IsVisible || !removal.Offered) return;
-            if (removal.State.Gold < removal.Price)
+            if (!IsOpen || phase != Phase.Shop || spentInShop || choice == null) return;
+            shop.Hide();
+            ShowChoice();
+        }
+
+        void OnContinue()
+        {
+            if (!IsOpen || phase != Phase.Shop) return;
+            shop.Hide();
+            RunEvents.RaiseLevelUpChoice(Now, queue.CurrentLevel, LevelUpOption.Shop);
+            AfterChoice();
+        }
+
+
+        void OnGemsChosen()
+        {
+            if (!IsOpen || phase != Phase.Choice || !GemsAvailable) return;
+            if (!gemsOpened)
             {
-                shop.RemoveFailed();
+                gemOffer.Open(queue.CurrentLevel, Now);
+                gemsOpened = true;
+            }
+            HideChoice();
+            phase = Phase.Gems;
+            pickedGem = null;
+            CountCompatible();
+            gemScreen.ShowGems(gemOffer, compatible, TakeInputLock());
+        }
+
+        void OnGemRefresh()
+        {
+            if (!IsOpen || phase != Phase.Gems || gemScreen.ShowingCards) return;
+            if (!gemOffer.TryRefresh(Now))
+            {
+                gemScreen.RefreshFailed();
+                return;
+            }
+            CountCompatible();
+            gemScreen.UpdateGems(gemOffer, compatible);
+        }
+
+        void OnGemPicked(int slot)
+        {
+            if (!IsOpen || phase != Phase.Gems || gemScreen.ShowingCards) return;
+            var gem = gemOffer.Slot(slot);
+            if (gem == null || compatible[slot] == 0)
+            {
+                gemScreen.GemFailed(slot);
                 return;
             }
 
-            shop.SetSuspended(true);
-            ShowEntries();
+            pickedGem = gem;
+            BuildEntries(gem);
+            gemScreen.ShowCards(gem, entries, entryCount);
         }
 
-        void ShowEntries()
+        void OnGemCard(int index)
         {
-            BuildEntries();
+            if (!IsOpen || phase != Phase.Gems || pickedGem == null || index < 0 || index >= entryCount) return;
+
+            var instance = entries[index].Instance;
+            if (!instance.Accepts(pickedGem))
+            {
+                gemScreen.CardFailed(index);
+                return;
+            }
+
+            var previous = instance.Gem;
+            instance.SetGem(pickedGem);
+            RunEvents.RaiseGemApplied(Now, pickedGem.id, instance.Definition.id, previous != null ? previous.id : null);
+            RunEvents.RaiseLevelUpChoice(Now, queue.CurrentLevel, LevelUpOption.Gem);
+            pickedGem = null;
+            gemScreen.Hide();
+            AfterChoice();
+        }
+
+        void OnGemBack()
+        {
+            if (!IsOpen || phase != Phase.Gems) return;
+            if (gemScreen.ShowingCards)
+            {
+                pickedGem = null;
+                CountCompatible();
+                gemScreen.ShowGems(gemOffer, compatible, lockInput: false);
+                return;
+            }
+            gemScreen.Hide();
+            ShowChoice();
+        }
+
+        // Copias del mazo que admiten cada gema ofrecida.
+        void CountCompatible()
+        {
+            cards.Cycle.CopyCards(deckBuffer);
+            for (int i = 0; i < compatible.Length; i++)
+            {
+                var gem = gemOffer.Slot(i);
+                int count = 0;
+                if (gem != null)
+                    foreach (var instance in deckBuffer)
+                        if (instance.Accepts(gem)) count++;
+                compatible[i] = count;
+            }
+        }
+
+
+        // Tras la tienda o las gemas: en los niveles que lo ofrecen, la lista de eliminar; si no, el nivel termina.
+        void AfterChoice()
+        {
+            if (removal.Offered)
+            {
+                phase = Phase.Removal;
+                ShowRemoval();
+            }
+            else CompleteLevel();
+        }
+
+        void ShowRemoval()
+        {
+            BuildEntries(null);
             removalScreen.Show(entries, entryCount, removal.Price, removal.State.Gold, removal.State.Rules.minActionCards);
         }
 
         void OnRemoveEntry(int index)
         {
-            if (!IsOpen || index < 0 || index >= entryCount) return;
+            if (!IsOpen || phase != Phase.Removal || index < 0 || index >= entryCount) return;
 
             var entry = entries[index];
             var result = removal.TryRemove(entry.Card.id, IsAction(entry.Card), actionCards, Now);
@@ -221,21 +436,23 @@ namespace Cardstorm.Progression
                 return;
             }
 
-            // La lista sigue abierta para quitar más, con el precio nuevo; Volver regresa a la tienda.
+            // La lista sigue abierta para quitar más, con el precio nuevo; Continuar termina el nivel.
             cards.Cycle.Remove(entry.Instance);
-            shop.UpdateOffer(offer);
-            ShowEntries();
+            ShowRemoval();
         }
 
-        void CloseRemoval()
+        void OnRemovalDone()
         {
-            if (!removalScreen.IsVisible) return;
+            if (!IsOpen || phase != Phase.Removal) return;
             removalScreen.Hide();
-            shop.SetSuspended(false);
+            CompleteLevel();
         }
 
-        // Agrupa el mazo por carta.
-        void BuildEntries()
+
+        // Agrupa el mazo por carta y gema. Sin gema, para eliminar: todas las copias, y las de acción solo
+        // si quedan más del mínimo. Con gema, para engarzar: las copias que la admiten o que ya la tienen
+        // (atenuadas).
+        void BuildEntries(GemDefinition gem)
         {
             cards.Cycle.CopyCards(deckBuffer);
             entryCount = 0;
@@ -245,10 +462,11 @@ namespace Cardstorm.Progression
             {
                 var card = instance.Definition;
                 if (IsAction(card)) actionCards++;
+                if (gem != null && !instance.Accepts(gem) && instance.Gem != gem) continue;
 
                 int found = -1;
                 for (int i = 0; i < entryCount; i++)
-                    if (entries[i].Card == card) { found = i; break; }
+                    if (entries[i].Card == card && entries[i].Gem == instance.Gem) { found = i; break; }
 
                 if (found >= 0)
                 {
@@ -259,18 +477,30 @@ namespace Cardstorm.Progression
                 if (entryCount == entries.Count) entries.Add(new RemovalEntry());
                 var entry = entries[entryCount++];
                 entry.Card = card;
+                entry.Gem = instance.Gem;
                 entry.Instance = instance;
                 entry.Count = 1;
+                entry.Note = null;
             }
 
             for (int i = 0; i < entryCount; i++)
-                entries[i].Allowed = removal.Allows(IsAction(entries[i].Card), actionCards);
+            {
+                var entry = entries[i];
+                if (gem == null)
+                {
+                    entry.Allowed = removal.Allows(IsAction(entry.Card), actionCards);
+                    continue;
+                }
+                entry.Allowed = entry.Instance.Accepts(gem);
+                if (entry.Gem != null && entry.Gem != gem) entry.Note = $"Sustituye a {entry.Gem.displayName}";
+            }
 
             entries.Sort(0, entryCount, EntryOrder.Instance);
         }
 
         static bool IsAction(CardDefinition card) => card.type != CardType.Power;
 
+        // Acción antes que poder, por nombre y, con el mismo nombre, sin gema primero.
         sealed class EntryOrder : IComparer<RemovalEntry>
         {
             public static readonly EntryOrder Instance = new();
@@ -278,22 +508,32 @@ namespace Cardstorm.Progression
             public int Compare(RemovalEntry a, RemovalEntry b)
             {
                 int byType = IsAction(b.Card).CompareTo(IsAction(a.Card));
-                return byType != 0 ? byType : string.CompareOrdinal(a.Card.displayName, b.Card.displayName);
+                if (byType != 0) return byType;
+                int byName = string.CompareOrdinal(a.Card.displayName, b.Card.displayName);
+                if (byName != 0) return byName;
+                if (a.Gem == b.Gem) return 0;
+                if (a.Gem == null) return -1;
+                if (b.Gem == null) return 1;
+                return string.CompareOrdinal(a.Gem.displayName, b.Gem.displayName);
             }
         }
 
-        void OnContinue()
-        {
-            if (!IsOpen || (removalScreen != null && removalScreen.IsVisible)) return;
 
-            if (queue.Complete()) ShowCurrent();
+        void CompleteLevel()
+        {
+            phase = Phase.None;
+            if (queue.Complete()) StartLevel();
             else Close();
         }
 
         void Close()
         {
             IsOpen = false;
-            shop.Hide();
+            phase = Phase.None;
+            HideChoice();
+            if (shop.IsVisible) shop.Hide();
+            if (gemScreen != null && gemScreen.IsVisible) gemScreen.Hide();
+            if (removalScreen != null && removalScreen.IsVisible) removalScreen.Hide();
             Time.timeScale = previousTimeScale;
 
             if (refillEnergyOnClose && cards != null) cards.Energy.Refill();

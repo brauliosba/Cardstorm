@@ -17,7 +17,7 @@ MonoBehaviour:
   description: "+30 % de \xE1rea o alcance."
   icon: {fileID: 0}
   color: {r: 0.43529412, g: 0.8117647, b: 0.5921569, a: 1}
-  required: 5
+  required: 4
   modifiers:
     damageMultiplier: 1
     costMultiplier: 1

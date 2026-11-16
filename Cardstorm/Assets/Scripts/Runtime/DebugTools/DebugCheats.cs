@@ -148,7 +148,11 @@ namespace Cardstorm.DebugTools
                 else if (enemies != null) DespawnAll();
             }
             if (k.f11Key.wasPressedThisFrame && recorder != null) recorder.StartRecording();
-            if (k.f12Key.wasPressedThisFrame) ForceRemovalShop();
+            if (k.f12Key.wasPressedThisFrame)
+            {
+                if (k.shiftKey.isPressed) OpenGems();
+                else ForceRemoval();
+            }
             if (k.rKey.wasPressedThisFrame) Restart();
         }
 
@@ -263,12 +267,20 @@ namespace Cardstorm.DebugTools
             Debug.Log($"[DebugCheats] +{debugGold} de oro · {run.State.Gold}");
         }
 
-        // F12: tienda del nivel actual con Eliminar carta.
-        void ForceRemovalShop()
+        // F12: elección del nivel actual con Eliminar carta al final.
+        void ForceRemoval()
         {
             if (levelUp == null) return;
-            levelUp.OpenShopWithRemoval();
-            Debug.Log("[DebugCheats] Tienda con Eliminar carta");
+            levelUp.OpenWithRemoval();
+            Debug.Log("[DebugCheats] Subida con Eliminar carta");
+        }
+
+        // Mayús+F12: Mejorar carta del nivel actual.
+        void OpenGems()
+        {
+            if (levelUp == null) return;
+            levelUp.OpenGems();
+            Debug.Log("[DebugCheats] Mejorar carta");
         }
 
         // F9: loadTestCount enemigos en anillos alrededor del jugador, fuera de la vista; pausa las apariciones normales.

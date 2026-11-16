@@ -16,7 +16,7 @@ Este repositorio contiene el prototipo desarrollado como **Trabajo Final de Más
 - **Mano de cuatro cartas** asignadas a cuatro botones en rombo (I, J, K, L o 1–4 en teclado; Y, X, B, A en mando).
 - **Energía** que se regenera con el tiempo; cada carta tiene un coste. Al jugar una carta se roba otra del mazo y, cuando el mazo se agota, se baraja el descarte.
 - **Tipos de carta:** ataque (proyectil, área, cuerpo a cuerpo), defensa y movilidad, invocaciones y cartas de poder con efecto pasivo.
-- **Progresión en la partida:** los enemigos sueltan experiencia y oro; al subir de nivel se elige entre añadir una carta nueva, mejorarla con gemas o mejorar un atributo.
+- **Progresión en la partida:** los enemigos sueltan experiencia y oro; al subir de nivel se elige entre **Nueva carta** (tienda) y **Mejorar carta** (gemas) y, cada 5 niveles, después se pueden eliminar cartas del mazo.
 - **Partida completa de unos 15 minutos**, con una oleada densa hacia el minuto 3, un minijefe en el minuto 5 y un jefe final en el minuto 15.
 - **Mazo inicial:** 4 × Disparo, 2 × Tajo, 2 × Esquivar.
 
@@ -57,6 +57,19 @@ Este repositorio contiene el prototipo desarrollado como **Trabajo Final de Más
 Jefes: Heraldo (minijefe, minuto 5) y Ojo de la tormenta (jefe final, minuto 15).
 
 El Heraldo persigue al jugador y cada 8 s alterna dos patrones, ambos con aviso: una embestida en línea recta y un anillo de proyectiles que gira entre un anillo y el siguiente. Si no se le derrota en 5 minutos, huye y se desvanece sin dar nada. Al derrotarlo, la partida se pausa para elegir una carta rara.
+
+**Gemas (6)**
+
+Mejorar carta ofrece tres gemas al azar (se pueden refrescar pagando oro) y, al elegir una, todo el mazo que la admite. La gema se engarza en una copia concreta y sustituye a la que tuviera; las cartas de poder no admiten gemas.
+
+| Gema | Efecto | Cartas |
+|---|---|---|
+| Filo | +25 % de daño. | Con daño |
+| Ligereza | −20 % de coste. | Con coste |
+| Amplitud | +30 % de área o alcance. | Con área, arco o alcance |
+| Perforación | Atraviesa un enemigo más, que recibe el 50 % del daño. | De proyectil |
+| Resonancia | 50 % de probabilidad de lanzarse dos veces. | Con daño |
+| Prioridad: más vida | Apunta al enemigo con más vida. | Con objetivo |
 
 ---
 
@@ -138,7 +151,8 @@ Solo en el editor y en *development build*.
 | F10 | Reciclar todos los enemigos |
 | Mayús+F10 | Dejar 5 s al límite del jefe actual |
 | F11 | Grabar tiempos de fotograma |
-| F12 | Abrir la tienda con Eliminar carta |
+| F12 | Abrir la subida del nivel actual con Eliminar carta al final |
+| Mayús+F12 | Abrir Mejorar carta del nivel actual |
 | R | Reiniciar la partida |
 
 ---

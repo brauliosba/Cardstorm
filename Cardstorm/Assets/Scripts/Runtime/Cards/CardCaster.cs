@@ -95,6 +95,7 @@ namespace Cardstorm.Cards
             {
                 CastOnce(card.Definition, targeting, modifiers);
                 if (flashes != null && card.Gem != null) flashes.Area(rb.position, repeatFlashRadius, card.Gem.color);
+                RunEvents.RaiseCardRepeated(run != null ? run.Now : Time.timeSinceLevelLoad, card.Definition.id);
             }
         }
 

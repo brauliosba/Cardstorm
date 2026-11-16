@@ -6,8 +6,7 @@ using UnityEngine.UI;
 
 namespace Cardstorm.UI
 {
-    // Una carta del mazo en la pantalla de eliminar, con las copias que hay («×4»).
-    // Si no se puede quitar, se atenúa con un velo y deja de poder pulsarse.
+    // Una carta del mazo en las listas de eliminar.
     [RequireComponent(typeof(Button))]
     public class RemovalEntryView : MonoBehaviour
     {
@@ -19,8 +18,10 @@ namespace Cardstorm.UI
         [SerializeField] TMP_Text countText;
         [SerializeField] TMP_Text typeText;
         [SerializeField] TMP_Text costText;
-        [Tooltip("Imagen oscura sobre la carta cuando no se puede eliminar.")]
+        [Tooltip("Imagen oscura sobre la carta cuando no se puede elegir.")]
         [SerializeField] Image veil;
+        [Tooltip("Rombo del color de la gema; oculto si la copia no tiene.")]
+        [SerializeField] Image gemBadge;
 
         Button button;
         Tween wobble;
@@ -35,10 +36,12 @@ namespace Cardstorm.UI
             transform.localRotation = Quaternion.identity;
         }
 
-        public void Show(CardDefinition card, int count, bool allowed)
+        public void Show(RemovalEntry entry)
         {
             gameObject.SetActive(true);
 
+            var card = entry.Card;
+            var gem = entry.Gem;
             Color color = CardPalette.For(card.type);
             if (border != null) border.color = color;
             if (icon != null)
@@ -48,18 +51,24 @@ namespace Cardstorm.UI
                 icon.color = color;
             }
             nameText.text = card.displayName;
-            countText.SetText("×{0}", count);
+            countText.SetText("×{0}", entry.Count);
             if (typeText != null)
             {
-                typeText.text = HudColors.TypeName(card.type);
+                typeText.text = !string.IsNullOrEmpty(entry.Note) ? entry.Note : HudColors.TypeLine(card.type, gem);
                 typeText.color = color;
             }
-            if (costText != null) costText.text = HudColors.CostLabel(card.cost);
+            if (costText != null)
+                costText.text = HudColors.CostLabel(entry.Instance != null ? entry.Instance.Cost : card.cost);
+            if (gemBadge != null)
+            {
+                gemBadge.gameObject.SetActive(gem != null);
+                if (gem != null) gemBadge.color = gem.color;
+            }
 
-            Button.interactable = allowed;
+            Button.interactable = entry.Allowed;
             if (veil != null)
             {
-                veil.gameObject.SetActive(!allowed);
+                veil.gameObject.SetActive(!entry.Allowed);
                 var c = veil.color;
                 c.a = BlockedVeil;
                 veil.color = c;
