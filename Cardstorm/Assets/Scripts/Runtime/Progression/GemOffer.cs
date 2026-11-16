@@ -10,6 +10,7 @@ namespace Cardstorm.Progression
         readonly RunState state;
         readonly List<TGem> catalog = new();
         readonly TGem[] slots = new TGem[SlotCount];
+        readonly List<string> rolledIds = new(SlotCount);
 
         public GemOffer(IEnumerable<TGem> gems, RunState state)
         {
@@ -35,7 +36,7 @@ namespace Cardstorm.Progression
         {
             Level = level;
             Refreshes = 0;
-            Roll();
+            Roll(time);
             RunEvents.RaiseGemsOffered(time, level);
         }
 
@@ -45,7 +46,7 @@ namespace Cardstorm.Progression
             if (!state.TrySpendGold(price)) return false;
 
             Refreshes++;
-            Roll();
+            Roll(time);
 
             RunEvents.RaiseGemsRefreshed(time, price);
             RunEvents.RaiseGoldSpent(time, price, SpendReason.GemRefresh);
@@ -53,7 +54,7 @@ namespace Cardstorm.Progression
         }
 
         // Fisher-Yates parcial: las primeras posiciones quedan sorteadas.
-        void Roll()
+        void Roll(double time)
         {
             int count = System.Math.Min(SlotCount, catalog.Count);
             for (int i = 0; i < SlotCount; i++)
@@ -66,6 +67,10 @@ namespace Cardstorm.Progression
                 }
                 else slots[i] = null;
             }
+
+            rolledIds.Clear();
+            foreach (var gem in slots) rolledIds.Add(gem?.Id);
+            RunEvents.RaiseGemsRolled(time, rolledIds);
         }
     }
 }

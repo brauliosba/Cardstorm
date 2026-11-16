@@ -20,6 +20,7 @@ namespace Cardstorm.Progression
         readonly RunState state;
         readonly ShopSlot<TItem>[] slots = new ShopSlot<TItem>[SlotCount];
         readonly List<TItem> rolled = new();
+        readonly List<string> rolledIds = new(SlotCount);
 
         public ShopOffer(ShopRoller<TItem> roller, RunState state)
         {
@@ -87,6 +88,10 @@ namespace Cardstorm.Progression
             rolled.Clear();
             roller.RollPowers(state, rolled);
             Fill(ShopRoller<TItem>.ActionSlots, ShopRoller<TItem>.PowerSlots);
+
+            rolledIds.Clear();
+            foreach (var slot in slots) rolledIds.Add(slot.Item?.Id);
+            RunEvents.RaiseCardsRolled(time, rolledIds);
 
             UpdatePrices();
         }

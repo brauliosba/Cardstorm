@@ -41,7 +41,7 @@ namespace Cardstorm.Cards.Effects
             {
                 float angle = count > 1 ? -spreadDegrees * 0.5f + spreadDegrees * i / (count - 1) : 0f;
                 Vector2 dir = Quaternion.Euler(0f, 0f, angle) * context.Aim;
-                projectiles.Launch(context.Origin, dir, speed, maxDistance, radius, finalDamage, finalPierce, color,
+                projectiles.Launch(context.Origin, dir, speed, maxDistance, radius, finalDamage, finalPierce, color, context.Source,
                     pierce + 1, m.extraPierceDamage);
             }
         }

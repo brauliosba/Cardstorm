@@ -4,6 +4,8 @@ using UnityEngine;
 
 namespace Cardstorm.Player
 {
+    public enum HitKind { Contact, Projectile }
+
     [RequireComponent(typeof(CircleCollider2D))]
     public class PlayerHealth : MonoBehaviour
     {
@@ -46,6 +48,14 @@ namespace Cardstorm.Player
 
         // Vida por segundo (carta Regeneración). Avanza con Time.deltaTime, así que se para con la pausa.
         public float RegenPerSecond { get; set; }
+
+        // Último golpe que quitó vida: id del enemigo y tipo. null si nadie le ha dado.
+        public string LastHitSourceId { get; private set; }
+        public HitKind LastHitKind { get; private set; }
+
+        // «rondador:contacto», «tirador:proyectil»…
+        public string LastDamageCause => LastHitSourceId == null ? null
+            : LastHitSourceId + (LastHitKind == HitKind.Projectile ? ":proyectil" : ":contacto");
         public bool IsDead { get; private set; }
 
         // Truco de depuración (F6)
@@ -87,7 +97,7 @@ namespace Cardstorm.Player
                 // Sin daño (un jefe que huye) no cuenta como golpe.
                 if (contacts[i].TryGetComponent(out IContactDamageSource source) && source.ContactDamage > 0f)
                 {
-                    TakeDamage(source.ContactDamage);
+                    TakeDamage(source.ContactDamage, source.SourceId, HitKind.Contact);
                     break;  // Un solo golpe por contacto; después, invulnerabilidad.
                 }
             }
@@ -103,7 +113,7 @@ namespace Cardstorm.Player
                 blinkRenderers[i].enabled = visible;
         }
 
-        public void TakeDamage(float amount)
+        public void TakeDamage(float amount, string sourceId = null, HitKind kind = HitKind.Contact)
         {
             if (IsDead || IsInvulnerable || IsShieldGuarded || GodMode || amount <= 0f) return;
 
@@ -122,6 +132,11 @@ namespace Cardstorm.Player
             }
 
             Current = Mathf.Max(0f, Current - amount);
+            if (sourceId != null)
+            {
+                LastHitSourceId = sourceId;
+                LastHitKind = kind;
+            }
             invulnerableUntil = Time.time + invulnerabilityTime;
             Damaged?.Invoke(amount);
 
@@ -157,6 +172,7 @@ namespace Cardstorm.Player
         {
             Current = MaxHealth;
             IsDead = false;
+            LastHitSourceId = null;
             invulnerableUntil = 0f;
             shieldGuardUntil = 0f;
             shield.Clear();

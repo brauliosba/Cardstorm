@@ -168,6 +168,25 @@ Las claves de cartas, gemas y enemigos salen del `id` de su asset (`card.disparo
 
 `Assets/Localization/Google Sheets Service.asset` guarda la API key y no está en el repositorio. Para hacer *Pull* en otra máquina, créalo con ese nombre (*Assets › Create › Localization › Google Sheets Service*, autenticación **API Key**) y asígnalo en la extensión de las dos tablas.
 
+## Telemetría
+
+Cada partida se graba en local, sin conexión ni datos personales, en:
+
+```
+%USERPROFILE%\AppData\LocalLow\DefaultCompany\Cardstorm\telemetria\
+```
+
+Son cuatro CSV por partida (`resumen`, `eventos`, `muestras` cada 15 s y `cartas`), con el nombre `<código>_<fecha>_<hora>_<fichero>.csv`. El código de jugador son 4 caracteres al azar que se guardan entre partidas; se ve en el menú de pausa y en la pantalla final, que también tiene un botón para abrir la carpeta. La grabación está activa también en la build normal; se apaga desmarcando `TelemetryRecorder` en el objeto `Telemetry` de la escena.
+
+Para juntar todas las partidas y comprobar los criterios de equilibrado:
+
+```
+cd Tools\Telemetry
+python analizar.py <carpeta_con_csv> --modelo ..\..\..\cardstorm_equilibrado.xlsx
+```
+
+Genera `telemetria_resumen.xlsx`. Las partidas con teclas de depuración se descartan salvo con `--incluir-trucos`. Más detalles en [`Tools/Telemetry/README.md`](Tools/Telemetry/README.md).
+
 ---
 
 ## Estructura del repositorio
@@ -178,6 +197,8 @@ Cardstorm/
 │   ├── Assets/           Escenas, scripts, prefabs y datos (ScriptableObjects)
 │   ├── Packages/         Dependencias del proyecto
 │   └── ProjectSettings/  Configuración del proyecto
+├── Tools/
+│   └── Telemetry/        Script de análisis de las partidas (Python)
 ├── .gitattributes        Reglas de Git LFS
 ├── LICENSE
 └── README.md

@@ -1,3 +1,4 @@
+using Cardstorm.Core;
 using UnityEngine;
 
 namespace Cardstorm.Combat
@@ -19,6 +20,8 @@ namespace Cardstorm.Combat
         internal float ProjectileRadius { get; private set; }
         internal float ProjectileDistance { get; private set; }
         internal Color Color => color;
+        // Carta que la puso: sus proyectiles le atribuyen el daño.
+        internal DamageSource Source { get; private set; }
         // Tiempo que lleva desvaneciéndose; negativo mientras está activa.
         internal float Fade { get; set; }
         // Orden de colocación, para reciclar la más antigua.
@@ -36,7 +39,7 @@ namespace Cardstorm.Combat
 
         // Reinicia todo el estado: la instancia viene del pool. Los valores quedan fijos hasta que acaba.
         internal void Place(Vector2 position, float duration, float fireInterval, float damage, float range,
-            float projectileSpeed, float projectileRadius, float projectileDistance, Color color, int order)
+            float projectileSpeed, float projectileRadius, float projectileDistance, Color color, in DamageSource source, int order)
         {
             Position = position;
             Remaining = duration;
@@ -49,6 +52,7 @@ namespace Cardstorm.Combat
             ProjectileDistance = projectileDistance;
             Fade = -1f;
             Order = order;
+            Source = source;
 
             this.color = color;
             Renderer.color = color;

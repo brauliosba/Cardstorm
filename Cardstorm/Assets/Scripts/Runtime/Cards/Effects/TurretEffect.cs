@@ -30,7 +30,7 @@ namespace Cardstorm.Cards.Effects
 
             // El daño se fija al ponerla: una Furia posterior no la cambia.
             caster.Turrets.Place(context.Origin, duration, fireInterval, damage * context.DamageMultiplier, range * context.AreaMultiplier,
-                projectileSpeed, projectileRadius, projectileDistance, CardPalette.For(context.Card.type));
+                projectileSpeed, projectileRadius, projectileDistance, CardPalette.For(context.Card.type), context.Source);
         }
     }
 }

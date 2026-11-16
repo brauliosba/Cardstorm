@@ -14,7 +14,7 @@ namespace Cardstorm.Combat
 
         // OverlapCircle ya cuenta a los enemigos cuyo borde entra en el círculo, también a los grandes.
         // Devuelve los enemigos alcanzados.
-        public static int Apply(Vector2 center, float radius, float damage, float slowFactor = 1f, float slowDuration = 0f)
+        public static int Apply(Vector2 center, float radius, float damage, in DamageSource source, float slowFactor = 1f, float slowDuration = 0f)
         {
             if (!filterReady)
             {
@@ -34,7 +34,7 @@ namespace Cardstorm.Combat
 
                 // Primero la ralentización: si el golpe lo mata, ya no importa.
                 if (slows) enemy.ApplySlow(slowFactor, slowDuration);
-                enemy.TakeDamage(damage);
+                enemy.TakeDamage(damage, in source);
                 hits++;
             }
 

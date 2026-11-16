@@ -36,11 +36,11 @@ namespace Cardstorm.Cards.Effects
 
             if (delay > 0f && caster.Strikes != null)
             {
-                caster.Strikes.Schedule(point, finalRadius, finalDamage, delay, color, slowFactor, slowDuration);
+                caster.Strikes.Schedule(point, finalRadius, finalDamage, delay, color, context.Source, slowFactor, slowDuration);
                 return;
             }
 
-            AreaDamage.Apply(point, finalRadius, finalDamage, slowFactor, slowDuration);
+            AreaDamage.Apply(point, finalRadius, finalDamage, context.Source, slowFactor, slowDuration);
             if (caster.Flashes != null) caster.Flashes.Area(point, finalRadius, color);
         }
     }

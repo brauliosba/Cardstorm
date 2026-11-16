@@ -49,6 +49,8 @@ namespace Cardstorm.Enemies
 
         public float ContactDamage => Definition != null && !IsRetreating ? Definition.contactDamage : 0f;
 
+        public string SourceId => Definition != null ? Definition.id : null;
+
         public float Radius => Definition != null ? Definition.radius : 0.5f;
 
         // Estado que gestiona EnemyManager.
@@ -162,12 +164,16 @@ namespace Cardstorm.Enemies
             ApplyBaseColor();
         }
 
-        public void TakeDamage(float amount)
+        public void TakeDamage(float amount, in DamageSource source)
         {
             if (!IsAlive || IsRetreating || amount <= 0f) return;
 
+            float dealt = Mathf.Min(amount, Health);
             Health -= amount;
-            if (Health <= 0f)
+            bool killed = Health <= 0f;
+            DamageEvents.RaiseEnemyDamaged(in source, dealt, amount - dealt, killed);
+
+            if (killed)
             {
                 Health = 0f;
                 IsAlive = false;

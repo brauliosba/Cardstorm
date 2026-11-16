@@ -118,43 +118,68 @@ namespace Cardstorm.DebugTools
             if (k == null) return;
 
             if (k.f1Key.wasPressedThisFrame && overlay != null) overlay.Visible = !overlay.Visible;
-            if (k.f2Key.wasPressedThisFrame && clock != null) clock.CycleTimeScale();
-            if (k.f3Key.wasPressedThisFrame) JumpToNextEvent();
+            if (k.f2Key.wasPressedThisFrame && clock != null)
+            {
+                clock.CycleTimeScale();
+                Used("F2");
+            }
+            if (k.f3Key.wasPressedThisFrame)
+            {
+                JumpToNextEvent();
+                Used("F3");
+            }
             if (k.f4Key.wasPressedThisFrame)
             {
+                Used(k.shiftKey.isPressed ? "Mayús+F4" : "F4");
                 if (k.shiftKey.isPressed) SpawnChargeEnemy();
                 else if (spawner != null) TogglePauseSpawning();
             }
             if (k.f5Key.wasPressedThisFrame)
             {
+                Used(k.shiftKey.isPressed ? "Mayús+F5" : "F5");
                 if (k.shiftKey.isPressed) DamageBoss();
                 else KillNearby();
             }
-            if (k.f6Key.wasPressedThisFrame && player != null) ToggleGodMode();
+            if (k.f6Key.wasPressedThisFrame && player != null)
+            {
+                ToggleGodMode();
+                Used("F6");
+            }
             if (k.f7Key.wasPressedThisFrame)
             {
+                Used(k.shiftKey.isPressed ? "Mayús+F7" : "F7");
                 if (k.shiftKey.isPressed) AddDebugCards();
                 else ToggleInfiniteEnergy();
             }
             if (k.f8Key.wasPressedThisFrame)
             {
+                Used(k.shiftKey.isPressed ? "Mayús+F8" : "F8");
                 if (k.shiftKey.isPressed) AddGold();
                 else LevelUp();
             }
-            if (k.f9Key.wasPressedThisFrame) LoadTest();
+            if (k.f9Key.wasPressedThisFrame)
+            {
+                LoadTest();
+                Used("F9");
+            }
             if (k.f10Key.wasPressedThisFrame)
             {
+                Used(k.shiftKey.isPressed ? "Mayús+F10" : "F10");
                 if (k.shiftKey.isPressed) ShortenBossTime();
                 else if (enemies != null) DespawnAll();
             }
             if (k.f11Key.wasPressedThisFrame && recorder != null) recorder.StartRecording();
             if (k.f12Key.wasPressedThisFrame)
             {
+                Used(k.shiftKey.isPressed ? "Mayús+F12" : "F12");
                 if (k.shiftKey.isPressed) OpenGems();
                 else ForceRemoval();
             }
             if (k.rKey.wasPressedThisFrame) Restart();
         }
+
+        // F1 (panel), F11 (rendimiento) y R no cambian la partida y no cuentan.
+        void Used(string key) => RunEvents.RaiseCheatUsed(clock != null ? clock.Elapsed : Time.timeSinceLevelLoad, key);
 
         // F3
         void JumpToNextEvent()
@@ -194,7 +219,7 @@ namespace Cardstorm.DebugTools
         {
             var boss = bosses != null ? bosses.Current : null;
             if (boss == null) return;
-            boss.TakeDamage(boss.MaxHealth * 0.25f);
+            boss.TakeDamage(boss.MaxHealth * 0.25f, DamageSource.Debug);
             Debug.Log($"[DebugCheats] {bosses.CurrentName}: {Mathf.Max(0f, boss.Health):0} de vida");
         }
 
@@ -213,7 +238,7 @@ namespace Cardstorm.DebugTools
                 if (i >= active.Count) continue;
                 var enemy = active[i];
                 if (((Vector2)enemy.transform.position - center).sqrMagnitude > radiusSqr) continue;
-                enemy.TakeDamage(enemy.Health);
+                enemy.TakeDamage(enemy.Health, DamageSource.Debug);
                 killed++;
             }
             Debug.Log($"[DebugCheats] {killed} enemigos eliminados · instancias del pool: {(enemies.Pool != null ? enemies.Pool.InstanceCount : -1)}");

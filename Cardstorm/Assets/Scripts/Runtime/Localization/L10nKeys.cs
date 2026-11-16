@@ -38,6 +38,9 @@ namespace Cardstorm.Localization
         public const string EndHint = "ui.end.hint";
         public const string PauseHint = "ui.pause.hint";
 
+        public const string TelemetryCode = "ui.telemetry.code";
+        public const string TelemetryOpenFolder = "ui.telemetry.open_folder";
+
         public const string StatCapped = "ui.stat.capped";
         public const string StatPercent = "ui.stat.percent";
         public const string StatPerTen = "ui.stat.per_ten";

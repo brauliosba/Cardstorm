@@ -1,6 +1,7 @@
 using Cardstorm.Core;
 using Cardstorm.Localization;
 using Cardstorm.Player;
+using Cardstorm.Telemetry;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -25,6 +26,12 @@ namespace Cardstorm.UI
         [Tooltip("Opcional. Texto con la indicación para reiniciar.")]
         [SerializeField] TMP_Text hintText;
 
+        [Tooltip("Opcional. Código de jugador para el cuestionario.")]
+        [SerializeField] TMP_Text codeText;
+        [Tooltip("Opcional. Abre la carpeta de telemetría.")]
+        [SerializeField] Button openFolderButton;
+        [SerializeField] TelemetryRecorder telemetry;
+
         [Tooltip("Segundos del fundido al abrir, en tiempo real.")]
         [SerializeField, Min(0f)] float fadeTime = 0.3f;
 
@@ -44,12 +51,20 @@ namespace Cardstorm.UI
             group.interactable = false;
             group.blocksRaycasts = false;
             if (restartButton != null) restartButton.onClick.AddListener(SceneReload.ReloadActive);
+            if (telemetry == null) telemetry = FindFirstObjectByType<TelemetryRecorder>();
+            if (openFolderButton != null) openFolderButton.onClick.AddListener(OpenFolder);
         }
 
         protected virtual void OnDestroy()
         {
             fade?.Kill();
             if (restartButton != null) restartButton.onClick.RemoveListener(SceneReload.ReloadActive);
+            if (openFolderButton != null) openFolderButton.onClick.RemoveListener(OpenFolder);
+        }
+
+        void OpenFolder()
+        {
+            if (telemetry != null) TelemetryUi.OpenFolder(telemetry);
         }
 
         protected void Show(double time, int level)
@@ -64,6 +79,8 @@ namespace Cardstorm.UI
             if (timeText != null) timeText.text = L10n.Format(L10nKeys.EndTime, GameClock.Format(time));
             if (levelText != null) levelText.SetText(L10n.Get(L10nKeys.Level), level);
             if (hintText != null) hintText.text = L10n.Get(L10nKeys.EndHint);
+            TelemetryUi.ShowCode(codeText, telemetry);
+            if (openFolderButton != null) openFolderButton.gameObject.SetActive(TelemetryUi.IsOn(telemetry));
 
             group.interactable = true;
             group.blocksRaycasts = true;

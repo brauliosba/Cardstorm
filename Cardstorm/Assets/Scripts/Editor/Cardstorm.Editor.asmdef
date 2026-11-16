@@ -5,7 +5,8 @@
         "Cardstorm.Runtime",
         "Unity.Cinemachine",
         "UnityEngine.UI",
-        "Unity.TextMeshPro"
+        "Unity.TextMeshPro",
+        "Unity.Localization"
     ],
     "includePlatforms": [
         "Editor"

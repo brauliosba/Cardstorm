@@ -1,3 +1,4 @@
+using Cardstorm.Core;
 using Cardstorm.Enemies;
 using UnityEngine;
 
@@ -6,11 +7,13 @@ namespace Cardstorm.Cards
     // Lo que necesita un efecto para aplicarse: quién la lanza, desde dónde, hacia dónde y con qué gema.
     public readonly struct CardContext
     {
-        public CardContext(CardCaster caster, CardDefinition card, in GemModifiers modifiers, Vector2 origin, Vector2 aim, Enemy target, Vector2 targetPoint)
+        public CardContext(CardCaster caster, CardDefinition card, in GemModifiers modifiers, in DamageSource source, Vector2 origin, Vector2 aim,
+            Enemy target, Vector2 targetPoint)
         {
             Caster = caster;
             Card = card;
             Modifiers = modifiers;
+            Source = source;
             Origin = origin;
             Aim = aim;
             Target = target;
@@ -22,6 +25,9 @@ namespace Cardstorm.Cards
 
         // Los de la gema de la copia, o None.
         public GemModifiers Modifiers { get; }
+
+        // La carta y la gema, para atribuir el daño.
+        public DamageSource Source { get; }
 
         public Vector2 Origin { get; }
 

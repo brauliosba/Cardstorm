@@ -259,6 +259,14 @@ MonoBehaviour:
     m_Key: ui.fmt.decimal
     m_Metadata:
       m_Items: []
+  - m_Id: 2642271932473
+    m_Key: ui.telemetry.code
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932474
+    m_Key: ui.telemetry.open_folder
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -50,7 +50,7 @@ namespace Cardstorm.Cards.Effects
                 if (Vector2.Distance(origin, pos) - enemy.Radius > finalRange) continue;
                 if (!Targeting.InArc(origin, context.Aim, pos, finalArc)) continue;
 
-                enemy.TakeDamage(finalDamage);
+                enemy.TakeDamage(finalDamage, context.Source);
             }
 
             Array.Clear(Buffer, 0, count);

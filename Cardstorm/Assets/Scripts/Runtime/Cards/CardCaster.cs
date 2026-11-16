@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Cardstorm.Combat;
+using Cardstorm.Core;
 using Cardstorm.Enemies;
 using Cardstorm.Player;
 using Cardstorm.Progression;
@@ -78,7 +79,7 @@ namespace Cardstorm.Cards
         public void Cast(CardDefinition card)
         {
             if (card == null) return;
-            CastOnce(card, card.targeting, GemModifiers.None);
+            CastOnce(card, card.targeting, GemModifiers.None, null);
         }
 
         // La copia lleva la gema: su prioridad y sus modificadores pasan a los efectos.
@@ -88,18 +89,18 @@ namespace Cardstorm.Cards
 
             var modifiers = card.Modifiers;
             var targeting = card.Targeting;
-            CastOnce(card.Definition, targeting, modifiers);
+            CastOnce(card.Definition, targeting, modifiers, card.Gem);
 
             // Resonancia: otra vez, con objetivo nuevo y sin gastar energía.
             if (modifiers.repeatChance > 0f && GemRules.Repeats(modifiers, Random.NextDouble()))
             {
-                CastOnce(card.Definition, targeting, modifiers);
+                CastOnce(card.Definition, targeting, modifiers, card.Gem);
                 if (flashes != null && card.Gem != null) flashes.Area(rb.position, repeatFlashRadius, card.Gem.color);
-                RunEvents.RaiseCardRepeated(run != null ? run.Now : Time.timeSinceLevelLoad, card.Definition.id);
+                RunEvents.RaiseCardRepeated(run != null ? run.Now : Time.timeSinceLevelLoad, card.Definition.id, card.Gem != null ? card.Gem.id : null);
             }
         }
 
-        void CastOnce(CardDefinition card, TargetPriority targeting, in GemModifiers modifiers)
+        void CastOnce(CardDefinition card, TargetPriority targeting, in GemModifiers modifiers, GemDefinition gem)
         {
             Vector2 origin = rb.position;
             Enemy target = targeting == TargetPriority.MoveDirection ? null : FindTarget(card, targeting, origin);
@@ -112,7 +113,8 @@ namespace Cardstorm.Cards
             }
 
             Vector2 targetPoint = target != null ? target.Body.position : origin + aim * card.targetRange;
-            var context = new CardContext(this, card, in modifiers, origin, aim, target, targetPoint);
+            var source = new DamageSource(card.id, gem != null ? gem.id : null);
+            var context = new CardContext(this, card, in modifiers, in source, origin, aim, target, targetPoint);
 
             var effects = card.effects;
             for (int i = 0; i < effects.Count; i++)

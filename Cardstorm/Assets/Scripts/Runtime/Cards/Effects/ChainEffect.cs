@@ -58,7 +58,7 @@ namespace Cardstorm.Cards.Effects
             {
                 Vector2 to = Positions[Hits[i]];
                 if (flashes != null) flashes.Beam(from, to, color);
-                HitEnemies[i].TakeDamage(finalDamage);
+                HitEnemies[i].TakeDamage(finalDamage, context.Source);
                 from = to;
             }
 

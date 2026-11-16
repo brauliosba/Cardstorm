@@ -44,14 +44,14 @@ namespace Cardstorm.Combat
         }
 
         public void Place(Vector2 position, float duration, float fireInterval, float damage, float range,
-            float projectileSpeed, float projectileRadius, float projectileDistance, Color color)
+            float projectileSpeed, float projectileRadius, float projectileDistance, Color color, in DamageSource source)
         {
             if (duration <= 0f) return;
             if (free.Count == 0) Release(Oldest());
 
             var turret = free.Pop();
             turret.Place(position, duration, fireInterval, damage, range,
-                projectileSpeed, projectileRadius, projectileDistance, color, nextOrder++);
+                projectileSpeed, projectileRadius, projectileDistance, color, in source, nextOrder++);
             turret.ActiveIndex = active.Count;
             active.Add(turret);
         }
@@ -106,7 +106,7 @@ namespace Cardstorm.Combat
             Vector2 dir = target.Body.position - t.Position;
             if (projectiles != null)
                 projectiles.Launch(t.Position, dir, t.ProjectileSpeed, t.ProjectileDistance,
-                    t.ProjectileRadius, t.Damage, 0, t.Color);
+                    t.ProjectileRadius, t.Damage, 0, t.Color, t.Source);
             t.FireTimer += t.FireInterval;
             return true;
         }

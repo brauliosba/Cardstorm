@@ -237,7 +237,7 @@ namespace Cardstorm.Enemies
                 float angle = start + i * step;
                 Vector2 dir = new(Mathf.Cos(angle), Mathf.Sin(angle));
                 projectiles.LaunchHostile(pos + dir * (def.radius + def.ringRadius), dir, def.ringSpeed,
-                    def.ringRange, def.ringRadius, def.ringDamage, def.ringColor);
+                    def.ringRange, def.ringRadius, def.ringDamage, def.ringColor, def.id);
             }
         }
 
@@ -309,7 +309,7 @@ namespace Cardstorm.Enemies
                 {
                     Vector2 origin = pos + aim * (def.radius + def.projectileRadius);
                     projectiles.LaunchHostile(origin, aim, def.projectileSpeed, def.projectileRange,
-                        def.projectileRadius, def.projectileDamage, def.projectileColor);
+                        def.projectileRadius, def.projectileDamage, def.projectileColor, def.id);
                     enemy.FireTimer = def.fireInterval;
                 }
                 else

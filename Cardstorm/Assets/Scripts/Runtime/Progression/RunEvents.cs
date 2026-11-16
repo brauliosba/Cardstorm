@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Cardstorm.Progression
 {
@@ -45,8 +46,17 @@ namespace Cardstorm.Progression
         // Tiempo, nivel, opción elegida en la subida.
         public static event Action<double, int, LevelUpOption> LevelUpChoice;
 
-        // Tiempo, id de la carta que Resonancia ha lanzado otra vez.
-        public static event Action<double, string> CardRepeated;
+        // Tiempo, id de la carta que Resonancia ha lanzado otra vez, id de su gema.
+        public static event Action<double, string, string> CardRepeated;
+
+        // Tiempo, ids de las cartas sorteadas en la tienda (null en las ranuras vacías). La lista se reutiliza: copiarla si se guarda.
+        public static event Action<double, IReadOnlyList<string>> CardsRolled;
+
+        // Tiempo, ids de las gemas sorteadas. La lista se reutiliza.
+        public static event Action<double, IReadOnlyList<string>> GemsRolled;
+
+        // Tiempo, tecla de depuración usada.
+        public static event Action<double, string> CheatUsed;
 
         // Tiempo, oro gastado, motivo.
         public static event Action<double, int, SpendReason> GoldSpent;
@@ -90,7 +100,13 @@ namespace Cardstorm.Progression
         public static void RaiseLevelUpChoice(double time, int level, LevelUpOption option) =>
             LevelUpChoice?.Invoke(time, level, option);
 
-        public static void RaiseCardRepeated(double time, string cardId) => CardRepeated?.Invoke(time, cardId);
+        public static void RaiseCardRepeated(double time, string cardId, string gemId) => CardRepeated?.Invoke(time, cardId, gemId);
+
+        public static void RaiseCardsRolled(double time, IReadOnlyList<string> ids) => CardsRolled?.Invoke(time, ids);
+
+        public static void RaiseGemsRolled(double time, IReadOnlyList<string> ids) => GemsRolled?.Invoke(time, ids);
+
+        public static void RaiseCheatUsed(double time, string key) => CheatUsed?.Invoke(time, key);
 
         public static void RaiseGoldSpent(double time, int amount, SpendReason reason) => GoldSpent?.Invoke(time, amount, reason);
 

@@ -22,6 +22,7 @@ namespace Cardstorm.Combat
             public float Remaining;
             public Color Color;
             public int TelegraphId;
+            public DamageSource Source;
         }
 
         readonly List<Strike> pending = new(32);
@@ -34,12 +35,12 @@ namespace Cardstorm.Combat
             if (flashes == null) flashes = FindFirstObjectByType<FlashManager>();
         }
 
-        public void Schedule(Vector2 center, float radius, float damage, float delay, Color color,
+        public void Schedule(Vector2 center, float radius, float damage, float delay, Color color, in DamageSource source,
             float slowFactor = 1f, float slowDuration = 0f)
         {
             if (delay <= 0f)
             {
-                Detonate(center, radius, damage, slowFactor, slowDuration, color);
+                Detonate(center, radius, damage, slowFactor, slowDuration, color, in source);
                 return;
             }
 
@@ -48,13 +49,13 @@ namespace Cardstorm.Combat
             {
                 Center = center, Radius = radius, Damage = damage,
                 SlowFactor = slowFactor, SlowDuration = slowDuration,
-                Remaining = delay, Color = color, TelegraphId = telegraph,
+                Remaining = delay, Color = color, TelegraphId = telegraph, Source = source,
             });
         }
 
-        void Detonate(Vector2 center, float radius, float damage, float slowFactor, float slowDuration, Color color)
+        void Detonate(Vector2 center, float radius, float damage, float slowFactor, float slowDuration, Color color, in DamageSource source)
         {
-            AreaDamage.Apply(center, radius, damage, slowFactor, slowDuration);
+            AreaDamage.Apply(center, radius, damage, in source, slowFactor, slowDuration);
             if (flashes != null) flashes.Area(center, radius, color);
         }
 
@@ -87,7 +88,7 @@ namespace Cardstorm.Combat
 
                 // El aviso acaba a la vez; se cancela por si el redondeo lo deja un fotograma más.
                 if (flashes != null) flashes.Cancel(s.TelegraphId);
-                Detonate(s.Center, s.Radius, s.Damage, s.SlowFactor, s.SlowDuration, s.Color);
+                Detonate(s.Center, s.Radius, s.Damage, s.SlowFactor, s.SlowDuration, s.Color, in s.Source);
             }
         }
     }

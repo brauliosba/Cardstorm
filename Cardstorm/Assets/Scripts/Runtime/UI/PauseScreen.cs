@@ -2,6 +2,7 @@ using Cardstorm.Core;
 using Cardstorm.Localization;
 using Cardstorm.Player;
 using Cardstorm.Progression;
+using Cardstorm.Telemetry;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -32,6 +33,9 @@ namespace Cardstorm.UI
         [Tooltip("Cierra el juego. En el editor sale del modo Play.")]
         [SerializeField] Button quitButton;
         [SerializeField] TMP_Text hintText;
+        [Tooltip("Código de jugador, para copiarlo sin acabar la partida.")]
+        [SerializeField] TMP_Text codeText;
+        [SerializeField] TelemetryRecorder telemetry;
 
         [Tooltip("Segundos del fundido, en tiempo real.")]
         [SerializeField, Min(0f)] float fadeTime = 0.15f;
@@ -58,14 +62,15 @@ namespace Cardstorm.UI
             if (levelUp == null) levelUp = FindFirstObjectByType<LevelUpController>();
             if (victory == null) victory = FindFirstObjectByType<VictoryScreen>(FindObjectsInactive.Include);
             if (defeat == null) defeat = FindFirstObjectByType<DefeatScreen>(FindObjectsInactive.Include);
+            if (telemetry == null) telemetry = FindFirstObjectByType<TelemetryRecorder>();
             if (!root.TryGetComponent(out group)) group = root.AddComponent<CanvasGroup>();
             root.SetActive(true);
             group.alpha = 0f;
             group.interactable = false;
             group.blocksRaycasts = false;
 
-            ShowHint();
-            L10n.Changed += ShowHint;
+            ShowTexts();
+            L10n.Changed += ShowTexts;
             if (resumeButton != null) resumeButton.onClick.AddListener(Resume);
             if (restartButton != null) restartButton.onClick.AddListener(SceneReload.ReloadActive);
             if (quitButton != null) quitButton.onClick.AddListener(Quit);
@@ -84,16 +89,17 @@ namespace Cardstorm.UI
         void OnDestroy()
         {
             fade?.Kill();
-            L10n.Changed -= ShowHint;
+            L10n.Changed -= ShowTexts;
             if (resumeButton != null) resumeButton.onClick.RemoveListener(Resume);
             if (restartButton != null) restartButton.onClick.RemoveListener(SceneReload.ReloadActive);
             if (quitButton != null) quitButton.onClick.RemoveListener(Quit);
         }
 
         // Se ve mientras se cambia de idioma, así que se reescribe en el momento.
-        void ShowHint()
+        void ShowTexts()
         {
             if (hintText != null) hintText.text = L10n.Get(L10nKeys.PauseHint);
+            TelemetryUi.ShowCode(codeText, telemetry);
         }
 
         void Update()
@@ -117,6 +123,7 @@ namespace Cardstorm.UI
             if (clock != null) clock.Paused = true;
             previousTimeScale = Time.timeScale;
             Time.timeScale = 0f;
+            ShowTexts();
 
             group.interactable = true;
             group.blocksRaycasts = true;

@@ -262,6 +262,14 @@ MonoBehaviour:
     m_Localized: .
     m_Metadata:
       m_Items: []
+  - m_Id: 2642271932473
+    m_Localized: 'Player code: {0}'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2642271932474
+    m_Localized: Open data folder
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

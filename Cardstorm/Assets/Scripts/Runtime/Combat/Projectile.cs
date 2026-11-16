@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cardstorm.Core;
 using Cardstorm.Enemies;
 using UnityEngine;
 
@@ -26,6 +27,9 @@ namespace Cardstorm.Combat
         internal float ExtraHitDamage { get; private set; }
         // Disparado por un enemigo: daña al jugador en vez de a los enemigos.
         internal bool Hostile { get; private set; }
+        // Carta que lo lanzó, o enemigo que lo disparó si es hostil.
+        internal DamageSource Source { get; private set; }
+        internal string HostileSourceId { get; private set; }
         internal int ActiveIndex { get; set; } = -1;
 
         void Awake()
@@ -34,8 +38,8 @@ namespace Cardstorm.Combat
         }
 
         // Reinicia todo el estado: la instancia viene del pool.
-        internal void Launch(Vector2 origin, Vector2 direction, float speed, float maxDistance, float radius, float damage, int pierce, Color color, bool hostile = false,
-            int fullHits = -1, float extraHitDamage = 1f)
+        internal void Launch(Vector2 origin, Vector2 direction, float speed, float maxDistance, float radius, float damage, int pierce, Color color, bool hostile,
+            int fullHits, float extraHitDamage, in DamageSource source, string hostileSourceId)
         {
             Position = origin;
             Direction = direction;
@@ -48,6 +52,8 @@ namespace Cardstorm.Combat
             FullHits = fullHits < 0 ? pierce + 1 : fullHits;
             ExtraHitDamage = extraHitDamage;
             Hostile = hostile;
+            Source = source;
+            HostileSourceId = hostileSourceId;
             Hit.Clear();
 
             spriteRenderer.color = color;

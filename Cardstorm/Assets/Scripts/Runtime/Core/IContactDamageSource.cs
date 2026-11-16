@@ -4,5 +4,8 @@ namespace Cardstorm.Core
     public interface IContactDamageSource
     {
         float ContactDamage { get; }
+
+        // Id del enemigo, para la causa de la muerte.
+        string SourceId { get; }
     }
 }
