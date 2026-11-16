@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Cardstorm.Localization;
 using Cardstorm.Player;
 using Cardstorm.Progression;
 using DG.Tweening;
@@ -55,11 +56,13 @@ namespace Cardstorm.UI
         void OnEnable()
         {
             if (input != null) input.StatsPressed += Toggle;
+            L10n.Changed += OnLanguageChanged;
         }
 
         void OnDisable()
         {
             if (input != null) input.StatsPressed -= Toggle;
+            L10n.Changed -= OnLanguageChanged;
         }
 
         void OnDestroy()
@@ -93,16 +96,26 @@ namespace Cardstorm.UI
 
         void OnStatChanged(StatType stat) => dirty = true;
 
+        void OnLanguageChanged()
+        {
+            SetNames();
+            dirty = true;
+        }
+
         void BuildRows()
         {
             rows.Add(rowTemplate);
             for (int i = 1; i < StatTypes.Count; i++)
                 rows.Add(Instantiate(rowTemplate, rowTemplate.transform.parent));
             for (int i = 0; i < StatTypes.Count; i++)
-            {
                 rows[i].name = $"Row_{(StatType)i}";
-                rows[i].SetName(StatFormat.Label((StatType)i));
-            }
+            SetNames();
+        }
+
+        void SetNames()
+        {
+            for (int i = 0; i < rows.Count; i++)
+                rows[i].SetName(L10n.StatLabel((StatType)i));
         }
 
         // Solo con el panel abierto y cuando alguna carta de poder ha cambiado algo.
@@ -113,7 +126,7 @@ namespace Cardstorm.UI
             for (int i = 0; i < StatTypes.Count; i++)
             {
                 var stat = (StatType)i;
-                rows[i].SetValue(StatFormat.Value(stat, stats.Value(stat), stats.Base(stat)), stats.IsCapped(stat));
+                rows[i].SetValue(StatFormat.Value(stat, stats.Value(stat), stats.Base(stat), L10n.StatTexts), stats.IsCapped(stat));
             }
         }
 

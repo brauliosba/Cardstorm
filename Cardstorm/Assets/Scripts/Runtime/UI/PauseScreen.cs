@@ -1,4 +1,5 @@
 using Cardstorm.Core;
+using Cardstorm.Localization;
 using Cardstorm.Player;
 using Cardstorm.Progression;
 using DG.Tweening;
@@ -31,7 +32,6 @@ namespace Cardstorm.UI
         [Tooltip("Cierra el juego. En el editor sale del modo Play.")]
         [SerializeField] Button quitButton;
         [SerializeField] TMP_Text hintText;
-        [SerializeField] string hint = "Esc / Start para continuar";
 
         [Tooltip("Segundos del fundido, en tiempo real.")]
         [SerializeField, Min(0f)] float fadeTime = 0.15f;
@@ -64,7 +64,8 @@ namespace Cardstorm.UI
             group.interactable = false;
             group.blocksRaycasts = false;
 
-            if (hintText != null) hintText.text = hint;
+            ShowHint();
+            L10n.Changed += ShowHint;
             if (resumeButton != null) resumeButton.onClick.AddListener(Resume);
             if (restartButton != null) restartButton.onClick.AddListener(SceneReload.ReloadActive);
             if (quitButton != null) quitButton.onClick.AddListener(Quit);
@@ -83,9 +84,16 @@ namespace Cardstorm.UI
         void OnDestroy()
         {
             fade?.Kill();
+            L10n.Changed -= ShowHint;
             if (resumeButton != null) resumeButton.onClick.RemoveListener(Resume);
             if (restartButton != null) restartButton.onClick.RemoveListener(SceneReload.ReloadActive);
             if (quitButton != null) quitButton.onClick.RemoveListener(Quit);
+        }
+
+        // Se ve mientras se cambia de idioma, así que se reescribe en el momento.
+        void ShowHint()
+        {
+            if (hintText != null) hintText.text = L10n.Get(L10nKeys.PauseHint);
         }
 
         void Update()

@@ -1,3 +1,4 @@
+using Cardstorm.Localization;
 using System;
 using TMPro;
 using UnityEngine;
@@ -37,9 +38,9 @@ namespace Cardstorm.UI
         // Sin gemas en el catálogo, Mejorar carta no se puede pulsar.
         public void Show(int level, int position, int total, int gold, bool gemsAvailable, bool offersRemoval, bool lockInput)
         {
-            if (titleText != null) titleText.SetText("Nivel {0}", level);
+            if (titleText != null) titleText.SetText(L10n.Get(L10nKeys.Level), level);
             UpdateQueue(position, total);
-            if (goldText != null) goldText.SetText("Oro {0}", gold);
+            if (goldText != null) goldText.SetText(L10n.Get(L10nKeys.Gold), gold);
             gemsButton.interactable = gemsAvailable;
             if (removalHint != null) removalHint.gameObject.SetActive(offersRemoval);
             Open(lockInput);
@@ -49,7 +50,7 @@ namespace Cardstorm.UI
         {
             if (queueText == null) return;
             queueText.gameObject.SetActive(total > 1);
-            queueText.SetText("{0} de {1}", position, total);
+            queueText.SetText(L10n.Get(L10nKeys.Queue), position, total);
         }
 
         protected override Selectable DefaultSelection() => shopButton;

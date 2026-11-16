@@ -1,4 +1,5 @@
 using Cardstorm.Core;
+using Cardstorm.Localization;
 using Cardstorm.Player;
 using DG.Tweening;
 using TMPro;
@@ -23,7 +24,6 @@ namespace Cardstorm.UI
 
         [Tooltip("Opcional. Texto con la indicación para reiniciar.")]
         [SerializeField] TMP_Text hintText;
-        [SerializeField] string hint = "Pulsa Enter / A para reiniciar";
 
         [Tooltip("Segundos del fundido al abrir, en tiempo real.")]
         [SerializeField, Min(0f)] float fadeTime = 0.3f;
@@ -43,7 +43,6 @@ namespace Cardstorm.UI
             group.alpha = 0f;
             group.interactable = false;
             group.blocksRaycasts = false;
-            if (hintText != null) hintText.text = hint;
             if (restartButton != null) restartButton.onClick.AddListener(SceneReload.ReloadActive);
         }
 
@@ -62,8 +61,9 @@ namespace Cardstorm.UI
             if (input != null) input.SetGameplayEnabled(false);
             if (health != null) health.GodMode = true;
 
-            if (timeText != null) timeText.text = "Tiempo " + GameClock.Format(time);
-            if (levelText != null) levelText.SetText("Nivel {0}", level);
+            if (timeText != null) timeText.text = L10n.Format(L10nKeys.EndTime, GameClock.Format(time));
+            if (levelText != null) levelText.SetText(L10n.Get(L10nKeys.Level), level);
+            if (hintText != null) hintText.text = L10n.Get(L10nKeys.EndHint);
 
             group.interactable = true;
             group.blocksRaycasts = true;

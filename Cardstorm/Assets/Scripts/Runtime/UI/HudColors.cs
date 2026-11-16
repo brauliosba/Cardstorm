@@ -1,4 +1,5 @@
 using Cardstorm.Cards;
+using Cardstorm.Localization;
 using UnityEngine;
 
 namespace Cardstorm.UI
@@ -18,26 +19,13 @@ namespace Cardstorm.UI
         public static readonly Color Xp = new Color32(0x5B, 0x8C, 0xFF, 0xFF);
         public static readonly Color Gold = new Color32(0xFF, 0xD1, 0x26, 0xFF);
 
-        public static string TypeName(CardType type) => type switch
-        {
-            CardType.Defense => "Defensa",
-            CardType.Mobility => "Movilidad",
-            CardType.Summon => "Invocación",
-            CardType.Power => "Poder",
-            _ => "Ataque",
-        };
+        public static string TypeName(CardType type) => L10n.TypeName(type);
 
-        public static string RarityName(CardRarity rarity) => rarity switch
-        {
-            CardRarity.Basic => "Básica",
-            CardRarity.Uncommon => "Poco común",
-            CardRarity.Rare => "Rara",
-            _ => "Común",
-        };
+        public static string RarityName(CardRarity rarity) => L10n.RarityName(rarity);
 
         // Tipo de la carta y, si la copia tiene gema, su nombre: «Ataque · Filo».
         public static string TypeLine(CardType type, GemDefinition gem) =>
-            gem != null ? $"{TypeName(type)} · {gem.displayName}" : TypeName(type);
+            gem != null ? $"{TypeName(type)} · {L10n.GemName(gem)}" : TypeName(type);
 
         // Sin decimales si el coste es entero.
         public static string CostLabel(float cost) =>

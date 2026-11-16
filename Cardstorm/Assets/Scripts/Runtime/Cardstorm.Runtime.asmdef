@@ -6,7 +6,8 @@
         "Unity.Cinemachine",
         "UnityEngine.UI",
         "Unity.TextMeshPro",
-        "Unity.Localization"
+        "Unity.Localization",
+        "Unity.ResourceManager"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cardstorm.Cards;
+using Cardstorm.Localization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -40,7 +41,7 @@ namespace Cardstorm.UI
         // Bloquea la entrada al abrir para que el golpe que mata al jefe no elija carta.
         public void Show(string bossName, IReadOnlyList<CardDefinition> cards)
         {
-            if (titleText != null) titleText.text = $"Recompensa del {bossName}";
+            if (titleText != null) titleText.text = L10n.Format(L10nKeys.RewardTitle, bossName);
 
             for (int i = 0; i < slots.Length; i++)
             {

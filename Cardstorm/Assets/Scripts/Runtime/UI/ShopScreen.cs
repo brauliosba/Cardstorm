@@ -1,5 +1,6 @@
 using System;
 using Cardstorm.Cards;
+using Cardstorm.Localization;
 using Cardstorm.Progression;
 using DG.Tweening;
 using TMPro;
@@ -71,7 +72,7 @@ namespace Cardstorm.UI
 
         public void Show(int level, int position, int total, ShopOffer<CardDefinition> offer, bool canGoBack, bool lockInput)
         {
-            titleText.SetText("Nivel {0}", level);
+            titleText.SetText(L10n.Get(L10nKeys.Level), level);
             UpdateQueue(position, total);
             SetBackAvailable(canGoBack);
             shownGold = offer.State.Gold;
@@ -83,7 +84,7 @@ namespace Cardstorm.UI
         {
             if (queueText == null) return;
             queueText.gameObject.SetActive(total > 1);
-            queueText.SetText("{0} de {1}", position, total);
+            queueText.SetText(L10n.Get(L10nKeys.Queue), position, total);
         }
 
         public void SetBackAvailable(bool value)
@@ -95,7 +96,7 @@ namespace Cardstorm.UI
         public void UpdateOffer(ShopOffer<CardDefinition> offer)
         {
             int gold = offer.State.Gold;
-            UiTweens.Count(goldText, "Oro {0}", shownGold, gold, ref goldCount);
+            UiTweens.Count(goldText, L10n.Get(L10nKeys.Gold), shownGold, gold, ref goldCount);
             shownGold = gold;
 
             for (int i = 0; i < slots.Length; i++)
@@ -109,7 +110,7 @@ namespace Cardstorm.UI
             if (refreshText != null)
             {
                 int price = offer.RefreshPrice;
-                refreshText.SetText("Refrescar ({0} oro)", price);
+                refreshText.SetText(L10n.Get(L10nKeys.Refresh), price);
                 refreshText.color = gold >= price ? refreshColor : HudColors.NotEnough;
             }
         }

@@ -1,3 +1,4 @@
+using Cardstorm.Localization;
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
@@ -56,13 +57,13 @@ namespace Cardstorm.UI
             bool anyBlocked = false;
             for (int i = 0; i < count; i++) anyBlocked |= !entries[i].Allowed;
 
-            priceText.SetText("Cuesta {0} oro", price);
+            priceText.SetText(L10n.Get(L10nKeys.RemovalPrice), price);
             priceText.color = gold >= price ? priceColor : HudColors.NotEnough;
-            goldText.SetText("Oro {0}", gold);
+            goldText.SetText(L10n.Get(L10nKeys.Gold), gold);
             if (noteText != null)
             {
                 noteText.gameObject.SetActive(anyBlocked);
-                noteText.SetText("Deben quedar al menos {0} cartas de acción", minActionCards);
+                noteText.SetText(L10n.Get(L10nKeys.RemovalMinAction), minActionCards);
             }
 
             if (!IsVisible) Open(lockInput: false);

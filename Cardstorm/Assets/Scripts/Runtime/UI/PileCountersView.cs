@@ -1,4 +1,5 @@
 using Cardstorm.Cards;
+using Cardstorm.Localization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -8,9 +9,6 @@ namespace Cardstorm.UI
     // Cartas que quedan en el mazo, en el descarte y agotadas. El texto solo cambia cuando cambia el número.
     public class PileCountersView : MonoBehaviour
     {
-        const string DeckCaption = "Mazo";
-        const string ReshuffleCaption = "Barajando…";
-
         [SerializeField] PlayerCards cards;
         [SerializeField] TMP_Text deckText;
         [SerializeField] TMP_Text discardText;
@@ -34,6 +32,16 @@ namespace Cardstorm.UI
             if (cards == null) cards = FindFirstObjectByType<PlayerCards>();
         }
 
+        void OnEnable() => L10n.Changed += OnLanguageChanged;
+
+        void OnDisable() => L10n.Changed -= OnLanguageChanged;
+
+        void OnLanguageChanged()
+        {
+            shownExhausted = -1;
+            shownReshuffling = null;
+        }
+
         void LateUpdate()
         {
             if (cards == null || cards.Cycle == null) return;
@@ -53,14 +61,14 @@ namespace Cardstorm.UI
             {
                 shownExhausted = cycle.ExhaustedCount;
                 exhaustedText.gameObject.SetActive(shownExhausted > 0);
-                exhaustedText.SetText("Agotadas {0}", shownExhausted);
+                exhaustedText.SetText(L10n.Get(L10nKeys.HudExhausted), shownExhausted);
             }
 
             bool reshuffling = cycle.IsReshuffling;
             if (reshuffling != shownReshuffling)
             {
                 shownReshuffling = reshuffling;
-                if (deckLabel != null) deckLabel.text = reshuffling ? ReshuffleCaption : DeckCaption;
+                if (deckLabel != null) deckLabel.text = L10n.Get(reshuffling ? L10nKeys.HudReshuffling : L10nKeys.HudDeck);
                 if (reshuffleRing != null) reshuffleRing.gameObject.SetActive(reshuffling);
             }
             if (reshuffling && reshuffleRing != null)

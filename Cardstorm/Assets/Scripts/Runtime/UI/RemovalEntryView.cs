@@ -1,4 +1,5 @@
 using Cardstorm.Cards;
+using Cardstorm.Localization;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -50,7 +51,7 @@ namespace Cardstorm.UI
                 icon.enabled = card.icon != null;
                 icon.color = color;
             }
-            nameText.text = card.displayName;
+            nameText.text = L10n.CardName(card);
             countText.SetText("×{0}", entry.Count);
             if (typeText != null)
             {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cardstorm.Cards;
+using Cardstorm.Localization;
 using Cardstorm.Progression;
 using DG.Tweening;
 using TMPro;
@@ -84,8 +85,8 @@ namespace Cardstorm.UI
         {
             ShowingCards = false;
             SetPhase(cards: false);
-            if (titleText != null) titleText.text = "Mejorar carta";
-            if (hintText != null) hintText.text = "Elige una gema";
+            if (titleText != null) titleText.text = L10n.Get(L10nKeys.UpgradeCard);
+            if (hintText != null) hintText.text = L10n.Get(L10nKeys.GemPick);
             if (!IsVisible) shownGold = offer.State.Gold;
             UpdateGems(offer, compatible);
 
@@ -97,7 +98,7 @@ namespace Cardstorm.UI
         public void UpdateGems(GemOffer<GemDefinition> offer, IReadOnlyList<int> compatible)
         {
             int gold = offer.State.Gold;
-            UiTweens.Count(goldText, "Oro {0}", shownGold, gold, ref goldCount);
+            UiTweens.Count(goldText, L10n.Get(L10nKeys.Gold), shownGold, gold, ref goldCount);
             shownGold = gold;
 
             for (int i = 0; i < slots.Length; i++)
@@ -111,7 +112,7 @@ namespace Cardstorm.UI
             if (refreshText != null)
             {
                 int price = offer.RefreshPrice;
-                refreshText.SetText("Refrescar ({0} oro)", price);
+                refreshText.SetText(L10n.Get(L10nKeys.Refresh), price);
                 refreshText.color = gold >= price ? refreshColor : HudColors.NotEnough;
             }
         }
@@ -121,8 +122,8 @@ namespace Cardstorm.UI
         {
             ShowingCards = true;
             SetPhase(cards: true);
-            if (titleText != null) titleText.text = $"Engarzar {gem.displayName}";
-            if (hintText != null) hintText.text = gem.description;
+            if (titleText != null) titleText.text = L10n.Format(L10nKeys.GemSocket, L10n.GemName(gem));
+            if (hintText != null) hintText.text = L10n.GemDescription(gem);
             list.Show(entries, count);
             ResetFocus();
         }

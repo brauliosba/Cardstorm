@@ -1,3 +1,4 @@
+using Cardstorm.Localization;
 using TMPro;
 using UnityEngine;
 
@@ -13,7 +14,7 @@ namespace Cardstorm.UI
 
         public void SetValue(string text, bool capped)
         {
-            valueText.text = capped ? text + " (máx.)" : text;
+            valueText.text = capped ? L10n.Format(L10nKeys.StatCapped, text) : text;
             valueText.color = capped ? HudColors.Energy : HudColors.Text;
         }
     }

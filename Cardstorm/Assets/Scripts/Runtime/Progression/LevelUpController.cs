@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Cardstorm.Cards;
 using Cardstorm.Core;
+using Cardstorm.Localization;
 using Cardstorm.Player;
 using Cardstorm.UI;
 using UnityEngine;
@@ -492,7 +493,7 @@ namespace Cardstorm.Progression
                     continue;
                 }
                 entry.Allowed = entry.Instance.Accepts(gem);
-                if (entry.Gem != null && entry.Gem != gem) entry.Note = $"Sustituye a {entry.Gem.displayName}";
+                if (entry.Gem != null && entry.Gem != gem) entry.Note = L10n.Format(L10nKeys.RemovalReplaces, L10n.GemName(entry.Gem));
             }
 
             entries.Sort(0, entryCount, EntryOrder.Instance);

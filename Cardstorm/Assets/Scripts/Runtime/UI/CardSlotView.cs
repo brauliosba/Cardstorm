@@ -1,4 +1,5 @@
 using Cardstorm.Cards;
+using Cardstorm.Localization;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -48,6 +49,7 @@ namespace Cardstorm.UI
         Vector2 basePosition;
         CardInstance shownCard;
         GemDefinition shownGem;
+        int shownLanguage = -1;
         SlotState? shownState;
         bool? shownInfo;
         bool? shownCostRed;
@@ -78,10 +80,11 @@ namespace Cardstorm.UI
             var card = cycle.CardIn(slot);
 
             // La copia puede recibir una gema mientras está en la mano.
-            if (card != shownCard || (card != null && card.Gem != shownGem))
+            if (card != shownCard || (card != null && card.Gem != shownGem) || shownLanguage != L10n.Version)
             {
                 shownCard = card;
                 shownGem = card != null ? card.Gem : null;
+                shownLanguage = L10n.Version;
                 if (card != null) ShowCard(card);
             }
 
@@ -152,12 +155,13 @@ namespace Cardstorm.UI
             icon.sprite = definition.icon;
             icon.enabled = definition.icon != null;
             costText.text = HudColors.CostLabel(card.Cost);
-            nameText.text = definition.displayName;
+            nameText.text = L10n.CardName(definition);
             typeText.text = HudColors.TypeLine(definition.type, card.Gem);
             // Con gema, su efecto va debajo, en su color.
+            string description = L10n.CardDescription(definition);
             descriptionText.text = card.Gem != null
-                ? $"{definition.description}\n<color=#{ColorUtility.ToHtmlStringRGB(card.Gem.color)}>{card.Gem.description}</color>"
-                : definition.description;
+                ? $"{description}\n<color=#{ColorUtility.ToHtmlStringRGB(card.Gem.color)}>{L10n.GemDescription(card.Gem)}</color>"
+                : description;
             if (gemBadge != null)
             {
                 gemBadge.gameObject.SetActive(card.Gem != null);

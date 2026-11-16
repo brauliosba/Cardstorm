@@ -1,4 +1,5 @@
 using Cardstorm.Cards;
+using Cardstorm.Localization;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -32,6 +33,7 @@ namespace Cardstorm.UI
 
         Button button;
         CardDefinition shownCard;
+        int shownLanguage = -1;
         Tween wobble;
         Tween pop;
         Tween pricePop;
@@ -47,7 +49,7 @@ namespace Cardstorm.UI
             Draw(card);
 
             priceText.gameObject.SetActive(!bought);
-            priceText.SetText("{0} oro", price);
+            priceText.SetText(L10n.Get(L10nKeys.GoldPrice), price);
             priceText.color = affordable ? HudColors.Text : HudColors.NotEnough;
             if (boughtLabel != null) boughtLabel.SetActive(bought);
 
@@ -70,20 +72,21 @@ namespace Cardstorm.UI
 
         void Draw(CardDefinition card)
         {
-            if (card != shownCard)
+            if (card != shownCard || shownLanguage != L10n.Version)
             {
                 shownCard = card;
+                shownLanguage = L10n.Version;
                 Color color = CardPalette.For(card.type);
                 border.color = color;
                 icon.sprite = card.icon;
                 icon.enabled = card.icon != null;
                 icon.color = color;
-                nameText.text = card.displayName;
+                nameText.text = L10n.CardName(card);
                 typeText.text = HudColors.TypeName(card.type);
                 typeText.color = color;
                 costText.text = HudColors.CostLabel(card.cost);
                 rarityText.text = HudColors.RarityName(card.rarity);
-                descriptionText.text = card.description;
+                descriptionText.text = L10n.CardDescription(card);
             }
         }
 

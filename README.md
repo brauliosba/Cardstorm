@@ -155,6 +155,19 @@ Solo en el editor y en *development build*.
 | Mayús+F12 | Abrir Mejorar carta del nivel actual |
 | R | Reiniciar la partida |
 
+## Idiomas
+
+El juego está en **español** e **inglés**. Se cambia en el menú de pausa con el botón **Idioma** y la elección se recuerda entre partidas. La primera vez se usa el idioma del sistema y, si no es ninguno de los dos, español.
+
+Los textos están en una hoja de Google Sheets con dos pestañas, `UI` (interfaz) y `Content` (cartas, gemas y enemigos), que es la fuente de verdad. Para traer los cambios al proyecto:
+
+1. Selecciona `Assets/Localization/Tables/UI.asset` y, en la extensión **Google Sheets**, pulsa **Pull**.
+2. Haz lo mismo con `Content.asset`.
+
+Las claves de cartas, gemas y enemigos salen del `id` de su asset (`card.disparo.name`, `gem.filo.description`, `enemy.heraldo.name`). Si falta una, se muestra el texto del asset.
+
+`Assets/Localization/Google Sheets Service.asset` guarda la API key y no está en el repositorio. Para hacer *Pull* en otra máquina, créalo con ese nombre (*Assets › Create › Localization › Google Sheets Service*, autenticación **API Key**) y asígnalo en la extensión de las dos tablas.
+
 ---
 
 ## Estructura del repositorio

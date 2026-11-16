@@ -1,4 +1,5 @@
 using Cardstorm.Cards;
+using Cardstorm.Localization;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -46,13 +47,13 @@ namespace Cardstorm.UI
                 if (gem.icon != null) badge.sprite = gem.icon;
                 badge.color = gem.color;
             }
-            nameText.text = gem.displayName;
-            if (descriptionText != null) descriptionText.text = gem.description;
+            nameText.text = L10n.GemName(gem);
+            if (descriptionText != null) descriptionText.text = L10n.GemDescription(gem);
             if (countText != null)
             {
-                if (compatibleCards == 0) countText.text = "Ninguna carta";
-                else if (compatibleCards == 1) countText.text = "1 carta";
-                else countText.SetText("{0} cartas", compatibleCards);
+                if (compatibleCards == 0) countText.text = L10n.Get(L10nKeys.GemCardsNone);
+                else if (compatibleCards == 1) countText.text = L10n.Get(L10nKeys.GemCardsOne);
+                else countText.SetText(L10n.Get(L10nKeys.GemCardsMany), compatibleCards);
                 countText.color = compatibleCards > 0 ? HudColors.TextDim : HudColors.NotEnough;
             }
 

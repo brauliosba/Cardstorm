@@ -1,3 +1,4 @@
+using Cardstorm.Localization;
 using Cardstorm.Progression;
 using TMPro;
 using UnityEngine;
@@ -24,6 +25,16 @@ namespace Cardstorm.UI
             if (run == null) run = FindFirstObjectByType<RunManager>();
         }
 
+        void OnEnable() => L10n.Changed += OnLanguageChanged;
+
+        void OnDisable() => L10n.Changed -= OnLanguageChanged;
+
+        void OnLanguageChanged()
+        {
+            shownLevel = -1;
+            shownGold = -1;
+        }
+
         void LateUpdate()
         {
             var state = run != null ? run.State : null;
@@ -32,13 +43,13 @@ namespace Cardstorm.UI
             if (state.Level != shownLevel)
             {
                 shownLevel = state.Level;
-                levelText.SetText("Nv. {0}", shownLevel);
+                levelText.SetText(L10n.Get(L10nKeys.HudLevel), shownLevel);
             }
 
             if (state.Gold != shownGold)
             {
                 shownGold = state.Gold;
-                goldText.SetText("Oro {0}", shownGold);
+                goldText.SetText(L10n.Get(L10nKeys.Gold), shownGold);
             }
 
             var levels = state.Levels;

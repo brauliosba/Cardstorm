@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Cardstorm.CameraRig;
 using Cardstorm.Core;
 using Cardstorm.Enemies;
+using Cardstorm.Localization;
 using Cardstorm.Progression;
 using UnityEngine;
 
@@ -25,8 +26,14 @@ namespace Cardstorm.Spawning
             [Tooltip("Al derrotarlo se elige una carta rara.")]
             public bool rareReward;
 
-            public string DisplayName =>
-                definition != null && !string.IsNullOrEmpty(definition.displayName) ? definition.displayName : name;
+            public string DisplayName
+            {
+                get
+                {
+                    string shown = L10n.EnemyName(definition);
+                    return !string.IsNullOrEmpty(shown) ? shown : name;
+                }
+            }
         }
 
         [SerializeField] WaveSpawner spawner;
