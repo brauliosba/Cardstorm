@@ -38,6 +38,14 @@ namespace Cardstorm.Localization
         public const string EndHint = "ui.end.hint";
         public const string PauseHint = "ui.pause.hint";
 
+        public const string MenuPlay = "ui.menu.play";
+        public const string MenuUnlocks = "ui.menu.unlocks";
+        public const string MenuComingSoon = "ui.menu.coming_soon";
+        public const string MenuOptions = "ui.menu.options";
+        public const string MenuQuit = "ui.menu.quit";
+        public const string MenuMainMenu = "ui.menu.main_menu";
+        public const string MenuVersion = "ui.menu.version";
+
         public const string TelemetryCode = "ui.telemetry.code";
         public const string TelemetryOpenFolder = "ui.telemetry.open_folder";
 

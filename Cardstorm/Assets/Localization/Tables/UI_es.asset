@@ -163,7 +163,7 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 2642271932448
-    m_Localized: Esc / Start para continuar
+    m_Localized: '{0} para continuar'
     m_Metadata:
       m_Items: []
   - m_Id: 2642271932449
@@ -268,6 +268,34 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 2642271932474
     m_Localized: Abrir carpeta de datos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127031889920
+    m_Localized: Jugar
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970304
+    m_Localized: Desbloqueos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970305
+    m_Localized: "Pr\xF3ximamente"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970306
+    m_Localized: Opciones
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970307
+    m_Localized: Salir
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970308
+    m_Localized: "Men\xFA principal"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970309
+    m_Localized: "Versi\xF3n {0}"
     m_Metadata:
       m_Items: []
   references:

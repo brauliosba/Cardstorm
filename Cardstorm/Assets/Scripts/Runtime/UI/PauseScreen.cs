@@ -7,14 +7,12 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace Cardstorm.UI
 {
-    // Menú de pausa con Esc / Start: congela la partida como la tienda y muestra un panel con
-    // Continuar, Reiniciar y Salir. Otra pulsación de pausa la reanuda.
-    // Los controles de juego siguen activos para poder leer la tecla de pausa; las cartas ya se bloquean
-    // porque el reloj está en pausa, y el movimiento se para con Time.timeScale = 0.
+    // Menú de pausa con Esc / Start.
     public class PauseScreen : MonoBehaviour
     {
         [SerializeField] GameClock clock;
@@ -30,8 +28,9 @@ namespace Cardstorm.UI
         [Header("Opcionales")]
         [SerializeField] Button resumeButton;
         [SerializeField] Button restartButton;
-        [Tooltip("Cierra el juego. En el editor sale del modo Play.")]
-        [SerializeField] Button quitButton;
+        [Tooltip("Vuelve al menú principal. La partida queda como abandonada.")]
+        [FormerlySerializedAs("quitButton")]
+        [SerializeField] Button menuButton;
         [SerializeField] TMP_Text hintText;
         [Tooltip("Código de jugador, para copiarlo sin acabar la partida.")]
         [SerializeField] TMP_Text codeText;
@@ -72,18 +71,22 @@ namespace Cardstorm.UI
             ShowTexts();
             L10n.Changed += ShowTexts;
             if (resumeButton != null) resumeButton.onClick.AddListener(Resume);
-            if (restartButton != null) restartButton.onClick.AddListener(SceneReload.ReloadActive);
-            if (quitButton != null) quitButton.onClick.AddListener(Quit);
+            if (restartButton != null) restartButton.onClick.AddListener(SceneFlow.Restart);
+            if (menuButton != null) menuButton.onClick.AddListener(SceneFlow.LoadMenu);
         }
 
         void OnEnable()
         {
-            if (input != null) input.PausePressed += Toggle;
+            if (input == null) return;
+            input.PausePressed += Toggle;
+            input.DeviceChanged += ShowTexts;
         }
 
         void OnDisable()
         {
-            if (input != null) input.PausePressed -= Toggle;
+            if (input == null) return;
+            input.PausePressed -= Toggle;
+            input.DeviceChanged -= ShowTexts;
         }
 
         void OnDestroy()
@@ -91,14 +94,16 @@ namespace Cardstorm.UI
             fade?.Kill();
             L10n.Changed -= ShowTexts;
             if (resumeButton != null) resumeButton.onClick.RemoveListener(Resume);
-            if (restartButton != null) restartButton.onClick.RemoveListener(SceneReload.ReloadActive);
-            if (quitButton != null) quitButton.onClick.RemoveListener(Quit);
+            if (restartButton != null) restartButton.onClick.RemoveListener(SceneFlow.Restart);
+            if (menuButton != null) menuButton.onClick.RemoveListener(SceneFlow.LoadMenu);
         }
 
         // Se ve mientras se cambia de idioma, así que se reescribe en el momento.
+        // La tecla sale de los controles actuales y del último dispositivo usado.
         void ShowTexts()
         {
-            if (hintText != null) hintText.text = L10n.Get(L10nKeys.PauseHint);
+            if (hintText != null)
+                hintText.text = L10n.Format(L10nKeys.PauseHint, input != null ? input.BindingLabel("Pause") : "Esc");
             TelemetryUi.ShowCode(codeText, telemetry);
         }
 
@@ -112,6 +117,8 @@ namespace Cardstorm.UI
 
         public void Toggle()
         {
+            // Con la escena tapándose, reanudar dejaría correr la partida debajo.
+            if (SceneFlow.IsLoading) return;
             if (IsPaused) Resume();
             else if (CanPause) Pause();
         }
@@ -148,17 +155,8 @@ namespace Cardstorm.UI
         {
             var es = EventSystem.current;
             if (es == null) return;
-            var first = resumeButton != null ? resumeButton : restartButton != null ? restartButton : quitButton;
+            var first = resumeButton != null ? resumeButton : restartButton != null ? restartButton : menuButton;
             if (first != null) es.SetSelectedGameObject(first.gameObject);
-        }
-
-        static void Quit()
-        {
-#if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
-#else
-            Application.Quit();
-#endif
         }
     }
 }

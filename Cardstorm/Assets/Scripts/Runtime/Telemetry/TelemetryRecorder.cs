@@ -16,7 +16,6 @@ namespace Cardstorm.Telemetry
     [DefaultExecutionOrder(100)]  // Después del Start de RunManager, que crea el estado.
     public class TelemetryRecorder : MonoBehaviour
     {
-        const string CodeKey = "telemetry.code";
         const string RunsKey = "telemetry.runs";
 
         [SerializeField] RunManager run;
@@ -55,13 +54,7 @@ namespace Cardstorm.Telemetry
             if (health == null) health = FindFirstObjectByType<PlayerHealth>();
             if (enemies == null) enemies = FindFirstObjectByType<EnemyManager>();
 
-            PlayerCode = PlayerPrefs.GetString(CodeKey, "");
-            if (PlayerCode.Length != Telemetry.PlayerCode.Length)
-            {
-                PlayerCode = Telemetry.PlayerCode.Generate(new System.Random(Environment.TickCount));
-                PlayerPrefs.SetString(CodeKey, PlayerCode);
-                PlayerPrefs.Save();
-            }
+            PlayerCode = PlayerCodeStore.GetOrCreate();
         }
 
         void OnEnable()

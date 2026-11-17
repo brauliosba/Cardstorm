@@ -22,6 +22,15 @@ namespace Cardstorm.UI
             if (on) text.text = L10n.Format(L10nKeys.TelemetryCode, telemetry.PlayerCode);
         }
 
+        // Sin grabador, como en el menú.
+        public static void ShowCode(TMP_Text text, string code)
+        {
+            if (text == null) return;
+            bool on = !string.IsNullOrEmpty(code);
+            text.gameObject.SetActive(on);
+            if (on) text.text = L10n.Format(L10nKeys.TelemetryCode, code);
+        }
+
         public static void OpenFolder(TelemetryRecorder telemetry)
         {
             try

@@ -10,7 +10,7 @@ using UnityEngine.UI;
 
 namespace Cardstorm.UI
 {
-    // Pantalla de fin de partida: congela la partida, muestra el tiempo y el nivel, y ofrece reiniciar.
+    // Pantalla de fin de partida.
     public abstract class RunEndScreen : MonoBehaviour
     {
         [SerializeField] protected GameClock clock;
@@ -22,6 +22,9 @@ namespace Cardstorm.UI
         [SerializeField] TMP_Text timeText;
         [SerializeField] TMP_Text levelText;
         [SerializeField] Button restartButton;
+
+        [Tooltip("Opcional. Vuelve al menú principal.")]
+        [SerializeField] Button menuButton;
 
         [Tooltip("Opcional. Texto con la indicación para reiniciar.")]
         [SerializeField] TMP_Text hintText;
@@ -50,7 +53,8 @@ namespace Cardstorm.UI
             group.alpha = 0f;
             group.interactable = false;
             group.blocksRaycasts = false;
-            if (restartButton != null) restartButton.onClick.AddListener(SceneReload.ReloadActive);
+            if (restartButton != null) restartButton.onClick.AddListener(SceneFlow.Restart);
+            if (menuButton != null) menuButton.onClick.AddListener(SceneFlow.LoadMenu);
             if (telemetry == null) telemetry = FindFirstObjectByType<TelemetryRecorder>();
             if (openFolderButton != null) openFolderButton.onClick.AddListener(OpenFolder);
         }
@@ -58,7 +62,8 @@ namespace Cardstorm.UI
         protected virtual void OnDestroy()
         {
             fade?.Kill();
-            if (restartButton != null) restartButton.onClick.RemoveListener(SceneReload.ReloadActive);
+            if (restartButton != null) restartButton.onClick.RemoveListener(SceneFlow.Restart);
+            if (menuButton != null) menuButton.onClick.RemoveListener(SceneFlow.LoadMenu);
             if (openFolderButton != null) openFolderButton.onClick.RemoveListener(OpenFolder);
         }
 

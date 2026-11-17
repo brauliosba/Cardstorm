@@ -171,6 +171,34 @@ MonoBehaviour:
     m_Key: ui.pause.language
     m_Metadata:
       m_Items: []
+  - m_Id: 404127031889920
+    m_Key: ui.menu.play
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970304
+    m_Key: ui.menu.unlocks
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970305
+    m_Key: ui.menu.coming_soon
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970306
+    m_Key: ui.menu.options
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970307
+    m_Key: ui.menu.quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970308
+    m_Key: ui.menu.main_menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 404127119970309
+    m_Key: ui.menu.version
+    m_Metadata:
+      m_Items: []
   - m_Id: 2642271932451
     m_Key: ui.type.attack
     m_Metadata:
