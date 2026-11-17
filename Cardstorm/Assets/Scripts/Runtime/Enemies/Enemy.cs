@@ -181,7 +181,9 @@ namespace Cardstorm.Enemies
                 return;
             }
 
-            spriteRenderer.color = Color.white;
+            // Con menos destellos, el golpe solo aclara el color.
+            float flash = GameSettings.Current.FlashScale;
+            spriteRenderer.color = flash >= 1f || Definition == null ? Color.white : Color.Lerp(BaseColor, Color.white, flash);
             FlashTimer = HitFlashTime;
         }
 

@@ -83,7 +83,7 @@ namespace Cardstorm.Combat
 
             var main = Take(circleSprite, circleSize, center, radius, sortingOrder);
             active.Add(new Flash { Id = nextId++, Kind = Kind.Area, Main = main, Color = color, Radius = radius, Duration = areaDuration });
-            SetAlpha(main, color, areaAlpha);
+            SetAlpha(main, color, areaAlpha * GameSettings.Current.FlashScale);
         }
 
         // Anillo del tamaño final con un círculo que crece hasta llenarlo cuando acaba el aviso.
@@ -109,7 +109,7 @@ namespace Cardstorm.Combat
             var line = freeLines.Pop();
             line.SetPosition(0, from);
             line.SetPosition(1, to);
-            SetAlpha(line, color, 1f);
+            SetAlpha(line, color, GameSettings.Current.FlashScale);
             line.gameObject.SetActive(true);
             active.Add(new Flash { Id = nextId++, Kind = Kind.Beam, Line = line, Color = color, Duration = beamDuration });
         }
@@ -136,6 +136,9 @@ namespace Cardstorm.Combat
             float dt = clock != null && clock.Paused ? 0f : Time.deltaTime;
             if (dt <= 0f) return;
 
+            // Los avisos no se atenúan con menos destellos: son información.
+            float scale = GameSettings.Current.FlashScale;
+
             // Hacia atrás: Release intercambia con el último y no se salta ninguno.
             for (int i = active.Count - 1; i >= 0; i--)
             {
@@ -149,11 +152,11 @@ namespace Cardstorm.Combat
                 }
 
                 if (f.Kind == Kind.Area)
-                    SetAlpha(f.Main, f.Color, areaAlpha * (1f - t));
+                    SetAlpha(f.Main, f.Color, areaAlpha * scale * (1f - t));
                 else if (f.Kind == Kind.Telegraph)
                     SetRadius(f.Fill, circleSize, f.Radius * t);
                 else
-                    SetAlpha(f.Line, f.Color, 1f - t);
+                    SetAlpha(f.Line, f.Color, scale * (1f - t));
 
                 active[i] = f;
             }

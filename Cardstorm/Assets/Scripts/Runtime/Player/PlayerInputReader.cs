@@ -103,9 +103,17 @@ namespace Cardstorm.Player
 
         // Etiqueta del botón de la ranura para el dispositivo actual. Se lee de los bindings,
         // así que cambia sola si se reasignan los controles.
-        public string CardBindingLabel(int slot)
+        public string CardBindingLabel(int slot) => BindingLabel(cardActions[slot]);
+
+        // Lo mismo para cualquier acción del mapa de juego, por nombre («Pause»).
+        public string BindingLabel(string actionName)
         {
-            var action = cardActions[slot];
+            var action = map != null ? map.FindAction(actionName) : null;
+            return action != null ? BindingLabel(action) : string.Empty;
+        }
+
+        string BindingLabel(InputAction action)
+        {
             string group = UsingGamepad ? GamepadGroup : KeyboardGroup;
             var bindings = action.bindings;
             for (int i = 0; i < bindings.Count; i++)
@@ -125,7 +133,7 @@ namespace Cardstorm.Player
         }
 
         // Nombres de los botones frontales con la disposición de Xbox.
-        static string FaceButtonLabel(string path)
+        public static string FaceButtonLabel(string path)
         {
             if (string.IsNullOrEmpty(path)) return null;
             if (path.EndsWith("/buttonNorth")) return "Y";

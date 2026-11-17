@@ -298,6 +298,110 @@ MonoBehaviour:
     m_Localized: "Versi\xF3n {0}"
     m_Metadata:
       m_Items: []
+  - m_Id: 420792448716800
+    m_Localized: OPCIONES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911104
+    m_Localized: "M\xFAsica"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911105
+    m_Localized: Efectos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911106
+    m_Localized: "Sacudida de c\xE1mara"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911107
+    m_Localized: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911108
+    m_Localized: Reducida
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911109
+    m_Localized: Desactivada
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911110
+    m_Localized: Reducir destellos
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911111
+    m_Localized: Controles
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105408
+    m_Localized: CONTROLES
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105409
+    m_Localized: Teclado
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105410
+    m_Localized: Mando
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105411
+    m_Localized: Pulsa una tecla...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105412
+    m_Localized: Restablecer
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105413
+    m_Localized: Mover arriba
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105414
+    m_Localized: Mover abajo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105415
+    m_Localized: Mover a la izquierda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105416
+    m_Localized: Mover a la derecha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105417
+    m_Localized: Carta de arriba
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105418
+    m_Localized: Carta de la izquierda
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105419
+    m_Localized: Carta de la derecha
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105420
+    m_Localized: Carta de abajo
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105421
+    m_Localized: Ver cartas
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105422
+    m_Localized: "Estad\xEDsticas"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105423
+    m_Localized: Pausa
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105424
+    m_Localized: Intercambiada con {0}
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

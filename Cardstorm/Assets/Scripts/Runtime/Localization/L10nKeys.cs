@@ -46,6 +46,35 @@ namespace Cardstorm.Localization
         public const string MenuMainMenu = "ui.menu.main_menu";
         public const string MenuVersion = "ui.menu.version";
 
+        public const string OptionsTitle = "ui.options.title";
+        public const string OptionsMusic = "ui.options.music";
+        public const string OptionsSfx = "ui.options.sfx";
+        public const string OptionsShake = "ui.options.shake";
+        public const string OptionsShakeNormal = "ui.options.shake_normal";
+        public const string OptionsShakeReduced = "ui.options.shake_reduced";
+        public const string OptionsShakeOff = "ui.options.shake_off";
+        public const string OptionsFlashes = "ui.options.flashes";
+        public const string OptionsControls = "ui.options.controls";
+        public const string Back = "ui.common.back";
+
+        public const string ControlsTitle = "ui.controls.title";
+        public const string ControlsKeyboard = "ui.controls.keyboard";
+        public const string ControlsGamepad = "ui.controls.gamepad";
+        public const string ControlsPressKey = "ui.controls.press_key";
+        public const string ControlsReset = "ui.controls.reset";
+        public const string ControlsMoveUp = "ui.controls.move_up";
+        public const string ControlsMoveDown = "ui.controls.move_down";
+        public const string ControlsMoveLeft = "ui.controls.move_left";
+        public const string ControlsMoveRight = "ui.controls.move_right";
+        public const string ControlsCardUp = "ui.controls.card_up";
+        public const string ControlsCardLeft = "ui.controls.card_left";
+        public const string ControlsCardRight = "ui.controls.card_right";
+        public const string ControlsCardDown = "ui.controls.card_down";
+        public const string ControlsCardInfo = "ui.controls.card_info";
+        public const string ControlsStats = "ui.controls.stats";
+        public const string ControlsPause = "ui.controls.pause";
+        public const string ControlsSwapped = "ui.controls.swapped";
+
         public const string TelemetryCode = "ui.telemetry.code";
         public const string TelemetryOpenFolder = "ui.telemetry.open_folder";
 

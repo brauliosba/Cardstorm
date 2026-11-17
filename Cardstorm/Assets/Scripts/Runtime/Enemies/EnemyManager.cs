@@ -35,6 +35,8 @@ namespace Cardstorm.Enemies
         public event Action<Enemy> EnemySpawned;
         public event Action<Enemy, Vector2> EnemyKilled;
         public event Action<Enemy> EnemyDespawned;
+        // Un jefe empieza el aviso de un ataque (invocar, anillo o embestida).
+        public event Action<Enemy, BossPattern> BossWindupStarted;
 
         public int AliveCount => active.Count;
         public int TotalSpawned { get; private set; }
@@ -178,7 +180,12 @@ namespace Cardstorm.Enemies
 
             switch (patterns.Step(dt, chargeFinished, settings))
             {
+                case PatternAction.StartWindup:
+                    BossWindupStarted?.Invoke(enemy, patterns.Current);
+                    break;
+
                 case PatternAction.StartCharge:
+                    BossWindupStarted?.Invoke(enemy, BossPattern.Charge);
                     Vector2 toPlayer = playerPos - pos;
                     float distance = toPlayer.magnitude;
                     enemy.ChargeDirection = distance > 1e-4f ? toPlayer / distance : Vector2.right;

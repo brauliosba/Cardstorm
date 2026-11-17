@@ -199,6 +199,110 @@ MonoBehaviour:
     m_Key: ui.menu.version
     m_Metadata:
       m_Items: []
+  - m_Id: 420792448716800
+    m_Key: ui.options.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911104
+    m_Key: ui.options.music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911105
+    m_Key: ui.options.sfx
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911106
+    m_Key: ui.options.shake
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911107
+    m_Key: ui.options.shake_normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911108
+    m_Key: ui.options.shake_reduced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911109
+    m_Key: ui.options.shake_off
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911110
+    m_Key: ui.options.flashes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911111
+    m_Key: ui.options.controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105408
+    m_Key: ui.controls.title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105409
+    m_Key: ui.controls.keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105410
+    m_Key: ui.controls.gamepad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105411
+    m_Key: ui.controls.press_key
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105412
+    m_Key: ui.controls.reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105413
+    m_Key: ui.controls.move_up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105414
+    m_Key: ui.controls.move_down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105415
+    m_Key: ui.controls.move_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105416
+    m_Key: ui.controls.move_right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105417
+    m_Key: ui.controls.card_up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105418
+    m_Key: ui.controls.card_left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105419
+    m_Key: ui.controls.card_right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105420
+    m_Key: ui.controls.card_down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105421
+    m_Key: ui.controls.card_info
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105422
+    m_Key: ui.controls.stats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105423
+    m_Key: ui.controls.pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105424
+    m_Key: ui.controls.swapped
+    m_Metadata:
+      m_Items: []
   - m_Id: 2642271932451
     m_Key: ui.type.attack
     m_Metadata:

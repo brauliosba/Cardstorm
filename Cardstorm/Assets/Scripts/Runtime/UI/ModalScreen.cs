@@ -26,6 +26,7 @@ namespace Cardstorm.UI
         float readyTime;
         bool inputLocked;
         bool suspended;
+        int frontFrame = -1;
 
         public bool IsVisible { get; private set; }
 
@@ -55,6 +56,7 @@ namespace Cardstorm.UI
         protected void Open(bool lockInput)
         {
             suspended = false;
+            frontFrame = Time.frameCount;
             if (!IsVisible) SetVisible(true, instant: false);
             ResetFocus();
             if (lockInput) LockInput();
@@ -81,9 +83,21 @@ namespace Cardstorm.UI
         // Mientras otra pantalla está encima, esta no se puede pulsar ni recupera la selección.
         public void SetSuspended(bool value)
         {
+            if (suspended && !value) frontFrame = Time.frameCount;
             suspended = value;
             group.interactable = IsVisible && !value;
             group.blocksRaycasts = IsVisible && !value;
+        }
+
+        // Cancelar (Esc, B) con la pantalla delante. No cuenta en el fotograma en que se abre o vuelve a primer
+        // plano: esa pulsación ya la ha usado la pantalla que se acaba de cerrar.
+        protected bool CancelPressed()
+        {
+            if (!AcceptsInput || Time.frameCount == frontFrame) return false;
+            var es = EventSystem.current;
+            if (es == null || es.currentInputModule is not InputSystemUIInputModule module) return false;
+            var action = module.cancel != null ? module.cancel.action : null;
+            return action != null && action.WasPerformedThisFrame();
         }
 
         // Durante el bloqueo, el EventSystem no envía navegación ni Enviar/Cancelar, y los clics se ignoran

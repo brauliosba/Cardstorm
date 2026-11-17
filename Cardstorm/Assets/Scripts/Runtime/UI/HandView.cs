@@ -1,4 +1,5 @@
 using Cardstorm.Cards;
+using Cardstorm.Core;
 using Cardstorm.Player;
 using UnityEngine;
 
@@ -20,6 +21,7 @@ namespace Cardstorm.UI
         void OnEnable()
         {
             if (input != null) input.DeviceChanged += RefreshKeyLabels;
+            SettingsStore.BindingsChanged += RefreshKeyLabels;
             if (cards != null)
             {
                 cards.CardPlayed += OnCardPlayed;
@@ -30,6 +32,7 @@ namespace Cardstorm.UI
         void OnDisable()
         {
             if (input != null) input.DeviceChanged -= RefreshKeyLabels;
+            SettingsStore.BindingsChanged -= RefreshKeyLabels;
             if (cards != null)
             {
                 cards.CardPlayed -= OnCardPlayed;

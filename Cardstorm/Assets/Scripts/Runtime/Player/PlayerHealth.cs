@@ -108,7 +108,8 @@ namespace Cardstorm.Player
             if (RegenPerSecond > 0f) Heal(RegenPerSecond * Time.deltaTime);
             shield.Tick(Time.deltaTime);
 
-            bool visible = !IsInvulnerable || Mathf.FloorToInt((invulnerableUntil - Time.time) / blinkInterval) % 2 == 0;
+            float interval = blinkInterval * GameSettings.Current.BlinkIntervalScale;
+            bool visible = !IsInvulnerable || Mathf.FloorToInt((invulnerableUntil - Time.time) / interval) % 2 == 0;
             for (int i = 0; i < blinkRenderers.Length; i++)
                 blinkRenderers[i].enabled = visible;
         }

@@ -31,6 +31,8 @@ namespace Cardstorm.UI
         [Tooltip("Vuelve al menú principal. La partida queda como abandonada.")]
         [FormerlySerializedAs("quitButton")]
         [SerializeField] Button menuButton;
+        [SerializeField] Button optionsButton;
+        [SerializeField] OptionsScreen options;
         [SerializeField] TMP_Text hintText;
         [Tooltip("Código de jugador, para copiarlo sin acabar la partida.")]
         [SerializeField] TMP_Text codeText;
@@ -42,6 +44,8 @@ namespace Cardstorm.UI
         CanvasGroup group;
         Tween fade;
         float previousTimeScale = 1f;
+        bool suspended;
+        int frontFrame = -1;
 
         public bool IsPaused { get; private set; }
 
@@ -62,6 +66,7 @@ namespace Cardstorm.UI
             if (victory == null) victory = FindFirstObjectByType<VictoryScreen>(FindObjectsInactive.Include);
             if (defeat == null) defeat = FindFirstObjectByType<DefeatScreen>(FindObjectsInactive.Include);
             if (telemetry == null) telemetry = FindFirstObjectByType<TelemetryRecorder>();
+            if (options == null) options = FindFirstObjectByType<OptionsScreen>(FindObjectsInactive.Include);
             if (!root.TryGetComponent(out group)) group = root.AddComponent<CanvasGroup>();
             root.SetActive(true);
             group.alpha = 0f;
@@ -70,9 +75,11 @@ namespace Cardstorm.UI
 
             ShowTexts();
             L10n.Changed += ShowTexts;
+            SettingsStore.BindingsChanged += ShowTexts;
             if (resumeButton != null) resumeButton.onClick.AddListener(Resume);
             if (restartButton != null) restartButton.onClick.AddListener(SceneFlow.Restart);
             if (menuButton != null) menuButton.onClick.AddListener(SceneFlow.LoadMenu);
+            if (optionsButton != null) optionsButton.onClick.AddListener(OpenOptions);
         }
 
         void OnEnable()
@@ -93,9 +100,11 @@ namespace Cardstorm.UI
         {
             fade?.Kill();
             L10n.Changed -= ShowTexts;
+            SettingsStore.BindingsChanged -= ShowTexts;
             if (resumeButton != null) resumeButton.onClick.RemoveListener(Resume);
             if (restartButton != null) restartButton.onClick.RemoveListener(SceneFlow.Restart);
             if (menuButton != null) menuButton.onClick.RemoveListener(SceneFlow.LoadMenu);
+            if (optionsButton != null) optionsButton.onClick.RemoveListener(OpenOptions);
         }
 
         // Se ve mientras se cambia de idioma, así que se reescribe en el momento.
@@ -110,7 +119,7 @@ namespace Cardstorm.UI
         void Update()
         {
             // Si la selección se pierde (clic fuera), vuelve al primer botón para que el mando siga funcionando.
-            if (!IsPaused) return;
+            if (!IsPaused || suspended) return;
             var es = EventSystem.current;
             if (es != null && es.currentSelectedGameObject == null) SelectFirst();
         }
@@ -119,6 +128,9 @@ namespace Cardstorm.UI
         {
             // Con la escena tapándose, reanudar dejaría correr la partida debajo.
             if (SceneFlow.IsLoading) return;
+            // Con las opciones abiertas, primero se cierran ellas. Esc también es Cancelar: si las acaba de
+            // cerrar en este fotograma, no reanuda.
+            if (suspended || Time.frameCount == frontFrame) return;
             if (IsPaused) Resume();
             else if (CanPause) Pause();
         }
@@ -149,6 +161,29 @@ namespace Cardstorm.UI
             group.blocksRaycasts = false;
             UiTweens.Fade(group, false, fadeTime, ref fade);
             if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(null);
+        }
+
+        void OpenOptions()
+        {
+            if (!IsPaused || suspended || options == null) return;
+            SetSuspended(true);
+            options.Show(OnOptionsClosed);
+        }
+
+        void OnOptionsClosed()
+        {
+            SetSuspended(false);
+            var es = EventSystem.current;
+            if (es != null && IsPaused && optionsButton != null) es.SetSelectedGameObject(optionsButton.gameObject);
+        }
+
+        // Mientras las opciones están encima, la pausa no se puede pulsar ni recupera la selección.
+        public void SetSuspended(bool value)
+        {
+            if (suspended && !value) frontFrame = Time.frameCount;
+            suspended = value;
+            group.interactable = IsPaused && !value;
+            group.blocksRaycasts = IsPaused && !value;
         }
 
         void SelectFirst()

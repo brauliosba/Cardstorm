@@ -18,6 +18,7 @@ namespace Cardstorm.UI
         [SerializeField] Button unlocksButton;
         [SerializeField] TMP_Text comingSoonText;
         [SerializeField] Button optionsButton;
+        [SerializeField] OptionsScreen options;
         [Tooltip("Código de jugador, solo para leerlo.")]
         [SerializeField] TMP_Text codeText;
         [SerializeField] TMP_Text versionText;
@@ -25,8 +26,10 @@ namespace Cardstorm.UI
         protected override void Awake()
         {
             base.Awake();
+            if (options == null) options = FindFirstObjectByType<OptionsScreen>(FindObjectsInactive.Include);
             if (playButton != null) playButton.onClick.AddListener(Play);
             if (quitButton != null) quitButton.onClick.AddListener(Quit);
+            if (optionsButton != null) optionsButton.onClick.AddListener(OpenOptions);
             if (unlocksButton != null) unlocksButton.interactable = false;
             L10n.Changed += ShowTexts;
         }
@@ -37,6 +40,7 @@ namespace Cardstorm.UI
             L10n.Changed -= ShowTexts;
             if (playButton != null) playButton.onClick.RemoveListener(Play);
             if (quitButton != null) quitButton.onClick.RemoveListener(Quit);
+            if (optionsButton != null) optionsButton.onClick.RemoveListener(OpenOptions);
         }
 
         void Start()
@@ -57,6 +61,14 @@ namespace Cardstorm.UI
         void Play()
         {
             if (AcceptsInput) SceneFlow.LoadGameplay();
+        }
+
+        // Al volver, el foco regresa a Opciones (el último botón usado).
+        void OpenOptions()
+        {
+            if (!AcceptsInput || options == null) return;
+            SetSuspended(true);
+            options.Show(() => SetSuspended(false));
         }
 
         void Quit()

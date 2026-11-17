@@ -1,3 +1,4 @@
+using Cardstorm.Core;
 using UnityEngine;
 
 namespace Cardstorm.Combat
@@ -67,7 +68,7 @@ namespace Cardstorm.Combat
 
         void Apply()
         {
-            color.a = startAlpha * Mathf.Clamp01(timer / duration);
+            color.a = startAlpha * GameSettings.Current.FlashScale * Mathf.Clamp01(timer / duration);
             spriteRenderer.color = color;
         }
     }

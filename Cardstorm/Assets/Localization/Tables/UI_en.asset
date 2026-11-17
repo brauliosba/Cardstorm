@@ -298,6 +298,110 @@ MonoBehaviour:
     m_Localized: Version {0}
     m_Metadata:
       m_Items: []
+  - m_Id: 420792448716800
+    m_Localized: OPTIONS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911104
+    m_Localized: Music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911105
+    m_Localized: Sound effects
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911106
+    m_Localized: Camera shake
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911107
+    m_Localized: Normal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911108
+    m_Localized: Reduced
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911109
+    m_Localized: Off
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911110
+    m_Localized: Reduce flashes
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792452911111
+    m_Localized: Controls
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105408
+    m_Localized: CONTROLS
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105409
+    m_Localized: Keyboard
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105410
+    m_Localized: Gamepad
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105411
+    m_Localized: Press a key...
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105412
+    m_Localized: Reset
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105413
+    m_Localized: Move up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105414
+    m_Localized: Move down
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105415
+    m_Localized: Move left
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105416
+    m_Localized: Move right
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105417
+    m_Localized: Top card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105418
+    m_Localized: Left card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105419
+    m_Localized: Right card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105420
+    m_Localized: Bottom card
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105421
+    m_Localized: Card details
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105422
+    m_Localized: Stats
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105423
+    m_Localized: Pause
+    m_Metadata:
+      m_Items: []
+  - m_Id: 420792457105424
+    m_Localized: Swapped with {0}
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []
