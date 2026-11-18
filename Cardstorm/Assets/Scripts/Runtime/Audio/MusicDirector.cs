@@ -12,7 +12,7 @@ namespace Cardstorm.Audio
     public class MusicDirector : MonoBehaviour
     {
         [Tooltip("Vacío en el menú: entonces suena solo la pista del menú.")]
-        [SerializeField] SpawnScheduler scheduler;
+        [SerializeField] WaveSpawner spawner;
 
         [Header("Mixer (opcional)")]
         [SerializeField] AudioMixer mixer;
@@ -108,6 +108,7 @@ namespace Cardstorm.Audio
         // La intensidad solo se lee al empezar un tramo, para no cambiar de pista en mitad de una oleada.
         void ReadSegment()
         {
+            var scheduler = spawner != null ? spawner.Scheduler : null;
             if (scheduler == null || scheduler.CurrentSegmentIndex == segmentIndex) return;
             segmentIndex = scheduler.CurrentSegmentIndex;
             var segment = scheduler.CurrentSegment;
@@ -116,7 +117,7 @@ namespace Cardstorm.Audio
 
         AudioClip Desired()
         {
-            if (scheduler == null) return menuTrack;
+            if (spawner == null) return menuTrack;
             if (bosses.Count > 0)
             {
                 if (finalBossTrack != null && bosses.Contains(finalBossId)) return finalBossTrack;
@@ -165,7 +166,7 @@ namespace Cardstorm.Audio
         // La partida está congelada cuando el tiempo está parado: pausa, subida de nivel, tienda y fin.
         void UpdatePaused()
         {
-            if (pausedSnapshot == null || normalSnapshot == null || scheduler == null) return;
+            if (pausedSnapshot == null || normalSnapshot == null || spawner == null) return;
             bool now = Time.timeScale == 0f;
             if (now == paused) return;
             paused = now;

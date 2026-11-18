@@ -170,7 +170,7 @@ MonoBehaviour:
   sfxGroup: {fileID: 3465316700610023771, guid: 83608d2743115444cac04de61cc4ccfe, type: 2}
   uiGroup: {fileID: -8719667945718587866, guid: 83608d2743115444cac04de61cc4ccfe, type: 2}
   voices: 24
-  testCue: {fileID: 0}
+  testCue: {fileID: 11400000, guid: 3a3c7cf5794922e4b8f1256f3ea8d21a, type: 2}
 --- !u!114 &381588837
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -183,13 +183,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e0ec7fb7120e621448148bb1d8656f53, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Audio.MusicDirector
+  spawner: {fileID: 0}
   mixer: {fileID: 24100000, guid: 83608d2743115444cac04de61cc4ccfe, type: 2}
   volumeParameter: MusicVolume
   musicGroup: {fileID: 3802302908014293862, guid: 83608d2743115444cac04de61cc4ccfe, type: 2}
   pausedSnapshot: {fileID: 303821537194082510, guid: 83608d2743115444cac04de61cc4ccfe, type: 2}
   normalSnapshot: {fileID: 24500006, guid: 83608d2743115444cac04de61cc4ccfe, type: 2}
   snapshotTime: 0.3
-  menuTrack: {fileID: 0}
+  menuTrack: {fileID: 8300000, guid: fb27711a30d44234cb742e276a1743bd, type: 3}
   lowTrack: {fileID: 0}
   midTrack: {fileID: 0}
   highTrack: {fileID: 0}
@@ -211,9 +212,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Audio.UiSounds
   player: {fileID: 381588836}
-  move: {fileID: 0}
-  submit: {fileID: 0}
-  cancel: {fileID: 0}
+  move: {fileID: 11400000, guid: d40a7a1f059821a4182a9e269a6b0286, type: 2}
+  submit: {fileID: 11400000, guid: 3a3c7cf5794922e4b8f1256f3ea8d21a, type: 2}
+  cancel: {fileID: 11400000, guid: 5e661583c3eb1fb46811272561ce9582, type: 2}
 --- !u!1 &503203980
 GameObject:
   m_ObjectHideFlags: 0

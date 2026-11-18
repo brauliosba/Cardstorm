@@ -23,7 +23,6 @@ namespace Cardstorm.Audio
         [SerializeField] SfxCue cardPower;
         [Tooltip("Sin energía suficiente o con la carta aún robándose.")]
         [SerializeField] SfxCue cardUnavailable;
-        [SerializeField] SfxCue energyFull;
 
         [Header("Combate")]
         [SerializeField] SfxCue hit;
@@ -39,6 +38,7 @@ namespace Cardstorm.Audio
         [SerializeField] SfxCue pickupGold;
         [SerializeField] SfxCue levelUp;
         [SerializeField] SfxCue buy;
+        [SerializeField] SfxCue rareCard;
         [SerializeField] SfxCue victory;
         [SerializeField] SfxCue defeat;
 
@@ -47,7 +47,6 @@ namespace Cardstorm.Audio
         [SerializeField, Min(0f)] float xpPitchStep = 0.03f;
         [SerializeField, Min(1f)] float xpMaxPitch = 1.4f;
 
-        bool wasFull = true;
         int xpStreak;
         float lastXpTime = -10f;
 
@@ -85,6 +84,7 @@ namespace Cardstorm.Audio
             RunEvents.GemApplied += OnGemApplied;
             RunEvents.BossSpawned += OnBossSpawned;
             RunEvents.BossKilled += OnBossKilled;
+            RunEvents.RareCardTaken += OnRareCardTaken;
             RunEvents.RunWon += OnRunWon;
         }
 
@@ -114,17 +114,8 @@ namespace Cardstorm.Audio
             RunEvents.GemApplied -= OnGemApplied;
             RunEvents.BossSpawned -= OnBossSpawned;
             RunEvents.BossKilled -= OnBossKilled;
+            RunEvents.RareCardTaken -= OnRareCardTaken;
             RunEvents.RunWon -= OnRunWon;
-        }
-
-        // La energía no avisa al llenarse: se mira cada fotograma. Empieza llena, así que no suena al empezar.
-        void Update()
-        {
-            var energy = cards != null ? cards.Energy : null;
-            if (energy == null) return;
-            bool full = energy.IsFull;
-            if (full && !wasFull) Play(energyFull);
-            wasFull = full;
         }
 
         void Play(SfxCue cue, float pitchScale = 1f)
@@ -185,6 +176,8 @@ namespace Cardstorm.Audio
         void OnBossSpawned(double time, string boss) => Play(bossSpawn);
 
         void OnBossKilled(double time, string boss) => Play(bossDefeated);
+
+        void OnRareCardTaken(double time, string card) => Play(rareCard);
 
         void OnRunWon(double time, int level) => Play(victory);
     }
