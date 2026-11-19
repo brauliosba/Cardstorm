@@ -16,13 +16,15 @@ MonoBehaviour:
   displayName: Esquivar
   description: "Desplazamiento r\xE1pido de 4 unidades en la direcci\xF3n del movimiento,
     con 0,3 s de invulnerabilidad."
-  icon: {fileID: 21300000, guid: 3ba14ff62f572404b951690219d7db4d, type: 3}
+  icon: {fileID: 21300000, guid: 17dd50280126325f5b5f05f84a6d451a, type: 3}
   type: 2
   rarity: 0
   cost: 1
   targeting: 3
   targetRange: 0
-  powerValue: 10
+  maxCopiesPerRun: 0
+  basePrice: 0
+  priceMultiplierPerCopy: 1
   effects:
   - rid: 8012374996973781060
   references:

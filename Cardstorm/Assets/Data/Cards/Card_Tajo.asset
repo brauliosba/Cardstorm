@@ -16,13 +16,15 @@ MonoBehaviour:
   displayName: Tajo
   description: "Golpe en arco de 120\xB0 hacia el enemigo m\xE1s cercano: 18 de da\xF1o
     a todos los alcanzados."
-  icon: {fileID: 21300000, guid: d8246baa1a4b28e429f4bed0eea6daf8, type: 3}
+  icon: {fileID: 21300000, guid: 66cc389c5b0bf46d20a17209611fb39b, type: 3}
   type: 0
   rarity: 0
   cost: 2
   targeting: 0
   targetRange: 12
-  powerValue: 22.9
+  maxCopiesPerRun: 0
+  basePrice: 0
+  priceMultiplierPerCopy: 1
   effects:
   - rid: 8012374996973781059
   references:

@@ -31,6 +31,10 @@ namespace Cardstorm.UI
         [Tooltip("Hijo que hace el «pop» al comprar (Inner). La raíz no, porque la escala la lleva SelectionScale.")]
         [SerializeField] RectTransform content;
 
+        [SerializeField] CardTypeIcons typeIcons;
+        [Tooltip("Icono del tipo junto al coste.")]
+        [SerializeField] Image typeIcon;
+
         Button button;
         CardDefinition shownCard;
         int shownLanguage = -1;
@@ -80,7 +84,7 @@ namespace Cardstorm.UI
                 border.color = color;
                 icon.sprite = card.icon;
                 icon.enabled = card.icon != null;
-                icon.color = color;
+                CardTypeIcons.Apply(typeIcons, typeIcon, card.type);
                 nameText.text = L10n.CardName(card);
                 typeText.text = HudColors.TypeName(card.type);
                 typeText.color = color;

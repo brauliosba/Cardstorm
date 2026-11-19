@@ -15,13 +15,12 @@ MonoBehaviour:
   id: atraccion
   displayName: "Atracci\xF3n"
   description: Aumenta un 50 % el radio de recogida de orbes y monedas.
-  icon: {fileID: 21300000, guid: ff771ce775659304f84fbecef4bb4a44, type: 3}
+  icon: {fileID: 21300000, guid: 73e53b8a1ce8d201f431541a3305ce58, type: 3}
   type: 4
   rarity: 1
   cost: 1
   targeting: 3
   targetRange: 0
-  powerValue: 0
   maxCopiesPerRun: 2
   basePrice: 30
   priceMultiplierPerCopy: 1

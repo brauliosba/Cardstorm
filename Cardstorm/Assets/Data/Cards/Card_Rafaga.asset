@@ -16,13 +16,12 @@ MonoBehaviour:
   displayName: "R\xE1faga"
   description: "Tres proyectiles en abanico de 30\xB0 que infligen 10 de da\xF1o
     cada uno."
-  icon: {fileID: 21300000, guid: d8246baa1a4b28e429f4bed0eea6daf8, type: 3}
+  icon: {fileID: 21300000, guid: d3eec19d560acc4aecd223d8dc0aa0a3, type: 3}
   type: 0
   rarity: 1
   cost: 2
   targeting: 0
   targetRange: 12
-  powerValue: 24.2
   maxCopiesPerRun: 0
   basePrice: 0
   priceMultiplierPerCopy: 1

@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 41ea4c239a9215a40b52775b839d4a8b, type: 3}
+  m_Name: CardTypeIcons
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Cards.CardTypeIcons
+  attack: {fileID: 21300000, guid: 4f8d7f52d0ccd706eb411c291a1f8550, type: 3}
+  defense: {fileID: 21300000, guid: 4bf5a24f1a11dd0ec737f848b3226a17, type: 3}
+  mobility: {fileID: 21300000, guid: 2876f24b4177dd2aa449ec8483bda8c7, type: 3}
+  summon: {fileID: 21300000, guid: 07da7b532973924b60be391f408e27aa, type: 3}
+  power: {fileID: 21300000, guid: 7c62d789f3500e760876299925524b36, type: 3}

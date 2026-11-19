@@ -16,13 +16,12 @@ MonoBehaviour:
   displayName: "Cadena el\xE9ctrica"
   description: "Rayo que salta entre hasta 4 enemigos cercanos e inflige 12 de da\xF1o
     a cada uno."
-  icon: {fileID: 21300000, guid: d8246baa1a4b28e429f4bed0eea6daf8, type: 3}
+  icon: {fileID: 21300000, guid: aaefc37c99918d120ef490cc11f77a6f, type: 3}
   type: 0
   rarity: 2
   cost: 3
   targeting: 0
   targetRange: 10
-  powerValue: 40.8
   maxCopiesPerRun: 0
   basePrice: 0
   priceMultiplierPerCopy: 1

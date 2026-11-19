@@ -45,6 +45,10 @@ namespace Cardstorm.UI
         [Tooltip("Rombo del color de la gema; oculto si la copia no tiene.")]
         [SerializeField] Image gemBadge;
 
+        [SerializeField] CardTypeIcons typeIcons;
+        [Tooltip("Icono del tipo en una esquina del dibujo.")]
+        [SerializeField] Image typeIcon;
+
         RectTransform rect;
         Vector2 basePosition;
         CardInstance shownCard;
@@ -154,6 +158,7 @@ namespace Cardstorm.UI
             art.color = Color.Lerp(color, HudColors.Panel, 0.55f);
             icon.sprite = definition.icon;
             icon.enabled = definition.icon != null;
+            CardTypeIcons.Apply(typeIcons, typeIcon, definition.type);
             costText.text = HudColors.CostLabel(card.Cost);
             nameText.text = L10n.CardName(definition);
             typeText.text = HudColors.TypeLine(definition.type, card.Gem);

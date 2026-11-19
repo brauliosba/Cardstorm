@@ -49,7 +49,6 @@ namespace Cardstorm.UI
             {
                 icon.sprite = card.icon;
                 icon.enabled = card.icon != null;
-                icon.color = color;
             }
             nameText.text = L10n.CardName(card);
             countText.SetText("×{0}", entry.Count);
