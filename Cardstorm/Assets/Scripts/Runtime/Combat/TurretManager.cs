@@ -9,19 +9,37 @@ namespace Cardstorm.Combat
     // Si no quedan libres, se recicla la más antigua.
     public class TurretManager : MonoBehaviour
     {
+        // VFX de una carta de torreta. Lo que quede vacío no se dibuja.
+        public struct TurretLook
+        {
+            public ProjectileVfx Projectile;
+            public ParticleSystem Appear, End;
+        }
+
+        internal const float PixelsPerUnit = 16f;
+
+        // Caída al ponerla, en píxeles por frame de 30 fps; aterriza en el último.
+        static readonly float[] DropPixels = { 6f, 3f, 1f, 0f };
+        const float Frame = 1f / 30f;
+        static readonly float DropTime = (DropPixels.Length - 1) * Frame;
+        // Boca del cañón respecto al centro del sprite, en píxeles, mirando a la derecha.
+        static readonly Vector2 Muzzle = new(8f, 2.5f);
+        const float RecoilTime = 2 * Frame;
+        // Parpadea al final para avisar de que se acaba: 3 frames visible y 3 oculta.
+        const float BlinkTime = 0.6f;
+        const float BlinkHalf = 3 * Frame;
+
         [SerializeField] Turret prefab;
         [SerializeField] GameClock clock;
         [Tooltip("Si se deja vacío, se busca en la escena.")]
         [SerializeField] EnemyManager enemies;
         [Tooltip("Si se deja vacío, se busca en la escena.")]
         [SerializeField] ProjectileManager projectiles;
+        [Tooltip("Si se deja vacío, se busca en la escena.")]
+        [SerializeField] VfxManager vfx;
 
         [Tooltip("Torretas creadas al empezar. No crece.")]
         [SerializeField, Min(1)] int capacity = 6;
-        [Tooltip("Ancho en unidades.")]
-        [SerializeField, Min(0.05f)] float size = 0.6f;
-        [Tooltip("Segundos que tarda en desaparecer al acabar.")]
-        [SerializeField, Min(0.01f)] float fadeDuration = 0.2f;
 
         Stack<Turret> free;
         List<Turret> active;
@@ -37,6 +55,7 @@ namespace Cardstorm.Combat
             if (clock == null) clock = FindFirstObjectByType<GameClock>();
             if (enemies == null) enemies = FindFirstObjectByType<EnemyManager>();
             if (projectiles == null) projectiles = FindFirstObjectByType<ProjectileManager>();
+            if (vfx == null) vfx = FindFirstObjectByType<VfxManager>();
 
             free = new Stack<Turret>(capacity);
             active = new List<Turret>(capacity);
@@ -44,22 +63,25 @@ namespace Cardstorm.Combat
         }
 
         public void Place(Vector2 position, float duration, float fireInterval, float damage, float range,
-            float projectileSpeed, float projectileRadius, float projectileDistance, Color color, in DamageSource source)
+            float projectileSpeed, float projectileRadius, float projectileDistance, Color color, in DamageSource source,
+            in TurretLook look = default)
         {
             if (duration <= 0f) return;
-            if (free.Count == 0) Release(Oldest());
+            if (free.Count == 0) Release(Oldest(), true);
 
             var turret = free.Pop();
             turret.Place(position, duration, fireInterval, damage, range,
-                projectileSpeed, projectileRadius, projectileDistance, color, in source, nextOrder++);
+                projectileSpeed, projectileRadius, projectileDistance, color, in source, in look, nextOrder++);
             turret.ActiveIndex = active.Count;
             active.Add(turret);
+            UpdateView(turret);
         }
 
+        // Sin nube: es para limpiar al acabar la partida.
         public void ReleaseAll()
         {
             for (int i = active.Count - 1; i >= 0; i--)
-                Release(active[i]);
+                Release(active[i], false);
         }
 
         void Update()
@@ -71,25 +93,24 @@ namespace Cardstorm.Combat
             for (int i = active.Count - 1; i >= 0; i--)
             {
                 var turret = active[i];
-                if (!Step(turret, dt)) Release(turret);
+                if (!Step(turret, dt)) Release(turret, true);
+                else UpdateView(turret);
             }
         }
 
         // Devuelve false si la torreta ha terminado.
         bool Step(Turret t, float dt)
         {
-            if (t.Fade >= 0f)
-            {
-                t.Fade += dt;
-                t.SetAlpha(1f - t.Fade / fadeDuration);
-                return t.Fade < fadeDuration;
-            }
-
+            t.Age += dt;
             t.Remaining -= dt;
-            if (t.Remaining <= 0f)
+            if (t.Remaining <= 0f) return false;
+
+            t.Recoil = Mathf.Max(0f, t.Recoil - dt);
+            if (!t.Landed)
             {
-                t.Fade = 0f;
-                return true;
+                if (t.Age < DropTime) return true;
+                t.Landed = true;
+                if (vfx != null) vfx.Burst(t.Look.Appear, t.Position);
             }
 
             t.FireTimer -= dt;
@@ -103,12 +124,27 @@ namespace Cardstorm.Combat
                 return true;
             }
 
-            Vector2 dir = target.Body.position - t.Position;
+            Vector2 toTarget = target.Body.position - t.Position;
+            t.FacingLeft = toTarget.x < 0f;
+            Vector2 muzzle = t.Position + new Vector2(t.FacingLeft ? -Muzzle.x : Muzzle.x, Muzzle.y) / PixelsPerUnit;
+            // Desde la boca; si el enemigo está pegado a ella, desde el centro.
+            Vector2 dir = target.Body.position - muzzle;
+            if (Vector2.Dot(dir, toTarget) <= 0f) dir = toTarget;
+
             if (projectiles != null)
-                projectiles.Launch(t.Position, dir, t.ProjectileSpeed, t.ProjectileDistance,
-                    t.ProjectileRadius, t.Damage, 0, t.Color, t.Source);
+                projectiles.Launch(muzzle, dir, t.ProjectileSpeed, t.ProjectileDistance,
+                    t.ProjectileRadius, t.Damage, 0, t.Color, t.Source, look: t.Look.Projectile);
+            t.Recoil = RecoilTime;
             t.FireTimer += t.FireInterval;
             return true;
+        }
+
+        static void UpdateView(Turret t)
+        {
+            float y = t.Landed ? 0f : DropPixels[Mathf.Min((int)(t.Age / Frame), DropPixels.Length - 1)];
+            float x = t.Recoil > 0f ? (t.FacingLeft ? 1f : -1f) : 0f;
+            bool visible = t.Remaining > BlinkTime || (int)((BlinkTime - t.Remaining) / BlinkHalf) % 2 == 0;
+            t.SetView(new Vector2(x, y), visible);
         }
 
         Enemy Nearest(Vector2 origin, float range)
@@ -139,10 +175,12 @@ namespace Cardstorm.Combat
         }
 
         // Quita en O(1) intercambiando con el último y devuelve la instancia al pool.
-        void Release(Turret turret)
+        void Release(Turret turret, bool puff)
         {
             int index = turret.ActiveIndex;
             if (index < 0 || index >= active.Count || active[index] != turret) return;
+
+            if (puff && vfx != null) vfx.Burst(turret.Look.End, turret.Position);
 
             int last = active.Count - 1;
             if (index != last)
@@ -155,13 +193,11 @@ namespace Cardstorm.Combat
             free.Push(turret);
         }
 
+        // A su tamaño en píxeles: sin escalar, como el resto del pixel art.
         Turret Create()
         {
             var turret = Instantiate(prefab, transform);
             turret.name = $"{prefab.name}_{InstanceCount:00}";
-            var sprite = turret.Renderer.sprite;
-            float spriteSize = sprite != null ? sprite.bounds.size.x : 1f;
-            turret.transform.localScale = Vector3.one * (size / spriteSize);
             turret.gameObject.SetActive(false);
             InstanceCount++;
             return turret;

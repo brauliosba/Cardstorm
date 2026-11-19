@@ -40,3 +40,6 @@ MonoBehaviour:
         projectileSpeed: 15
         projectileRadius: 0.15
         projectileDistance: 10
+        vfx: {fileID: 11400000, guid: 41f94097ddac079e9d3b3768bb28772a, type: 2}
+        appearVfx: {fileID: 7757339158682862560, guid: d307ea7b13cac95ef81c398ecf751b56, type: 3}
+        endVfx: {fileID: 876539390674624426, guid: dd689f781b6f8a51276b2f8005ad7afe, type: 3}

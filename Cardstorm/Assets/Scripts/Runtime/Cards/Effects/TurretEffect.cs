@@ -1,4 +1,5 @@
 using System;
+using Cardstorm.Combat;
 using UnityEngine;
 
 namespace Cardstorm.Cards.Effects
@@ -21,6 +22,14 @@ namespace Cardstorm.Cards.Effects
         [Min(0.01f)] public float projectileRadius = 0.15f;
         [Min(0.1f)] public float projectileDistance = 10f;
 
+        [Header("VFX")]
+        [Tooltip("Opcional. Sin él, el proyectil es el círculo del color del tipo.")]
+        public ProjectileVfx vfx;
+        [Tooltip("Polvo al aterrizar.")]
+        public ParticleSystem appearVfx;
+        [Tooltip("Nube al desaparecer.")]
+        public ParticleSystem endVfx;
+
         public override CardTraits Traits => CardTraits.Damage | CardTraits.Area;
 
         public override void Apply(in CardContext context)
@@ -28,9 +37,10 @@ namespace Cardstorm.Cards.Effects
             var caster = context.Caster;
             if (caster.Turrets == null) return;
 
+            var look = new TurretManager.TurretLook { Projectile = vfx, Appear = appearVfx, End = endVfx };
             // El daño se fija al ponerla: una Furia posterior no la cambia.
             caster.Turrets.Place(context.Origin, duration, fireInterval, damage * context.DamageMultiplier, range * context.AreaMultiplier,
-                projectileSpeed, projectileRadius, projectileDistance, CardPalette.For(context.Card.type), context.Source);
+                projectileSpeed, projectileRadius, projectileDistance, CardPalette.For(context.Card.type), context.Source, look);
         }
     }
 }

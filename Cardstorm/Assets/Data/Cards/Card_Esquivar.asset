@@ -36,3 +36,6 @@ MonoBehaviour:
         distance: 4
         duration: 0.15
         invulnerability: 0.3
+        ghostVfx: {fileID: 7757339158682862560, guid: 8b2b2905e2736f32c3fac25fcaa712a5, type: 3}
+        startVfx: {fileID: 7757339158682862560, guid: 48d164b25936f495003c8bba7bb68ba0, type: 3}
+        endVfx: {fileID: 0}

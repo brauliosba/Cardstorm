@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef74089341c190e4f9035c4790b267b6, type: 3}
+  m_Name: Vfx_Torreta
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Combat.ProjectileVfx
+  sprite: {fileID: 21300000, guid: 982b9341fcd95a2068e3d9541a463f41, type: 3}
+  trail: {fileID: 6029322919028757818, guid: 83f4504bf4f7bcaceb8cda0d8d4c180e, type: 3}
+  muzzle: {fileID: 7757339158682862560, guid: d307ea7b13cac95ef81c398ecf751b56, type: 3}
+  impact: {fileID: 876539390674624426, guid: 10c2f58e980bbcb788f4832507e31efc, type: 3}
+  orient: 1
