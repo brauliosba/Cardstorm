@@ -73,6 +73,7 @@ namespace Cardstorm.Player
 
         public event Action<float> Damaged;
         public event Action Died;
+        public event Action ShieldGranted;
         public event Action ShieldHit;
         public event Action ShieldBroken;
 
@@ -168,6 +169,7 @@ namespace Cardstorm.Player
         {
             if (IsDead) return;
             shield.Grant(amount, duration);
+            if (shield.Active) ShieldGranted?.Invoke();
         }
 
         public void ResetHealth()

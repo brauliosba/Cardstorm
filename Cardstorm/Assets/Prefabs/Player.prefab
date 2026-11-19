@@ -238,7 +238,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 2
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: e1b4d8f2f1be41642bccf3a8986dc7b1, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 162ceea919eb26f86c0a53d7ccc49b47, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -261,13 +261,28 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Player.ShieldView
   health: {fileID: 217550424331203377}
+  frames:
+  - {fileID: 21300000, guid: 162ceea919eb26f86c0a53d7ccc49b47, type: 3}
+  - {fileID: 21300000, guid: 71708720f75a938086a9511d14761d04, type: 3}
+  - {fileID: 21300000, guid: f0d0cb1e4c866de4c5f8be17345227d1, type: 3}
+  - {fileID: 21300000, guid: 7ca73101be6c0297504b91cebe39938f, type: 3}
+  - {fileID: 21300000, guid: cb7d23ab862b7434d0ae6d0246d77885, type: 3}
+  - {fileID: 21300000, guid: 9f86c8128a2d16253bcfea2372ad85f4, type: 3}
+  - {fileID: 21300000, guid: 3baf56091cbe2d0d3397320b4f549f38, type: 3}
+  - {fileID: 21300000, guid: be274cfe81ff7b4ba0bd91c0d7dd677c, type: 3}
+  frameRate: 10
   radius: 0.8
   maxAlpha: 0.9
   minAlpha: 0.3
   warningTime: 1
   blinkInterval: 0.1
+  appearVfx: {fileID: 7757339158682862560, guid: d556065cebdeaa902fdea2671cc09329, type: 3}
+  appearHide: 0.133
+  hitVfx: {fileID: 876539390674624426, guid: 1103db8d6003225ea03f989fe3238d61, type: 3}
+  hitHide: 0.067
   pulseDuration: 0.15
   pulseScale: 0.25
+  breakVfx: {fileID: 876539390674624426, guid: 1eed7339999fc011c2530230df623202, type: 3}
   breakFlashRadius: 1.2
 --- !u!1 &5193990699498407243
 GameObject:

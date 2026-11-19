@@ -64,6 +64,15 @@ namespace Cardstorm.Combat
             }
         }
 
+        // Mueve la instancia ya emitida: en los sistemas en espacio local, sus partículas van con ella
+        // (p. ej. el escudo, que sigue al jugador). No hace nada si el prefab no se ha emitido aún.
+        public void Follow(ParticleSystem prefab, Vector2 position, float scale = 1f)
+        {
+            if (prefab == null) return;
+            scale = Mathf.Max(0.05f, Mathf.Round(scale * 20f) / 20f);
+            if (instances.TryGetValue((prefab, scale), out var inst)) inst.Root.transform.position = position;
+        }
+
         // Deja partículas a lo largo del segmento. carry guarda la distancia sobrante entre llamadas.
         public void Trail(ParticleSystem prefab, Vector2 from, Vector2 to, ref float carry, bool mirror = false)
         {
