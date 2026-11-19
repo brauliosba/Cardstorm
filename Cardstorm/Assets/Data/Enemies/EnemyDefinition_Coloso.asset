@@ -39,7 +39,22 @@ MonoBehaviour:
   chargeDistance: 9
   chargeRecover: 0.6
   chargeCooldown: 3
+  patternInterval: 8
+  patternFirstDelay: 3
+  summonDefinition: {fileID: 0}
+  summonCount: 8
+  summonRadius: 1.5
+  summonWindup: 0.6
+  ringCount: 16
+  ringWindup: 0.8
+  ringDamage: 10
+  ringSpeed: 5
+  ringRange: 14
+  ringRadius: 0.2
+  ringColor: {r: 0.2, g: 0.75, b: 0.647, a: 1}
   isBoss: 0
   shape: 0
   color: {r: 0.54509807, g: 0.3529412, b: 0.16862746, a: 1}
+  sprite: {fileID: 21300000, guid: 59d380c84d4afee49ad16278f8bf387d, type: 3}
+  floats: 0
   poolPrewarm: 10

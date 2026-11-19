@@ -113,6 +113,10 @@ namespace Cardstorm.Enemies
         [Tooltip("Se distinguen por forma además de por color.")]
         public EnemyShape shape = EnemyShape.Circle;
         public Color color = Color.red;
+        [Tooltip("Opcional. Sin sprite se usa la forma. Se ajusta al diámetro y no se tiñe con el color.")]
+        public Sprite sprite;
+        [Tooltip("Con sprite: flota en vez de andar (murciélago, fantasma).")]
+        public bool floats;
 
         [Header("Pool")]
         [Tooltip("Instancias creadas al empezar la partida.")]

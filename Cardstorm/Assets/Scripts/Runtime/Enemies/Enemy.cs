@@ -1,4 +1,5 @@
 using Cardstorm.Core;
+using Cardstorm.Visuals;
 using UnityEngine;
 
 namespace Cardstorm.Enemies
@@ -18,14 +19,20 @@ namespace Cardstorm.Enemies
         [Tooltip("Franja que marca la trayectoria de la embestida. Hijo desactivado del prefab.")]
         [SerializeField] SpriteRenderer chargeTelegraph;
 
+        [Tooltip("Hijo con el sprite del enemigo. Se usa si la definición tiene sprite; si no, la forma.")]
+        [SerializeField] SpriteRenderer art;
+
         const float HitFlashTime = 0.08f;
         const float TelegraphMinAlpha = 0.15f;
         const float TelegraphMaxAlpha = 0.5f;
         const float SlowTintAmount = 0.4f;
         static readonly Color SlowTint = new(0.604f, 0.843f, 1f);  // #9AD7FF
+        // El blanco no se ve sobre un sprite: el golpe y el aviso lo tiñen de rojo.
+        static readonly Color ArtHitTint = new(1f, 0.35f, 0.35f);
 
         Rigidbody2D rb;
         SpriteRenderer spriteRenderer;
+        SpriteMotion artMotion;
         CircleCollider2D circle;
         Slow slow;
 
@@ -79,12 +86,18 @@ namespace Cardstorm.Enemies
         // Opacidad del sprite, de 1 a 0 durante la retirada.
         float fade = 1f;
 
+        // El que se ve: la forma del greybox o el sprite de la definición.
+        SpriteRenderer view;
+        bool usesArt;
+
         void Awake()
         {
             Charge = new ChargeLogic();
             Patterns = new BossPatternLogic();
             rb = GetComponent<Rigidbody2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
+            view = spriteRenderer;
+            if (art != null) artMotion = art.GetComponent<SpriteMotion>();
 
             rb.bodyType = RigidbodyType2D.Dynamic;
             rb.gravityScale = 0f;
@@ -121,8 +134,17 @@ namespace Cardstorm.Enemies
             float diameter = definition.radius * 2f;
             transform.SetPositionAndRotation(position, Quaternion.identity);
             transform.localScale = new Vector3(diameter, diameter, 1f);
-            spriteRenderer.sprite = SpriteFor(definition.shape);
-            spriteRenderer.color = definition.color;
+            usesArt = art != null && definition.sprite != null;
+            spriteRenderer.enabled = !usesArt;
+            if (art != null)
+            {
+                art.gameObject.SetActive(usesArt);
+                if (usesArt) art.sprite = definition.sprite;
+            }
+            if (!usesArt) spriteRenderer.sprite = SpriteFor(definition.shape);
+            if (artMotion != null) artMotion.Floating = definition.floats;
+            view = usesArt ? art : spriteRenderer;
+            view.color = BaseColor;
 
             // Los jefes son demasiado grandes para el flow field: atraviesan los obstáculos.
             circle.excludeLayers = definition.isBoss ? Layers.ObstacleMask : 0;
@@ -183,8 +205,10 @@ namespace Cardstorm.Enemies
 
             // Con menos destellos, el golpe solo aclara el color.
             float flash = GameSettings.Current.FlashScale;
-            spriteRenderer.color = flash >= 1f || Definition == null ? Color.white : Color.Lerp(BaseColor, Color.white, flash);
+            Color hit = usesArt ? ArtHitTint : Color.white;
+            view.color = flash >= 1f || Definition == null ? hit : Color.Lerp(BaseColor, hit, flash);
             FlashTimer = HitFlashTime;
+            if (usesArt && artMotion != null) artMotion.Punch();
         }
 
         // Los jefes se ralentizan a la mitad.
@@ -215,15 +239,18 @@ namespace Cardstorm.Enemies
         internal void SetBlink(bool white)
         {
             if (FlashTimer > 0f || Definition == null) return;
-            spriteRenderer.color = white ? new Color(1f, 1f, 1f, fade) : BaseColor;
+            Color blink = usesArt ? ArtHitTint : Color.white;
+            blink.a = fade;
+            view.color = white ? blink : BaseColor;
         }
 
-        // Color de la definición, teñido de azul mientras está ralentizado.
+        // Color de la definición (blanco con sprite), teñido de azul mientras está ralentizado.
         Color BaseColor
         {
             get
             {
-                Color c = slow.Active ? Color.Lerp(Definition.color, SlowTint, SlowTintAmount) : Definition.color;
+                Color tint = usesArt ? Color.white : Definition.color;
+                Color c = slow.Active ? Color.Lerp(tint, SlowTint, SlowTintAmount) : tint;
                 c.a *= fade;
                 return c;
             }
@@ -232,7 +259,7 @@ namespace Cardstorm.Enemies
         void ApplyBaseColor()
         {
             if (FlashTimer > 0f || Definition == null) return;
-            spriteRenderer.color = BaseColor;
+            view.color = BaseColor;
         }
 
         // Franja de largo length y ancho igual al diámetro, desde el centro hacia dir.

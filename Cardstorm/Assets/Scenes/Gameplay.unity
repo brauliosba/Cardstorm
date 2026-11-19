@@ -1620,6 +1620,7 @@ GameObject:
   - component: {fileID: 330585544}
   - component: {fileID: 330585547}
   - component: {fileID: 330585548}
+  - component: {fileID: 330585549}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1670,7 +1671,7 @@ Camera:
   far clip plane: 5000
   field of view: 40
   orthographic: 1
-  orthographic size: 9
+  orthographic size: 7.921875
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -1777,6 +1778,30 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   CustomBlends: {fileID: 0}
+--- !u!114 &330585549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c88f5cead0c0b2a4eb05b5900433f8d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.RenderPipelines.Universal.2D.Runtime::UnityEngine.Rendering.Universal.PixelPerfectCamera
+  m_ComponentVersion: 1
+  m_AssetsPPU: 16
+  m_RefResolutionX: 480
+  m_RefResolutionY: 270
+  m_CropFrame: 0
+  m_GridSnapping: 0
+  m_FilterMode: 0
+  m_UpscaleRT: 0
+  m_PixelSnapping: 0
+  m_CropFrameX: 0
+  m_CropFrameY: 0
+  m_StretchFill: 0
 --- !u!1 &350652523
 GameObject:
   m_ObjectHideFlags: 0
@@ -6475,14 +6500,12 @@ MonoBehaviour:
   cards: {fileID: 127580127}
   health: {fileID: 478590293}
   enemies: {fileID: 350652524}
-  spawner: {fileID: 829606317}
   cardAttack: {fileID: 11400000, guid: 20c107947c6d14744a55d0885e87b686, type: 2}
   cardDefense: {fileID: 11400000, guid: fb01994db9eeccb41a14e9e485755a7b, type: 2}
   cardMobility: {fileID: 11400000, guid: 03c63d83240e4da4ea2641e40d269f48, type: 2}
   cardSummon: {fileID: 11400000, guid: 42bb04c67ddc07845a8d84a2c6d566ca, type: 2}
   cardPower: {fileID: 11400000, guid: dcd3837a66aa2b54b95ebe151879a432, type: 2}
   cardUnavailable: {fileID: 11400000, guid: 6deca7eb32dc1f948bdfc5ccd6d607fd, type: 2}
-  energyFull: {fileID: 11400000, guid: 854bde47f89a04c44b247f694b793b23, type: 2}
   hit: {fileID: 11400000, guid: 0f2d40431f351144f8809cd315eaa28f, type: 2}
   enemyDeath: {fileID: 11400000, guid: de382b0fd0c8e6546915ba553bd5e1f1, type: 2}
   playerHurt: {fileID: 11400000, guid: e7af68c5626f9e148be3d63dd4769c07, type: 2}
@@ -6490,7 +6513,6 @@ MonoBehaviour:
   bossWarning: {fileID: 11400000, guid: 74217d59ec3abcb4d99588147b6b3fa3, type: 2}
   bossSpawn: {fileID: 11400000, guid: 3cfafec3fb0932c4c9bbcb70f4d9ac65, type: 2}
   bossDefeated: {fileID: 11400000, guid: 9d33c76709bb2804dbae062f86c1a0ec, type: 2}
-  waveStart: {fileID: 11400000, guid: a5294df047acff647870b9e1db926a9f, type: 2}
   pickupXp: {fileID: 11400000, guid: 6eaa17a45b59413409fcda41c97cdc25, type: 2}
   pickupGold: {fileID: 11400000, guid: b3561899e7e6b1d4193af4408c6a84fa, type: 2}
   levelUp: {fileID: 11400000, guid: ad0fa31bf4c087347ba44231d41eb37e, type: 2}
@@ -9972,9 +9994,10 @@ GameObject:
   - component: {fileID: 1894500784}
   - component: {fileID: 1894500783}
   - component: {fileID: 1894500782}
-  - component: {fileID: 1894500781}
   - component: {fileID: 1894500780}
+  - component: {fileID: 1894500781}
   - component: {fileID: 1894500779}
+  - component: {fileID: 1894500786}
   m_Layer: 0
   m_Name: CM PlayerCamera
   m_TagString: Untagged
@@ -10183,6 +10206,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1894500786
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894500778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1a8a05de0ac134f4f9d01bef6b9da077, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Cinemachine::Unity.Cinemachine.CinemachinePixelPerfect
 --- !u!1001 &1941644260
 PrefabInstance:
   m_ObjectHideFlags: 0

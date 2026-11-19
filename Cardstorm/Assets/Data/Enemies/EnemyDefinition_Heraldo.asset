@@ -55,4 +55,5 @@ MonoBehaviour:
   isBoss: 1
   shape: 3
   color: {r: 0.2, g: 0.7490196, b: 0.64705884, a: 1}
+  sprite: {fileID: 21300000, guid: 9554c3dc4f8af4646943b0bf323c2ebb, type: 3}
   poolPrewarm: 1

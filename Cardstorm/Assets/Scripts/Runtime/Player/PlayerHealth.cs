@@ -81,8 +81,9 @@ namespace Cardstorm.Player
             body = GetComponent<CircleCollider2D>();
             enemyFilter = new ContactFilter2D { useTriggers = false };
             enemyFilter.SetLayerMask(Layers.EnemyMask);
+            // Los que empiezan apagados (el círculo del greybox si hay sprite) no parpadean.
             if (blinkRenderers == null || blinkRenderers.Length == 0)
-                blinkRenderers = GetComponentsInChildren<SpriteRenderer>();
+                blinkRenderers = Array.FindAll(GetComponentsInChildren<SpriteRenderer>(), r => r.enabled);
             Current = maxHealth;
         }
 
