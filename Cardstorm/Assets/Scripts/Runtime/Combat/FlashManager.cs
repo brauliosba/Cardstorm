@@ -23,6 +23,10 @@ namespace Cardstorm.Combat
         [SerializeField, Range(0f, 1f)] float areaAlpha = 0.5f;
 
         [Header("Aviso")]
+        [Tooltip("Anillo del aviso en pixel art. Si se deja vacío, se usa el anillo general.")]
+        [SerializeField] Sprite telegraphRingSprite;
+        [Tooltip("Círculo que crece dentro del aviso. Si se deja vacío, se usa el círculo general.")]
+        [SerializeField] Sprite telegraphFillSprite;
         [SerializeField, Range(0f, 1f)] float telegraphRingAlpha = 0.7f;
         [SerializeField, Range(0f, 1f)] float telegraphFillAlpha = 0.3f;
 
@@ -56,6 +60,8 @@ namespace Cardstorm.Combat
         List<Flash> active;
         float circleSize = 1f;
         float ringSize = 1f;
+        float telegraphRingSize = 1f;
+        float telegraphFillSize = 1f;
         int nextId = 1;
 
         public int ActiveCount => active.Count;
@@ -66,6 +72,10 @@ namespace Cardstorm.Combat
             if (clock == null) clock = FindFirstObjectByType<GameClock>();
             if (circleSprite != null) circleSize = circleSprite.bounds.size.x;
             if (ringSprite != null) ringSize = ringSprite.bounds.size.x;
+            if (telegraphRingSprite == null) telegraphRingSprite = ringSprite;
+            if (telegraphFillSprite == null) telegraphFillSprite = circleSprite;
+            if (telegraphRingSprite != null) telegraphRingSize = telegraphRingSprite.bounds.size.x;
+            if (telegraphFillSprite != null) telegraphFillSize = telegraphFillSprite.bounds.size.x;
 
             free = new Stack<SpriteRenderer>(capacity);
             active = new List<Flash>(capacity);
@@ -92,8 +102,8 @@ namespace Cardstorm.Combat
         {
             if (free.Count < 2 || duration <= 0f) return 0;
 
-            var ring = Take(ringSprite, ringSize, center, radius, sortingOrder + 1);
-            var fill = Take(circleSprite, circleSize, center, 0f, sortingOrder);
+            var ring = Take(telegraphRingSprite, telegraphRingSize, center, radius, sortingOrder + 1);
+            var fill = Take(telegraphFillSprite, telegraphFillSize, center, 0f, sortingOrder);
             int id = nextId++;
             active.Add(new Flash { Id = id, Kind = Kind.Telegraph, Main = ring, Fill = fill, Color = color, Radius = radius, Duration = duration });
             SetAlpha(ring, color, telegraphRingAlpha);
@@ -154,7 +164,7 @@ namespace Cardstorm.Combat
                 if (f.Kind == Kind.Area)
                     SetAlpha(f.Main, f.Color, areaAlpha * scale * (1f - t));
                 else if (f.Kind == Kind.Telegraph)
-                    SetRadius(f.Fill, circleSize, f.Radius * t);
+                    SetRadius(f.Fill, telegraphFillSize, f.Radius * t);
                 else
                     SetAlpha(f.Line, f.Color, scale * (1f - t));
 

@@ -2632,6 +2632,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1123449740601694053, guid: e9aff930dca893a4a852b0e53d2e497e, type: 3}
+      propertyPath: m_fontSize
+      value: 26.85
+      objectReference: {fileID: 0}
     - target: {fileID: 1539161389924264001, guid: e9aff930dca893a4a852b0e53d2e497e, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -3771,6 +3775,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Combat.StrikeManager
   clock: {fileID: 829606318}
   flashes: {fileID: 1795648340}
+  vfx: {fileID: 0}
+  cameraShake: {fileID: 0}
 --- !u!4 &810661531
 Transform:
   m_ObjectHideFlags: 0
@@ -149545,6 +149551,8 @@ MonoBehaviour:
   capacity: 16
   areaDuration: 0.25
   areaAlpha: 0.5
+  telegraphRingSprite: {fileID: 21300000, guid: e414857bf0673b55adf46012c3e5a858, type: 3}
+  telegraphFillSprite: {fileID: 21300000, guid: aebb3d6d47643c282f34c7a00b0e5cf2, type: 3}
   telegraphRingAlpha: 0.7
   telegraphFillAlpha: 0.3
   lineMaterial: {fileID: 0}

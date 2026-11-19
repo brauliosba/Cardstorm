@@ -29,6 +29,13 @@ namespace Cardstorm.Cards.Effects
         [Tooltip("Radio al que está dibujado el VFX. Se escala con el radio final.")]
         [Min(0.1f)] public float vfxRadius = 2f;
 
+        [Tooltip("Partículas que caen sobre el punto y llegan al acabar el aviso. Solo con aviso.")]
+        public ParticleSystem fallVfx;
+
+        [Tooltip("Sacudida de cámara al impactar. 0 = ninguna.")]
+        [Min(0f)] public float shake;
+        [Min(0f)] public float shakeDuration = 0.25f;
+
         public override CardTraits Traits =>
             CardTraits.Damage | CardTraits.Area | (center == AreaCenter.Target ? CardTraits.Targeted : CardTraits.None);
 
@@ -40,9 +47,14 @@ namespace Cardstorm.Cards.Effects
             float finalRadius = radius * context.AreaMultiplier;
             Color color = CardPalette.For(context.Card.type);
 
-            if (delay > 0f && caster.Strikes != null)
+            if (caster.Strikes != null)
             {
-                caster.Strikes.Schedule(point, finalRadius, finalDamage, delay, color, context.Source, slowFactor, slowDuration);
+                var visuals = new StrikeManager.Visuals
+                {
+                    Impact = vfx, Fall = fallVfx, Scale = finalRadius / vfxRadius,
+                    Shake = shake, ShakeDuration = shakeDuration,
+                };
+                caster.Strikes.Schedule(point, finalRadius, finalDamage, delay, color, context.Source, slowFactor, slowDuration, visuals);
                 return;
             }
 
