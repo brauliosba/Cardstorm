@@ -10,6 +10,7 @@ namespace Cardstorm.Combat
     public class Projectile : MonoBehaviour
     {
         SpriteRenderer spriteRenderer;
+        Sprite defaultSprite;
 
         // Enemigos ya golpeados, para no dañar dos veces al mismo al atravesarlo.
         internal readonly HashSet<Enemy> Hit = new();
@@ -31,15 +32,19 @@ namespace Cardstorm.Combat
         internal DamageSource Source { get; private set; }
         internal string HostileSourceId { get; private set; }
         internal int ActiveIndex { get; set; } = -1;
+        internal ProjectileVfx Vfx { get; private set; }
+        // Distancia recorrida desde la última partícula de la estela.
+        internal float TrailCarry { get; set; }
 
         void Awake()
         {
             spriteRenderer = GetComponent<SpriteRenderer>();
+            defaultSprite = spriteRenderer.sprite;
         }
 
         // Reinicia todo el estado: la instancia viene del pool.
         internal void Launch(Vector2 origin, Vector2 direction, float speed, float maxDistance, float radius, float damage, int pierce, Color color, bool hostile,
-            int fullHits, float extraHitDamage, in DamageSource source, string hostileSourceId)
+            int fullHits, float extraHitDamage, in DamageSource source, string hostileSourceId, ProjectileVfx vfx)
         {
             Position = origin;
             Direction = direction;
@@ -54,10 +59,22 @@ namespace Cardstorm.Combat
             Hostile = hostile;
             Source = source;
             HostileSourceId = hostileSourceId;
+            Vfx = vfx;
+            TrailCarry = 0f;
             Hit.Clear();
 
-            spriteRenderer.color = color;
-            transform.localScale = Vector3.one * (radius * 2f);  // El sprite mide 1 unidad.
+            if (vfx != null && vfx.sprite != null)
+            {
+                spriteRenderer.sprite = vfx.sprite;
+                spriteRenderer.color = Color.white;
+                transform.localScale = Vector3.one;
+            }
+            else
+            {
+                spriteRenderer.sprite = defaultSprite;
+                spriteRenderer.color = color;
+                transform.localScale = Vector3.one * (radius * 2f);  // El sprite mide 1 unidad.
+            }
             transform.position = origin;
             gameObject.SetActive(true);
         }
@@ -65,6 +82,7 @@ namespace Cardstorm.Combat
         internal void Deactivate()
         {
             Hit.Clear();
+            Vfx = null;
             ActiveIndex = -1;
             gameObject.SetActive(false);
         }

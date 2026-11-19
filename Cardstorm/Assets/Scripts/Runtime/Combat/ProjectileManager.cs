@@ -12,6 +12,7 @@ namespace Cardstorm.Combat
     {
         [SerializeField] Projectile prefab;
         [SerializeField] GameClock clock;
+        [SerializeField] VfxManager vfx;
 
         [Tooltip("Instancias creadas al empezar la partida.")]
         [SerializeField, Min(0)] int prewarm = 64;
@@ -31,6 +32,7 @@ namespace Cardstorm.Combat
         void Awake()
         {
             if (clock == null) clock = FindFirstObjectByType<GameClock>();
+            if (vfx == null) vfx = FindFirstObjectByType<VfxManager>();
 
             filter = new ContactFilter2D { useTriggers = false };
             filter.SetLayerMask(Layers.EnemyMask | Layers.ObstacleMask);
@@ -53,20 +55,21 @@ namespace Cardstorm.Combat
 
         // fullHits: impactos con el daño completo (por defecto, todos); los siguientes hacen damage · extraHitDamage.
         public void Launch(Vector2 origin, Vector2 dir, float speed, float maxDistance, float radius, float damage, int pierce, Color color,
-            in DamageSource source, int fullHits = -1, float extraHitDamage = 1f)
-            => Spawn(origin, dir, speed, maxDistance, radius, damage, pierce, color, false, fullHits, extraHitDamage, in source, null);
+            in DamageSource source, int fullHits = -1, float extraHitDamage = 1f, ProjectileVfx look = null)
+            => Spawn(origin, dir, speed, maxDistance, radius, damage, pierce, color, false, fullHits, extraHitDamage, in source, null, look);
 
         // Proyectil enemigo: daña al jugador y se destruye contra obstáculos. sourceId: id del enemigo que dispara.
         public void LaunchHostile(Vector2 origin, Vector2 dir, float speed, float maxDistance, float radius, float damage, Color color, string sourceId)
-            => Spawn(origin, dir, speed, maxDistance, radius, damage, 0, color, true, -1, 1f, DamageSource.None, sourceId);
+            => Spawn(origin, dir, speed, maxDistance, radius, damage, 0, color, true, -1, 1f, DamageSource.None, sourceId, null);
 
         void Spawn(Vector2 origin, Vector2 dir, float speed, float maxDistance, float radius, float damage, int pierce, Color color, bool hostile,
-            int fullHits, float extraHitDamage, in DamageSource source, string hostileSourceId)
+            int fullHits, float extraHitDamage, in DamageSource source, string hostileSourceId, ProjectileVfx look)
         {
             if (dir.sqrMagnitude < 1e-6f || speed <= 0f || maxDistance <= 0f) return;
 
             var projectile = pool.Get();
-            projectile.Launch(origin, dir.normalized, speed, maxDistance, radius, damage, pierce, color, hostile, fullHits, extraHitDamage, in source, hostileSourceId);
+            projectile.Launch(origin, dir.normalized, speed, maxDistance, radius, damage, pierce, color, hostile, fullHits, extraHitDamage, in source, hostileSourceId, look);
+            if (look != null && vfx != null) vfx.Burst(look.muzzle, origin, dir);
             projectile.ActiveIndex = active.Count;
             active.Add(projectile);
         }
@@ -75,6 +78,7 @@ namespace Cardstorm.Combat
         {
             for (int i = active.Count - 1; i >= 0; i--)
                 Release(active[i]);
+            if (vfx != null) vfx.ClearAll();
         }
 
         void Update()
@@ -100,7 +104,12 @@ namespace Cardstorm.Combat
             for (int i = 0; i < count; i++)
             {
                 var collider = hits[i].collider;
-                if (collider.gameObject.layer == Layers.Obstacle) return false;
+                Vector2 at = p.Position + p.Direction * hits[i].distance;
+                if (collider.gameObject.layer == Layers.Obstacle)
+                {
+                    Impact(p, at);
+                    return false;
+                }
 
                 if (p.Hostile)
                 {
@@ -116,14 +125,27 @@ namespace Cardstorm.Combat
                 float damage = p.Hit.Count < p.FullHits ? p.Damage : p.Damage * p.ExtraHitDamage;
                 p.Hit.Add(enemy);
                 enemy.TakeDamage(damage, p.Source);
+                Impact(p, at);
                 p.PierceLeft--;
                 if (p.PierceLeft < 0) return false;
             }
 
+            Vector2 from = p.Position;
             p.Position += p.Direction * step;
             p.Travelled += step;
+            if (p.Vfx != null && vfx != null)
+            {
+                float carry = p.TrailCarry;
+                vfx.Trail(p.Vfx.trail, from, p.Position, ref carry);
+                p.TrailCarry = carry;
+            }
             p.transform.position = p.Position;
             return p.Travelled < p.MaxDistance;
+        }
+
+        void Impact(Projectile p, Vector2 at)
+        {
+            if (p.Vfx != null && vfx != null) vfx.Burst(p.Vfx.impact, at, p.Direction);
         }
 
         // Inserción.

@@ -927,6 +927,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Combat.ProjectileManager
   prefab: {fileID: 8313055915397941267, guid: 56012cac2d3f08345828aba7c2ad9a1c, type: 3}
   clock: {fileID: 829606318}
+  vfx: {fileID: 0}
   prewarm: 64
   maxSize: 256
 --- !u!4 &355111580
@@ -4881,6 +4882,51 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 480, y: 40}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &1215376948
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1215376950}
+  - component: {fileID: 1215376949}
+  m_Layer: 0
+  m_Name: Vfx
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1215376949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215376948}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0c33190db28850c4db4416b2f9337d45, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Combat.VfxManager
+  clock: {fileID: 829606318}
+--- !u!4 &1215376950
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1215376948}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1425472187
 GameObject:
   m_ObjectHideFlags: 0
@@ -163716,3 +163762,4 @@ SceneRoots:
   - {fileID: 1816950342}
   - {fileID: 700631869}
   - {fileID: 1003975574}
+  - {fileID: 1215376950}

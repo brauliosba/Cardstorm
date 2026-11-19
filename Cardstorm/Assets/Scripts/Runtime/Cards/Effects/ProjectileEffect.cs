@@ -1,4 +1,5 @@
 using System;
+using Cardstorm.Combat;
 using UnityEngine;
 
 namespace Cardstorm.Cards.Effects
@@ -25,6 +26,9 @@ namespace Cardstorm.Cards.Effects
         [Tooltip("Ángulo total del abanico cuando hay más de un proyectil.")]
         [Range(0f, 360f)] public float spreadDegrees;
 
+        [Tooltip("Opcional. Sin él, el proyectil es el círculo del color del tipo.")]
+        public ProjectileVfx vfx;
+
         public override CardTraits Traits => CardTraits.Damage | CardTraits.Projectile | CardTraits.Targeted;
 
         public override void Apply(in CardContext context)
@@ -42,7 +46,7 @@ namespace Cardstorm.Cards.Effects
                 float angle = count > 1 ? -spreadDegrees * 0.5f + spreadDegrees * i / (count - 1) : 0f;
                 Vector2 dir = Quaternion.Euler(0f, 0f, angle) * context.Aim;
                 projectiles.Launch(context.Origin, dir, speed, maxDistance, radius, finalDamage, finalPierce, color, context.Source,
-                    pierce + 1, m.extraPierceDamage);
+                    pierce + 1, m.extraPierceDamage, vfx);
             }
         }
     }
