@@ -40,7 +40,7 @@ namespace Cardstorm.UI
         {
             if (titleText != null) titleText.SetText(L10n.Get(L10nKeys.Level), level);
             UpdateQueue(position, total);
-            if (goldText != null) goldText.SetText(L10n.Get(L10nKeys.Gold), gold);
+            if (goldText != null) goldText.SetText("{0}", gold);
             gemsButton.interactable = gemsAvailable;
             if (removalHint != null) removalHint.gameObject.SetActive(offersRemoval);
             Open(lockInput);

@@ -96,7 +96,7 @@ namespace Cardstorm.UI
         public void UpdateOffer(ShopOffer<CardDefinition> offer)
         {
             int gold = offer.State.Gold;
-            UiTweens.Count(goldText, L10n.Get(L10nKeys.Gold), shownGold, gold, ref goldCount);
+            UiTweens.Count(goldText, "{0}", shownGold, gold, ref goldCount);
             shownGold = gold;
 
             for (int i = 0; i < slots.Length; i++)

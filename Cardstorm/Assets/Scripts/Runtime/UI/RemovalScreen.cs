@@ -59,7 +59,7 @@ namespace Cardstorm.UI
 
             priceText.SetText(L10n.Get(L10nKeys.RemovalPrice), price);
             priceText.color = gold >= price ? priceColor : HudColors.NotEnough;
-            goldText.SetText(L10n.Get(L10nKeys.Gold), gold);
+            goldText.SetText("{0}", gold);
             if (noteText != null)
             {
                 noteText.gameObject.SetActive(anyBlocked);

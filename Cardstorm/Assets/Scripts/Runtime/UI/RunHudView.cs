@@ -29,11 +29,7 @@ namespace Cardstorm.UI
 
         void OnDisable() => L10n.Changed -= OnLanguageChanged;
 
-        void OnLanguageChanged()
-        {
-            shownLevel = -1;
-            shownGold = -1;
-        }
+        void OnLanguageChanged() => shownLevel = -1;
 
         void LateUpdate()
         {
@@ -49,7 +45,7 @@ namespace Cardstorm.UI
             if (state.Gold != shownGold)
             {
                 shownGold = state.Gold;
-                goldText.SetText(L10n.Get(L10nKeys.Gold), shownGold);
+                goldText.SetText("{0}", shownGold);
             }
 
             var levels = state.Levels;
