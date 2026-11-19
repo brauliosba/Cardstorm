@@ -44,7 +44,8 @@ namespace Cardstorm.Combat
         // así que el giro va en cada partícula y no en el renderer.
         // scale agranda el efecto entero (tamaño y forma de emisión), p. ej. para ajustarlo a un radio.
         // mirror voltea en horizontal las partículas del raíz (necesita la rotación 3D en el prefab).
-        public void Burst(ParticleSystem prefab, Vector2 position, Vector2 direction = default, bool orient = false, float scale = 1f, bool mirror = false)
+        // tint tiñe todas las partículas (p. ej. los trozos de un enemigo con su color).
+        public void Burst(ParticleSystem prefab, Vector2 position, Vector2 direction = default, bool orient = false, float scale = 1f, bool mirror = false, Color? tint = null)
         {
             if (prefab == null) return;
             var inst = Get(prefab, scale);
@@ -52,7 +53,7 @@ namespace Cardstorm.Combat
             float angle = direction.sqrMagnitude > 1e-6f ? Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg : 0f;
             inst.Root.transform.SetPositionAndRotation(position, Quaternion.Euler(0f, 0f, angle));
 
-            var p = new ParticleSystem.EmitParams { startColor = FlashColor() };
+            var p = new ParticleSystem.EmitParams { startColor = FlashColor(tint ?? Color.white) };
             for (int s = 0; s < inst.Systems.Length; s++)
             {
                 // La rotación de las partículas va en sentido horario.
@@ -102,10 +103,11 @@ namespace Cardstorm.Combat
         }
 
         // Con menos destellos, las partículas salen más transparentes.
-        static Color32 FlashColor()
+        static Color32 FlashColor() => FlashColor(Color.white);
+
+        static Color32 FlashColor(Color c)
         {
-            Color c = Color.white;
-            c.a = GameSettings.Current.FlashScale;
+            c.a *= GameSettings.Current.FlashScale;
             return c;
         }
 

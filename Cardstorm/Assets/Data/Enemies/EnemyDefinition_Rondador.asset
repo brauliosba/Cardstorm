@@ -56,4 +56,6 @@ MonoBehaviour:
   shape: 0
   color: {r: 0.8509804, g: 0.3254902, b: 0.30980393, a: 1}
   sprite: {fileID: 21300000, guid: 54cf76871fd2af447968a12ea765f95d, type: 3}
+  floats: 0
+  deathColor: {r: 0.9098039, g: 0.27058825, b: 0.21568628, a: 1}
   poolPrewarm: 350

@@ -117,6 +117,16 @@ namespace Cardstorm.Enemies
         public Sprite sprite;
         [Tooltip("Con sprite: flota en vez de andar (murciélago, fantasma).")]
         public bool floats;
+        [Tooltip("Tinte de los trozos al morir. Mejor el color principal del sprite que el de la forma.")]
+        public Color deathColor = Color.white;
+        [Tooltip("Opcional: muerte propia (jefes). Se emite sin escalar en lugar de la nube y los trozos.")]
+        public ParticleSystem deathVfx;
+        [Tooltip("Sacudida de cámara al morir. 0 = ninguna.")]
+        [Min(0f)] public float deathShake;
+        [Min(0f)] public float deathShakeDuration = 0.3f;
+
+        // Lo que dura la muerte propia: la recompensa del jefe y la victoria esperan a que acabe.
+        public float DeathDuration => deathVfx != null ? deathVfx.main.startLifetime.constantMax : 0f;
 
         [Header("Pool")]
         [Tooltip("Instancias creadas al empezar la partida.")]

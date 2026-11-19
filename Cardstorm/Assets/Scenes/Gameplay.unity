@@ -844,8 +844,11 @@ MonoBehaviour:
   player: {fileID: 478590299}
   pool: {fileID: 350652526}
   flowField: {fileID: 350652525}
-  projectiles: {fileID: 0}
-  map: {fileID: 0}
+  projectiles: {fileID: 355111579}
+  map: {fileID: 1816950341}
+  deathVfx: {fileID: 876539390674624426, guid: 5b4f32dc043ec40eeb95f2eeb0d8ae08, type: 3}
+  deathChunksVfx: {fileID: 96014255814617626, guid: c0b81234e34cd64ab46a302e53a3969c, type: 3}
+  vfx: {fileID: 1215376949}
   despawnDistance: 60
   despawnTime: 5
 --- !u!114 &350652525
@@ -149666,9 +149669,8 @@ MonoBehaviour:
   clock: {fileID: 829606318}
   enemies: {fileID: 350652524}
   projectiles: {fileID: 355111579}
+  vfx: {fileID: 0}
   capacity: 6
-  size: 0.6
-  fadeDuration: 0.2
 --- !u!4 &1833366531
 Transform:
   m_ObjectHideFlags: 0

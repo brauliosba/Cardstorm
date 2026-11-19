@@ -57,4 +57,8 @@ MonoBehaviour:
   color: {r: 0.24705882, g: 0.44705883, b: 0.9490196, a: 1}
   sprite: {fileID: 21300000, guid: 8d3dfe9ba98c4bc429a19d34494fdef0, type: 3}
   floats: 1
+  deathColor: {r: 0.7529412, g: 0.79607844, b: 0.8627451, a: 1}
+  deathVfx: {fileID: 876539390674624426, guid: 98ba47d03a0e46069709958c6378a07f, type: 3}
+  deathShake: 0.4
+  deathShakeDuration: 0.3
   poolPrewarm: 1

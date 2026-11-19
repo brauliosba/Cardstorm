@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Cardstorm.CameraRig;
 using Cardstorm.Combat;
 using Cardstorm.Core;
 using Cardstorm.Navigation;
@@ -19,6 +20,16 @@ namespace Cardstorm.Enemies
         [SerializeField] ProjectileManager projectiles;
         [Tooltip("Para que las invocaciones no caigan en obstáculos. Si se deja vacío, se busca en la escena.")]
         [SerializeField] MapBounds map;
+
+        [Header("Muerte")]
+        [Tooltip("Nube al morir. Dibujada para un enemigo de 1 u: se escala con el diámetro.")]
+        [SerializeField] ParticleSystem deathVfx;
+        [Tooltip("Trozos al morir, teñidos con el deathColor del enemigo.")]
+        [SerializeField] ParticleSystem deathChunksVfx;
+        [Tooltip("Si se deja vacío, se busca en la escena.")]
+        [SerializeField] VfxManager vfx;
+        [Tooltip("Si se deja vacío, se busca en la escena.")]
+        [SerializeField] CameraShake cameraShake;
 
         [Header("Despawn de seguridad")]
         [Tooltip("Si un enemigo pasa más de despawnTime segundos a más de esta distancia del jugador, se recicla.")]
@@ -51,6 +62,8 @@ namespace Cardstorm.Enemies
         {
             if (projectiles == null) projectiles = FindFirstObjectByType<ProjectileManager>();
             if (map == null) map = FindFirstObjectByType<MapBounds>();
+            if (vfx == null) vfx = FindFirstObjectByType<VfxManager>();
+            if (cameraShake == null) cameraShake = FindFirstObjectByType<CameraShake>();
         }
 
         void Start()
@@ -79,7 +92,26 @@ namespace Cardstorm.Enemies
             Vector2 position = enemy.Body.position;
             TotalKilled++;
             EnemyKilled?.Invoke(enemy, position);
+            PlayDeathVfx(enemy, position);
             Remove(enemy);
+        }
+
+        // Los jefes llevan su propia muerte: escalada a su tamaño, la común queda demasiado gruesa.
+        void PlayDeathVfx(Enemy enemy, Vector2 position)
+        {
+            var definition = enemy.Definition;
+            if (definition.deathShake > 0f && cameraShake != null)
+                cameraShake.AddShake(definition.deathShake, definition.deathShakeDuration);
+            if (vfx == null) return;
+            if (definition.deathVfx != null)
+            {
+                vfx.Burst(definition.deathVfx, position);
+                return;
+            }
+            if (enemy.IsBoss) return;
+            float scale = enemy.Radius * 2f;
+            vfx.Burst(deathChunksVfx, position, scale: scale, tint: enemy.Definition.deathColor);
+            vfx.Burst(deathVfx, position, scale: scale);
         }
 
         // Recicla sin contar como muerte.

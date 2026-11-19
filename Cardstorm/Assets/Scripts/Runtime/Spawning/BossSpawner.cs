@@ -4,6 +4,7 @@ using Cardstorm.CameraRig;
 using Cardstorm.Core;
 using Cardstorm.Enemies;
 using Cardstorm.Localization;
+using Cardstorm.Player;
 using Cardstorm.Progression;
 using UnityEngine;
 
@@ -41,6 +42,8 @@ namespace Cardstorm.Spawning
         [SerializeField] RunManager run;
         [SerializeField] GameClock clock;
         [SerializeField] MapBounds map;
+        [Tooltip("Si se deja vacío, se busca en la escena.")]
+        [SerializeField] PlayerHealth playerHealth;
 
         [SerializeField] List<BossEntry> bosses = new();
 
@@ -56,6 +59,8 @@ namespace Cardstorm.Spawning
         readonly List<Enemy> alive = new(2);
         readonly List<BossEntry> aliveEntries = new(2);
         readonly List<double> spawnTimes = new(2);
+        // Jefes muertos cuya animación de muerte aún no ha acabado, con el momento en que acaba.
+        readonly List<(BossEntry entry, double at)> defeated = new(2);
         SpawnPositionPicker picker;
         Camera cam;
 
@@ -66,7 +71,7 @@ namespace Cardstorm.Spawning
         // Segundos que le quedan al jefe actual, o -1 si no tiene límite.
         public float CurrentTimeLeft => alive.Count > 0 ? TimeLeft(alive.Count - 1) : -1f;
 
-        // Al matar a un jefe, después de la victoria si era el final.
+        // Al acabar la animación de muerte de un jefe, después de la victoria si era el final.
         public event Action<BossEntry> BossDefeated;
 
         double Now => clock != null ? clock.Elapsed : Time.timeSinceLevelLoad;
@@ -78,6 +83,7 @@ namespace Cardstorm.Spawning
             if (run == null) run = FindFirstObjectByType<RunManager>();
             if (clock == null) clock = FindFirstObjectByType<GameClock>();
             if (map == null) map = FindFirstObjectByType<MapBounds>();
+            if (playerHealth == null) playerHealth = FindFirstObjectByType<PlayerHealth>();
         }
 
         void Start()
@@ -96,6 +102,8 @@ namespace Cardstorm.Spawning
                 }
                 if (!Mathf.Approximately(boss.health, entry.definition.maxHealth))
                     Debug.LogWarning($"[BossSpawner] {boss.name}: la curva dice {boss.health} de vida y la definición {entry.definition.maxHealth}. Manda la definición.", entry.definition);
+                if (entry.definition.deathVfx == null)
+                    Debug.LogWarning($"[BossSpawner] {entry.definition.name} no tiene deathVfx: su recompensa y la victoria saldrán sin esperar a la animación de muerte.", entry.definition);
                 if (!entry.definition.isBoss)
                     Debug.LogWarning($"[BossSpawner] {entry.definition.name} no tiene marcado isBoss: se quedará atascado y se puede reciclar por distancia.", entry.definition);
             }
@@ -152,6 +160,16 @@ namespace Cardstorm.Spawning
                 if (enemy.IsRetreating || TimeLeft(i) != 0f) continue;
                 enemy.BeginRetreat(retreatDuration, retreatSpeed);
             }
+
+            for (int i = 0; i < defeated.Count;)
+            {
+                if (Now < defeated[i].at) { i++; continue; }
+                var entry = defeated[i].entry;
+                defeated.RemoveAt(i);
+                if (playerHealth != null && playerHealth.IsDead) continue;
+                if (entry.isFinal && run != null) run.Win();
+                BossDefeated?.Invoke(entry);
+            }
         }
 
         // Depuración: deja «seconds» al límite del jefe actual. Devuelve false si no hay jefe o no tiene límite.
@@ -178,8 +196,7 @@ namespace Cardstorm.Spawning
             var entry = aliveEntries[index];
             RemoveAt(index);
             RunEvents.RaiseBossKilled(Now, entry.definition.id);
-            if (entry.isFinal && run != null) run.Win();
-            BossDefeated?.Invoke(entry);
+            defeated.Add((entry, Now + entry.definition.DeathDuration));
         }
 
         // Al terminar la retirada. Con F10 también se retira a los jefes, pero sin el evento.
