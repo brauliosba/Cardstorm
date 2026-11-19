@@ -752,6 +752,8 @@ MonoBehaviour:
   strikes: {fileID: 0}
   flashes: {fileID: 0}
   turrets: {fileID: 0}
+  vfx: {fileID: 0}
+  powerVfx: {fileID: 876539390674624426, guid: 5b1b65d679ade73a7178014ef67ee221, type: 3}
   densityRadius: 2
   repeatFlashRadius: 0.8
   run: {fileID: 0}

@@ -26,6 +26,8 @@ namespace Cardstorm.Cards
         [SerializeField] TurretManager turrets;
         [Tooltip("Partículas de las cartas. Si se deja vacío, se busca en la escena.")]
         [SerializeField] VfxManager vfx;
+        [Tooltip("Partículas en el jugador al jugar cualquier carta de poder.")]
+        [SerializeField] ParticleSystem powerVfx;
 
         [Tooltip("Radio con el que se cuentan los vecinos al buscar la zona más densa.")]
         [Min(0.1f)] [SerializeField] float densityRadius = 2f;
@@ -72,6 +74,12 @@ namespace Cardstorm.Cards
             if (turrets == null) turrets = FindFirstObjectByType<TurretManager>();
             if (vfx == null) vfx = FindFirstObjectByType<VfxManager>();
             if (run == null) run = FindFirstObjectByType<RunManager>();
+        }
+
+        // El anillo y los rayos del poder van en espacio local: siguen al jugador.
+        void LateUpdate()
+        {
+            if (vfx != null) vfx.Follow(powerVfx, transform.position);
         }
 
         // Se crea al primer uso: RunManager fija la semilla en su Start.
@@ -123,6 +131,8 @@ namespace Cardstorm.Cards
             var effects = card.effects;
             for (int i = 0; i < effects.Count; i++)
                 effects[i]?.Apply(in context);
+
+            if (card.type == CardType.Power && vfx != null) vfx.Burst(powerVfx, transform.position);
 
 #if UNITY_EDITOR
             Debug.DrawLine(origin, targetPoint, target != null ? Color.yellow : Color.cyan, 0.5f);
