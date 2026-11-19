@@ -36,3 +36,6 @@ MonoBehaviour:
         damage: 18
         range: 2.5
         arcDegrees: 120
+        vfx: {fileID: 876539390674624426, guid: a8b2b966e37775350d8b5a64549900de, type: 3}
+        vfxRange: 2.5
+        hitVfx: {fileID: 876539390674624426, guid: b1611d1ab3c7e66fb5527c1420587fe0, type: 3}

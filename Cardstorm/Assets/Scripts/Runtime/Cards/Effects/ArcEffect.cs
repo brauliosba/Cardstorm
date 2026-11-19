@@ -23,6 +23,15 @@ namespace Cardstorm.Cards.Effects
 
         [Range(1f, 360f)] public float arcDegrees = 120f;
 
+        [Tooltip("Barrido del golpe, dibujado hacia +X. Si está vacío se usa el ArcFlash.")]
+        public ParticleSystem vfx;
+
+        [Tooltip("Alcance al que está dibujado el barrido.")]
+        [Min(0.1f)] public float vfxRange = 2.5f;
+
+        [Tooltip("Corte en cada enemigo alcanzado, girado hacia él.")]
+        public ParticleSystem hitVfx;
+
         public override CardTraits Traits =>
             CardTraits.Damage | CardTraits.Area | (arcDegrees < 360f ? CardTraits.Targeted : CardTraits.None);
 
@@ -39,6 +48,7 @@ namespace Cardstorm.Cards.Effects
             float finalRange = range * context.AreaMultiplier;
             float finalArc = Mathf.Min(360f, arcDegrees * context.AreaMultiplier);
             Vector2 origin = context.Origin;
+            var vfxManager = context.Caster.Vfx;
             int count = Physics2D.OverlapCircle(origin, finalRange + SearchMargin, filter, Buffer);
 
             // Un collider por enemigo: cada uno se golpea como mucho una vez.
@@ -51,9 +61,16 @@ namespace Cardstorm.Cards.Effects
                 if (!Targeting.InArc(origin, context.Aim, pos, finalArc)) continue;
 
                 enemy.TakeDamage(finalDamage, context.Source);
+                if (vfxManager != null) vfxManager.Burst(hitVfx, pos, pos - origin, orient: true);
             }
 
             Array.Clear(Buffer, 0, count);
+
+            if (vfx != null && vfxManager != null)
+            {
+                vfxManager.Burst(vfx, origin, context.Aim, orient: true, scale: finalRange / vfxRange);
+                return;
+            }
 
             var flash = context.Caster.ArcFlash;
             if (flash != null) flash.Show(context.Aim, finalRange, finalArc, CardPalette.For(context.Card.type));
