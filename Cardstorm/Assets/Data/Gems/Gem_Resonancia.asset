@@ -15,7 +15,7 @@ MonoBehaviour:
   id: resonancia
   displayName: Resonancia
   description: 50 % de probabilidad de lanzarse dos veces.
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 50f7c7b45aecacb3f4b1af4b0308a128, type: 3}
   color: {r: 0.73333335, g: 0.41960785, b: 0.8509804, a: 1}
   required: 1
   modifiers:

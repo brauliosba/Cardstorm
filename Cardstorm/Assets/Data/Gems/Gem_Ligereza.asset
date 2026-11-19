@@ -15,7 +15,7 @@ MonoBehaviour:
   id: ligereza
   displayName: Ligereza
   description: "\u221220 % de coste."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: f1f65a00a1c3bbaed3e8baf74effd1bd, type: 3}
   color: {r: 0.9490196, g: 0.7882353, b: 0.29803923, a: 1}
   required: 16
   modifiers:

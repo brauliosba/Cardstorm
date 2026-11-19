@@ -42,8 +42,9 @@ namespace Cardstorm.UI
         [Tooltip("Velo que se retira de arriba abajo durante el robo.")]
         [SerializeField] Image drawVeil;
 
-        [Tooltip("Rombo del color de la gema; oculto si la copia no tiene.")]
+        [Tooltip("Icono de la gema; oculto si la copia no tiene.")]
         [SerializeField] Image gemBadge;
+        Sprite defaultGemBadge;
 
         [SerializeField] CardTypeIcons typeIcons;
         [Tooltip("Icono del tipo en una esquina del dibujo.")]
@@ -170,7 +171,13 @@ namespace Cardstorm.UI
             if (gemBadge != null)
             {
                 gemBadge.gameObject.SetActive(card.Gem != null);
-                if (card.Gem != null) gemBadge.color = card.Gem.color;
+                if (card.Gem != null)
+                {
+                    if (defaultGemBadge == null) defaultGemBadge = gemBadge.sprite;
+                    bool hasIcon = card.Gem.icon != null;
+                    gemBadge.sprite = hasIcon ? card.Gem.icon : defaultGemBadge;
+                    gemBadge.color = hasIcon ? Color.white : card.Gem.color;
+                }
             }
         }
 

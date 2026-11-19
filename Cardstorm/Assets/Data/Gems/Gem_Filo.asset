@@ -15,7 +15,7 @@ MonoBehaviour:
   id: filo
   displayName: Filo
   description: "+25 % de da\xF1o."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: 8930c0be5b3ad2ce26d2404f7f751f1b, type: 3}
   color: {r: 0.8784314, g: 0.3529412, b: 0.30980393, a: 1}
   required: 1
   modifiers:

@@ -15,7 +15,7 @@ MonoBehaviour:
   id: prioridad_vida
   displayName: "Prioridad: m\xE1s vida"
   description: "Apunta al enemigo con m\xE1s vida."
-  icon: {fileID: 0}
+  icon: {fileID: 21300000, guid: b6370cf2f37798abde2975bb39b5da06, type: 3}
   color: {r: 0.8784314, g: 0.8784314, b: 0.8784314, a: 1}
   required: 8
   modifiers:

@@ -21,8 +21,9 @@ namespace Cardstorm.UI
         [SerializeField] TMP_Text costText;
         [Tooltip("Imagen oscura sobre la carta cuando no se puede elegir.")]
         [SerializeField] Image veil;
-        [Tooltip("Rombo del color de la gema; oculto si la copia no tiene.")]
+        [Tooltip("Icono de la gema; oculto si la copia no tiene.")]
         [SerializeField] Image gemBadge;
+        Sprite defaultGemBadge;
 
         Button button;
         Tween wobble;
@@ -62,7 +63,13 @@ namespace Cardstorm.UI
             if (gemBadge != null)
             {
                 gemBadge.gameObject.SetActive(gem != null);
-                if (gem != null) gemBadge.color = gem.color;
+                if (gem != null)
+                {
+                    if (defaultGemBadge == null) defaultGemBadge = gemBadge.sprite;
+                    bool hasIcon = gem.icon != null;
+                    gemBadge.sprite = hasIcon ? gem.icon : defaultGemBadge;
+                    gemBadge.color = hasIcon ? Color.white : gem.color;
+                }
             }
 
             Button.interactable = entry.Allowed;

@@ -15,7 +15,7 @@ namespace Cardstorm.UI
         const float NoCardsVeil = 0.6f;
 
         [SerializeField] Image border;
-        [Tooltip("Rombo del color de la gema.")]
+        [Tooltip("Icono de la gema.")]
         [SerializeField] Image badge;
         [SerializeField] TMP_Text nameText;
         [SerializeField] TMP_Text descriptionText;
@@ -44,8 +44,9 @@ namespace Cardstorm.UI
             if (border != null) border.color = gem.color;
             if (badge != null)
             {
+                // El icono ya trae su color; sin icono se tiñe la forma por defecto.
                 if (gem.icon != null) badge.sprite = gem.icon;
-                badge.color = gem.color;
+                badge.color = gem.icon != null ? Color.white : gem.color;
             }
             nameText.text = L10n.GemName(gem);
             if (descriptionText != null) descriptionText.text = L10n.GemDescription(gem);
