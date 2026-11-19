@@ -69,7 +69,7 @@ namespace Cardstorm.Combat
 
             var projectile = pool.Get();
             projectile.Launch(origin, dir.normalized, speed, maxDistance, radius, damage, pierce, color, hostile, fullHits, extraHitDamage, in source, hostileSourceId, look);
-            if (look != null && vfx != null) vfx.Burst(look.muzzle, origin, dir);
+            if (look != null && vfx != null) vfx.Burst(look.muzzle, origin, dir, look.orient);
             projectile.ActiveIndex = active.Count;
             active.Add(projectile);
         }
@@ -145,7 +145,7 @@ namespace Cardstorm.Combat
 
         void Impact(Projectile p, Vector2 at)
         {
-            if (p.Vfx != null && vfx != null) vfx.Burst(p.Vfx.impact, at, p.Direction);
+            if (p.Vfx != null && vfx != null) vfx.Burst(p.Vfx.impact, at, p.Direction, p.Vfx.orient);
         }
 
         // Inserción.

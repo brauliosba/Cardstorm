@@ -75,7 +75,8 @@ namespace Cardstorm.Combat
                 spriteRenderer.color = color;
                 transform.localScale = Vector3.one * (radius * 2f);  // El sprite mide 1 unidad.
             }
-            transform.position = origin;
+            float angle = vfx != null && vfx.orient && vfx.sprite != null ? Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg : 0f;
+            transform.SetPositionAndRotation(origin, Quaternion.Euler(0f, 0f, angle));
             gameObject.SetActive(true);
         }
 

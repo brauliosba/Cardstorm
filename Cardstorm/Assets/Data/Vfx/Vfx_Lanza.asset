@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef74089341c190e4f9035c4790b267b6, type: 3}
+  m_Name: Vfx_Lanza
+  m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Combat.ProjectileVfx
+  sprite: {fileID: 21300000, guid: 903b1edb1a8804e08f5da0ff44ccec0f, type: 3}
+  trail: {fileID: 6029322919028757818, guid: c93eea7afe3179e8fbd020092f8c2675, type: 3}
+  muzzle: {fileID: 7757339158682862560, guid: 3dd38aae50914ea2e7472f4cdf350636, type: 3}
+  impact: {fileID: 876539390674624426, guid: 40eee556fe835bf3f61cbec37b493f8d, type: 3}
+  orient: 1

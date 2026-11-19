@@ -39,7 +39,9 @@ namespace Cardstorm.Combat
         }
 
         // Emite el burst de cada sistema del prefab (el raíz y sus hijos).
-        public void Burst(ParticleSystem prefab, Vector2 position, Vector2 direction = default)
+        // Con orient, las partículas del raíz salen giradas hacia direction; la instancia es compartida,
+        // así que el giro va en cada partícula y no en el renderer.
+        public void Burst(ParticleSystem prefab, Vector2 position, Vector2 direction = default, bool orient = false)
         {
             if (prefab == null) return;
             var inst = Get(prefab);
@@ -49,7 +51,12 @@ namespace Cardstorm.Combat
 
             var p = new ParticleSystem.EmitParams { startColor = FlashColor() };
             for (int s = 0; s < inst.Systems.Length; s++)
+            {
+                // La rotación de las partículas va en sentido horario.
+                if (s == 0 && orient) p.rotation = -angle;
+                else p.ResetRotation();
                 inst.Systems[s].Emit(p, inst.Counts[s]);
+            }
         }
 
         // Deja partículas a lo largo del segmento. carry guarda la distancia sobrante entre llamadas.

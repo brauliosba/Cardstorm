@@ -39,3 +39,4 @@ MonoBehaviour:
         pierce: 2
         count: 1
         spreadDegrees: 0
+        vfx: {fileID: 11400000, guid: c0cd3e7620f14918993175dfa71c6f8a, type: 2}

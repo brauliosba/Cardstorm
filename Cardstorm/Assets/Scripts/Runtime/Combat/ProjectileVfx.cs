@@ -18,5 +18,8 @@ namespace Cardstorm.Combat
 
         [Tooltip("Al golpear a un enemigo o un obstáculo.")]
         public ParticleSystem impact;
+
+        [Tooltip("Gira la bala, la salida y el impacto hacia donde va el proyectil. Para sprites alargados.")]
+        public bool orient;
     }
 }
