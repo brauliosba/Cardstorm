@@ -23,7 +23,7 @@ MonoBehaviour:
   moveSpeed: 1.26
   radius: 3
   mass: 200
-  behaviour: 0
+  behaviour: 3
   preferredDistance: 6
   distanceTolerance: 1
   fireInterval: 2
@@ -41,7 +41,7 @@ MonoBehaviour:
   chargeCooldown: 3
   patternInterval: 8
   patternFirstDelay: 3
-  summonDefinition: {fileID: 0}
+  summonDefinition: {fileID: 11400000, guid: ce2dbab91483a8241b9a0e3aeb9990ea, type: 2}
   summonCount: 8
   summonRadius: 1.5
   summonWindup: 0.6
