@@ -18,7 +18,8 @@ namespace Cardstorm.Combat
             public float Spacing;
         }
 
-        readonly Dictionary<ParticleSystem, Instance> instances = new();
+        // Una instancia por prefab y escala: la escala va en el transform y lo comparten todas sus partículas.
+        readonly Dictionary<(ParticleSystem, float), Instance> instances = new();
         bool paused;
 
         void Awake()
@@ -41,10 +42,11 @@ namespace Cardstorm.Combat
         // Emite el burst de cada sistema del prefab (el raíz y sus hijos).
         // Con orient, las partículas del raíz salen giradas hacia direction; la instancia es compartida,
         // así que el giro va en cada partícula y no en el renderer.
-        public void Burst(ParticleSystem prefab, Vector2 position, Vector2 direction = default, bool orient = false)
+        // scale agranda el efecto entero (tamaño y forma de emisión), p. ej. para ajustarlo a un radio.
+        public void Burst(ParticleSystem prefab, Vector2 position, Vector2 direction = default, bool orient = false, float scale = 1f)
         {
             if (prefab == null) return;
-            var inst = Get(prefab);
+            var inst = Get(prefab, scale);
 
             float angle = direction.sqrMagnitude > 1e-6f ? Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg : 0f;
             inst.Root.transform.SetPositionAndRotation(position, Quaternion.Euler(0f, 0f, angle));
@@ -94,13 +96,25 @@ namespace Cardstorm.Combat
             return c;
         }
 
-        Instance Get(ParticleSystem prefab)
+        Instance Get(ParticleSystem prefab, float scale = 1f)
         {
-            if (instances.TryGetValue(prefab, out var inst)) return inst;
+            // Redondeada para no crear una instancia por cada valor casi igual.
+            scale = Mathf.Max(0.05f, Mathf.Round(scale * 20f) / 20f);
+            var key = (prefab, scale);
+            if (instances.TryGetValue(key, out var inst)) return inst;
 
             var root = Instantiate(prefab, transform);
-            root.name = prefab.name;
+            root.name = scale == 1f ? prefab.name : $"{prefab.name} x{scale:0.##}";
             var systems = root.GetComponentsInChildren<ParticleSystem>(true);
+            if (scale != 1f)
+            {
+                root.transform.localScale = Vector3.one * scale;
+                foreach (var s in systems)
+                {
+                    var main = s.main;
+                    main.scalingMode = ParticleSystemScalingMode.Hierarchy;
+                }
+            }
             var counts = new int[systems.Length];
             for (int s = 0; s < systems.Length; s++)
             {
@@ -110,7 +124,7 @@ namespace Cardstorm.Combat
 
             float rate = root.emission.rateOverDistance.constant;
             inst = new Instance { Root = root, Systems = systems, Counts = counts, Spacing = rate > 0f ? 1f / rate : 0f };
-            instances.Add(prefab, inst);
+            instances.Add(key, inst);
             if (paused) root.Pause(true);
             return inst;
         }

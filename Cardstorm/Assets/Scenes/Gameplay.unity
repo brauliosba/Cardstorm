@@ -183,6 +183,14 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2664324199609604321, guid: 90c100c509dddab43a10c506745eca4d, type: 3}
+      propertyPath: run
+      value: 
+      objectReference: {fileID: 200822254}
+    - target: {fileID: 2664324199609604321, guid: 90c100c509dddab43a10c506745eca4d, type: 3}
+      propertyPath: vfx
+      value: 
+      objectReference: {fileID: 1215376949}
+    - target: {fileID: 2664324199609604321, guid: 90c100c509dddab43a10c506745eca4d, type: 3}
       propertyPath: enemies
       value: 
       objectReference: {fileID: 350652524}

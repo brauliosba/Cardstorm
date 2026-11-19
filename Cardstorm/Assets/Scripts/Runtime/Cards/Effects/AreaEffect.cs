@@ -23,6 +23,12 @@ namespace Cardstorm.Cards.Effects
         [Range(0.05f, 1f)] public float slowFactor = 1f;
         [Min(0f)] public float slowDuration;
 
+        [Tooltip("Partículas del impacto. Si se deja vacío, se dibuja el círculo del color del tipo.")]
+        public ParticleSystem vfx;
+
+        [Tooltip("Radio al que está dibujado el VFX. Se escala con el radio final.")]
+        [Min(0.1f)] public float vfxRadius = 2f;
+
         public override CardTraits Traits =>
             CardTraits.Damage | CardTraits.Area | (center == AreaCenter.Target ? CardTraits.Targeted : CardTraits.None);
 
@@ -41,7 +47,8 @@ namespace Cardstorm.Cards.Effects
             }
 
             AreaDamage.Apply(point, finalRadius, finalDamage, context.Source, slowFactor, slowDuration);
-            if (caster.Flashes != null) caster.Flashes.Area(point, finalRadius, color);
+            if (vfx != null && caster.Vfx != null) caster.Vfx.Burst(vfx, point, scale: finalRadius / vfxRadius);
+            else if (caster.Flashes != null) caster.Flashes.Area(point, finalRadius, color);
         }
     }
 }

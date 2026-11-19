@@ -24,6 +24,8 @@ namespace Cardstorm.Cards
         [SerializeField] FlashManager flashes;
         [Tooltip("Torretas. Si se deja vacío, se busca en la escena.")]
         [SerializeField] TurretManager turrets;
+        [Tooltip("Partículas de las cartas. Si se deja vacío, se busca en la escena.")]
+        [SerializeField] VfxManager vfx;
 
         [Tooltip("Radio con el que se cuentan los vecinos al buscar la zona más densa.")]
         [Min(0.1f)] [SerializeField] float densityRadius = 2f;
@@ -48,6 +50,7 @@ namespace Cardstorm.Cards
         public StrikeManager Strikes => strikes;
         public FlashManager Flashes => flashes;
         public TurretManager Turrets => turrets;
+        public VfxManager Vfx => vfx;
 
         // null si el jugador no tiene PlayerStatsBinder.
         public PlayerStats Stats => statsBinder != null ? statsBinder.Stats : null;
@@ -67,6 +70,7 @@ namespace Cardstorm.Cards
             if (strikes == null) strikes = FindFirstObjectByType<StrikeManager>();
             if (flashes == null) flashes = FindFirstObjectByType<FlashManager>();
             if (turrets == null) turrets = FindFirstObjectByType<TurretManager>();
+            if (vfx == null) vfx = FindFirstObjectByType<VfxManager>();
             if (run == null) run = FindFirstObjectByType<RunManager>();
         }
 

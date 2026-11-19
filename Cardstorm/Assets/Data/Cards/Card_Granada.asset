@@ -39,3 +39,5 @@ MonoBehaviour:
         delay: 0
         slowFactor: 1
         slowDuration: 0
+        vfx: {fileID: 876539390674624426, guid: 6e5e6e6dc0502bdf558462c05f3de056, type: 3}
+        vfxRadius: 2
