@@ -149560,6 +149560,17 @@ MonoBehaviour:
   beamCapacity: 12
   beamWidth: 0.12
   beamDuration: 0.15
+  boltMaterials:
+  - {fileID: 2100000, guid: bf41eb65e2f875d8d9901aa98a99bc73, type: 2}
+  - {fileID: 2100000, guid: 4fe5b88d47c5cbdfd2197aeec5cab896, type: 2}
+  - {fileID: 2100000, guid: e51b1f377727915f6a74d784b2a1bf73, type: 2}
+  - {fileID: 2100000, guid: 8365c96d6d31ae1edfd1d2a25671f782, type: 2}
+  - {fileID: 2100000, guid: 65796f353fd32609c6029bef1bc58cd8, type: 2}
+  boltFrameTime: 0.033333335
+  boltWidth: 0.3125
+  boltTile: 0.75
+  boltStep: 0.375
+  boltJitter: 0.25
 --- !u!4 &1795648341
 Transform:
   m_ObjectHideFlags: 0

@@ -40,7 +40,24 @@ namespace Cardstorm.Combat
         [SerializeField, Min(0.01f)] float beamWidth = 0.12f;
         [SerializeField, Min(0.01f)] float beamDuration = 0.15f;
 
-        enum Kind { Area, Telegraph, Beam }
+        [Header("Rayo quebrado")]
+        [Tooltip("Un material por frame, con el perfil del rayo a lo ancho y repetido a lo largo. Vacío = segmento recto.")]
+        [SerializeField] Material[] boltMaterials;
+        [SerializeField, Min(0.01f)] float boltFrameTime = 1f / 30f;
+        [Tooltip("Ancho de las texturas.")]
+        [SerializeField, Min(0.01f)] float boltWidth = 0.3125f;
+        [Tooltip("Largo de las texturas: se repiten cada tanto.")]
+        [SerializeField, Min(0.01f)] float boltTile = 0.75f;
+        [Tooltip("Distancia media entre los quiebros.")]
+        [SerializeField, Min(0.05f)] float boltStep = 0.375f;
+        [Tooltip("Desvío máximo de cada quiebro; alternan de lado.")]
+        [SerializeField, Min(0f)] float boltJitter = 0.25f;
+
+        const int MaxBoltPoints = 32;
+        const float PixelsPerUnit = 16f;
+        static readonly Vector3[] BoltPoints = new Vector3[MaxBoltPoints];
+
+        enum Kind { Area, Telegraph, Beam, Bolt }
 
         struct Flash
         {
@@ -53,6 +70,8 @@ namespace Cardstorm.Combat
             public float Radius;
             public float Timer;
             public float Duration;
+            public int Frame;          // Solo en los rayos quebrados
+            public Vector2 From, To;
         }
 
         Stack<SpriteRenderer> free;
@@ -116,12 +135,75 @@ namespace Cardstorm.Combat
         {
             if (freeLines.Count < 1) return;
 
+            // El pool es compartido con los rayos quebrados: se deja como lo crea CreateLine.
             var line = freeLines.Pop();
+            line.sharedMaterial = lineMaterial != null ? lineMaterial : spriteMaterial;
+            line.textureMode = LineTextureMode.Stretch;
+            line.startWidth = beamWidth;
+            line.endWidth = beamWidth;
+            line.numCapVertices = 2;
+            line.positionCount = 2;
             line.SetPosition(0, from);
             line.SetPosition(1, to);
             SetAlpha(line, color, GameSettings.Current.FlashScale);
             line.gameObject.SetActive(true);
             active.Add(new Flash { Id = nextId++, Kind = Kind.Beam, Line = line, Color = color, Duration = beamDuration });
+        }
+
+        // Rayo en zigzag que cambia de forma en cada frame. Sin texturas, es un segmento recto del color.
+        public void Bolt(Vector2 from, Vector2 to, Color color)
+        {
+            if (boltMaterials == null || boltMaterials.Length == 0)
+            {
+                Beam(from, to, color);
+                return;
+            }
+            if (freeLines.Count < 1) return;
+
+            var line = freeLines.Pop();
+            line.textureMode = LineTextureMode.Tile;
+            line.textureScale = new Vector2(1f / boltTile, 1f);
+            line.startWidth = boltWidth;
+            line.endWidth = boltWidth;
+            line.numCapVertices = 0;
+            SetAlpha(line, Color.white, GameSettings.Current.FlashScale);
+            SetBoltFrame(line, 0, from, to);
+            line.gameObject.SetActive(true);
+            active.Add(new Flash
+            {
+                Id = nextId++, Kind = Kind.Bolt, Line = line, Color = Color.white,
+                Duration = boltMaterials.Length * boltFrameTime, From = from, To = to,
+            });
+        }
+
+        // Un material por frame y no un MaterialPropertyBlock: con un bloque, el shader de sprites
+        // pierde el color y el volteo que pone el motor, y la línea no se ve.
+        void SetBoltFrame(LineRenderer line, int frame, Vector2 from, Vector2 to)
+        {
+            line.sharedMaterial = boltMaterials[frame];
+
+            Vector2 delta = to - from;
+            float length = delta.magnitude;
+            int n = Mathf.Clamp(Mathf.RoundToInt(length / boltStep), 1, MaxBoltPoints - 1);
+            Vector2 normal = length > 1e-4f ? new Vector2(-delta.y, delta.x) / length : Vector2.zero;
+            float minJitter = Mathf.Min(1f / PixelsPerUnit, boltJitter);
+            for (int i = 0; i <= n; i++)
+            {
+                Vector2 p = to;
+                if (i == 0) p = from;
+                else if (i < n)
+                {
+                    float t = (i + Random.Range(-0.35f, 0.35f)) / n;
+                    float side = (i & 1) == 0 ? -1f : 1f;
+                    p = from + delta * t + normal * (side * Random.Range(minJitter, boltJitter));
+                    // En la rejilla de píxeles, para que los quiebros salgan nítidos.
+                    p.x = Mathf.Round(p.x * PixelsPerUnit) / PixelsPerUnit;
+                    p.y = Mathf.Round(p.y * PixelsPerUnit) / PixelsPerUnit;
+                }
+                BoltPoints[i] = p;
+            }
+            line.positionCount = n + 1;
+            for (int i = 0; i <= n; i++) line.SetPosition(i, BoltPoints[i]);
         }
 
         public void Cancel(int id)
@@ -165,6 +247,16 @@ namespace Cardstorm.Combat
                     SetAlpha(f.Main, f.Color, areaAlpha * scale * (1f - t));
                 else if (f.Kind == Kind.Telegraph)
                     SetRadius(f.Fill, telegraphFillSize, f.Radius * t);
+                else if (f.Kind == Kind.Bolt)
+                {
+                    // Se apaga con sus frames, no con el alfa.
+                    int frame = Mathf.Min((int)(f.Timer / boltFrameTime), boltMaterials.Length - 1);
+                    if (frame != f.Frame)
+                    {
+                        f.Frame = frame;
+                        SetBoltFrame(f.Line, frame, f.From, f.To);
+                    }
+                }
                 else
                     SetAlpha(f.Line, f.Color, scale * (1f - t));
 

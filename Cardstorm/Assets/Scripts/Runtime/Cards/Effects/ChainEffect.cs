@@ -24,6 +24,15 @@ namespace Cardstorm.Cards.Effects
         [Tooltip("Distancia máxima entre un enemigo alcanzado y el siguiente.")]
         [Min(0.1f)] public float jumpRange = 4f;
 
+        [Tooltip("Segundos entre un salto y el siguiente: el daño llega con el rayo. 0 = todos a la vez.")]
+        [Min(0f)] public float hopTime;
+
+        [Tooltip("Chasquido en cada enemigo alcanzado.")]
+        public ParticleSystem hitVfx;
+
+        [Tooltip("Destello en el jugador al lanzar el rayo, girado hacia el objetivo.")]
+        public ParticleSystem muzzleVfx;
+
         public override CardTraits Traits => CardTraits.Damage | CardTraits.Area | CardTraits.Targeted;
 
         public override void Apply(in CardContext context)
@@ -51,14 +60,26 @@ namespace Cardstorm.Cards.Effects
             for (int i = 0; i < Hits.Count; i++) HitEnemies.Add(Candidates[Hits[i]]);
 
             var flashes = caster.Flashes;
+            var strikes = caster.Strikes;
+            var vfx = caster.Vfx;
             Color color = CardPalette.For(context.Card.type);
             float finalDamage = damage * context.DamageMultiplier;
             Vector2 from = context.Origin;
+            if (vfx != null && Hits.Count > 0) vfx.Burst(muzzleVfx, from, Positions[Hits[0]] - from, orient: true);
             for (int i = 0; i < Hits.Count; i++)
             {
                 Vector2 to = Positions[Hits[i]];
-                if (flashes != null) flashes.Beam(from, to, color);
-                HitEnemies[i].TakeDamage(finalDamage, context.Source);
+                if (strikes != null)
+                {
+                    var previous = i > 0 ? HitEnemies[i - 1] : null;
+                    strikes.ScheduleChainHit(HitEnemies[i], previous, from, finalDamage, hopTime * i, color, context.Source, hitVfx);
+                }
+                else
+                {
+                    if (flashes != null) flashes.Bolt(from, to, color);
+                    HitEnemies[i].TakeDamage(finalDamage, context.Source);
+                    if (vfx != null) vfx.Burst(hitVfx, to, to - from, orient: true);
+                }
                 from = to;
             }
 

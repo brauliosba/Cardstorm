@@ -36,3 +36,6 @@ MonoBehaviour:
         damage: 12
         maxTargets: 4
         jumpRange: 4
+        hopTime: 0.067
+        hitVfx: {fileID: 876539390674624426, guid: 40a8af96d9ffa4ae30cdf695fc7634a5, type: 3}
+        muzzleVfx: {fileID: 7757339158682862560, guid: e4fe0d2e691e6d63d6fd015e052348f9, type: 3}

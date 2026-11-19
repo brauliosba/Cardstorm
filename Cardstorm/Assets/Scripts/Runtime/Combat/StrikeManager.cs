@@ -55,6 +55,11 @@ namespace Cardstorm.Combat
             public float Remaining;
             public DamageSource Source;
             public ParticleSystem Vfx;
+            // Solo en los saltos de un rayo: sale del enemigo anterior, o de Origin si no lo hay.
+            public bool Bolt;
+            public Enemy From;
+            public int FromSpawn;
+            public Color Color;
         }
 
         readonly List<Strike> pending = new(32);
@@ -103,14 +108,38 @@ namespace Cardstorm.Combat
             else hits.Add(hit);
         }
 
+        // Salto de un rayo: pasado el retraso, dibuja el rayo desde el enemigo anterior (o desde el origen)
+        // y daña al enemigo. Un enemigo muerto conserva su posición hasta que vuelve a salir del pool.
+        public void ScheduleChainHit(Enemy enemy, Enemy from, Vector2 origin, float damage, float delay, Color color,
+            in DamageSource source, ParticleSystem hitVfx = null)
+        {
+            var hit = new Hit
+            {
+                Enemy = enemy, Spawn = enemy.Spawns, Origin = origin,
+                Damage = damage, Remaining = delay, Source = source, Vfx = hitVfx,
+                Bolt = true, From = from, FromSpawn = from != null ? from.Spawns : 0, Color = color,
+            };
+            if (delay <= 0f) Land(in hit);
+            else hits.Add(hit);
+        }
+
         void Land(in Hit hit)
         {
             var enemy = hit.Enemy;
-            if (enemy == null || !enemy.IsAlive || enemy.Spawns != hit.Spawn) return;
+            if (enemy == null || enemy.Spawns != hit.Spawn) return;
 
             Vector2 pos = enemy.Body.position;
+            Vector2 origin = hit.Origin;
+            if (hit.Bolt)
+            {
+                // El rayo llega aunque otro golpe lo haya matado: el salto siguiente sale de aquí.
+                if (hit.From != null && hit.From.Spawns == hit.FromSpawn) origin = hit.From.Body.position;
+                if (flashes != null) flashes.Bolt(origin, pos, hit.Color);
+            }
+            if (!enemy.IsAlive) return;
+
             enemy.TakeDamage(hit.Damage, in hit.Source);
-            if (hit.Vfx != null && vfx != null) vfx.Burst(hit.Vfx, pos, pos - hit.Origin, orient: true);
+            if (hit.Vfx != null && vfx != null) vfx.Burst(hit.Vfx, pos, pos - origin, orient: true);
         }
 
         void Detonate(Vector2 center, float radius, float damage, float slowFactor, float slowDuration, Color color,
