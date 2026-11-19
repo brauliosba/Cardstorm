@@ -22,6 +22,9 @@ namespace Cardstorm.Enemies
         [Tooltip("Hijo con el sprite del enemigo. Se usa si la definición tiene sprite; si no, la forma.")]
         [SerializeField] SpriteRenderer art;
 
+        [Tooltip("Material del sprite mientras está ralentizado. Vacío = tinte azul.")]
+        [SerializeField] Material frozenMaterial;
+
         const float HitFlashTime = 0.08f;
         const float TelegraphMinAlpha = 0.15f;
         const float TelegraphMaxAlpha = 0.5f;
@@ -89,6 +92,7 @@ namespace Cardstorm.Enemies
         // El que se ve: la forma del greybox o el sprite de la definición.
         SpriteRenderer view;
         bool usesArt;
+        Material artMaterial;
 
         void Awake()
         {
@@ -97,7 +101,11 @@ namespace Cardstorm.Enemies
             rb = GetComponent<Rigidbody2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             view = spriteRenderer;
-            if (art != null) artMotion = art.GetComponent<SpriteMotion>();
+            if (art != null)
+            {
+                artMotion = art.GetComponent<SpriteMotion>();
+                artMaterial = art.sharedMaterial;
+            }
 
             rb.bodyType = RigidbodyType2D.Dynamic;
             rb.gravityScale = 0f;
@@ -144,6 +152,7 @@ namespace Cardstorm.Enemies
             if (!usesArt) spriteRenderer.sprite = SpriteFor(definition.shape);
             if (artMotion != null) artMotion.Floating = definition.floats;
             view = usesArt ? art : spriteRenderer;
+            ApplyFrozen();
             view.color = BaseColor;
 
             // Los jefes son demasiado grandes para el flow field: atraviesan los obstáculos.
@@ -219,14 +228,31 @@ namespace Cardstorm.Enemies
 
             bool wasSlowed = slow.Active;
             slow.Apply(factor, duration);
-            if (!wasSlowed && slow.Active) ApplyBaseColor();
+            if (!wasSlowed && slow.Active)
+            {
+                ApplyFrozen();
+                ApplyBaseColor();
+            }
         }
 
         internal void TickSlow(float dt)
         {
             if (!slow.Active) return;
             slow.Tick(dt);
-            if (!slow.Active) ApplyBaseColor();
+            if (!slow.Active)
+            {
+                ApplyFrozen();
+                ApplyBaseColor();
+            }
+        }
+
+        // Con sprite y material de congelado, el material sustituye al tinte azul.
+        bool UsesFrozenMaterial => usesArt && frozenMaterial != null;
+
+        void ApplyFrozen()
+        {
+            if (art == null || artMaterial == null) return;
+            art.sharedMaterial = UsesFrozenMaterial && slow.Active ? frozenMaterial : artMaterial;
         }
 
         internal void RestoreColor()
@@ -244,13 +270,13 @@ namespace Cardstorm.Enemies
             view.color = white ? blink : BaseColor;
         }
 
-        // Color de la definición (blanco con sprite), teñido de azul mientras está ralentizado.
+        // Color de la definición (blanco con sprite), teñido de azul mientras está ralentizado si no hay material de congelado.
         Color BaseColor
         {
             get
             {
                 Color tint = usesArt ? Color.white : Definition.color;
-                Color c = slow.Active ? Color.Lerp(tint, SlowTint, SlowTintAmount) : tint;
+                Color c = slow.Active && !UsesFrozenMaterial ? Color.Lerp(tint, SlowTint, SlowTintAmount) : tint;
                 c.a *= fade;
                 return c;
             }

@@ -39,3 +39,8 @@ MonoBehaviour:
         delay: 0
         slowFactor: 0.5
         slowDuration: 3
+        vfx: {fileID: 876539390674624426, guid: 0a6f82e04674aa45ee13725a99e83c4f, type: 3}
+        vfxRadius: 3
+        fallVfx: {fileID: 0}
+        shake: 0
+        shakeDuration: 0.25

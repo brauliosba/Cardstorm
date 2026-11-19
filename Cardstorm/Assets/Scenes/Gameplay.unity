@@ -149544,8 +149544,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Cardstorm.Runtime::Cardstorm.Combat.FlashManager
   clock: {fileID: 829606318}
-  circleSprite: {fileID: 21300000, guid: 3ba14ff62f572404b951690219d7db4d, type: 3}
-  ringSprite: {fileID: 21300000, guid: e1b4d8f2f1be41642bccf3a8986dc7b1, type: 3}
+  circleSprite: {fileID: 21300000, guid: aebb3d6d47643c282f34c7a00b0e5cf2, type: 3}
+  ringSprite: {fileID: 21300000, guid: e414857bf0673b55adf46012c3e5a858, type: 3}
   spriteMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   sortingOrder: -3
   capacity: 16
