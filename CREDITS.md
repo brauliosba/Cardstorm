@@ -8,6 +8,7 @@ Recursos de terceros que usa Cardstorm.
 |---|---|---|---|---|
 | [Tiny Dungeon](https://kenney.nl/assets/tiny-dungeon) 1.0 | Kenney | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Jugador, enemigos, jefes, suelo y muros | `Assets/Art/Kenney/TinyDungeon`, `Assets/Art/Map` |
 | [UI Pack – Pixel Adventure](https://kenney.nl/assets/ui-pack-pixel-adventure) 2.0 | Kenney | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Paneles, botones, barras y deslizadores de piedra. `Ui_FrameWhite` es `Ui_Frame` pasado a escala de grises y aclarado, para teñirlo con el color de cada tipo de carta | `Assets/Art/Kenney/UIPixelAdventure` |
+| [Kenney Fonts](https://kenney.nl/assets/kenney-fonts) | Kenney | [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/) | Fuente de todos los textos (Kenney Mini Square) | `Assets/Art/Kenney/Fonts` |
 
 Los iconos de cartas, tipos, gemas y recursos (`Assets/Art/Icons`) y los efectos visuales (`Assets/Art/VFX`) se han hecho con IA (ver abajo) y siguen la paleta de Tiny Dungeon.
 
