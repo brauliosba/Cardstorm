@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Cardstorm.Cards;
+using Cardstorm.Combat;
 using Cardstorm.Core;
 using Cardstorm.Enemies;
 using Cardstorm.Progression;
@@ -35,12 +36,36 @@ namespace Cardstorm.Pickups
         [SerializeField] Color energyColor = HudColors.Energy;
         [SerializeField, Min(0.05f)] float xpSize = 0.35f;
         [SerializeField, Min(0.05f)] float coinSize = 0.4f;
-        [Tooltip("Escala del dime (moneda que vale el doble) respecto a la moneda normal.")]
+        [Tooltip("Sprite del dime (moneda que vale el doble). Sin él, se usa la moneda escalada con dimeScale.")]
+        [SerializeField] Sprite dimeSprite;
+        [Tooltip("Escala del dime respecto a la moneda normal, si no tiene sprite propio.")]
         [SerializeField, Min(1f)] float dimeScale = 1.35f;
         [SerializeField, Min(0.05f)] float chestSize = 1f;
         [SerializeField, Min(0.05f)] float energySize = 0.4f;
         [Tooltip("Por debajo de los enemigos y por encima del suelo.")]
         [SerializeField] int sortingOrder = -5;
+
+        [Header("Brillo")]
+        [Tooltip("Frames del brillo, después del sprite base. Vacío: sin brillo.")]
+        [SerializeField] Sprite[] xpGlint;
+        [SerializeField] Sprite[] coinGlint;
+        [SerializeField] Sprite[] dimeGlint;
+        [SerializeField] Sprite[] energyGlint;
+        [SerializeField] Sprite[] chestGlint;
+        [Tooltip("Segundos entre dos brillos del mismo recogible. Cada uno empieza desfasado.")]
+        [SerializeField, Min(0.1f)] float glintPeriod = 1.5f;
+        [SerializeField, Min(0.01f)] float glintFrameTime = 1f / 30f;
+
+        [Header("VFX")]
+        [Tooltip("Por defecto, el VfxManager de la escena.")]
+        [SerializeField] VfxManager vfx;
+        [SerializeField] ParticleSystem xpCollectVfx;
+        [SerializeField] ParticleSystem goldCollectVfx;
+        [SerializeField] ParticleSystem energyCollectVfx;
+        [Tooltip("Polvo al aparecer el cofre.")]
+        [SerializeField] ParticleSystem chestSpawnVfx;
+        [Tooltip("El cofre se abre y desaparece: lleva dentro el sprite del cofre.")]
+        [SerializeField] ParticleSystem chestOpenVfx;
 
         [Header("Pools")]
         [SerializeField, Min(0)] int xpPrewarm = 400;
@@ -73,6 +98,10 @@ namespace Cardstorm.Pickups
         {
             public PickupKind Kind;
             public Transform Transform;
+            public SpriteRenderer Renderer;
+            public bool Dime;
+            public float GlintPhase;
+            public int GlintFrame;
             public Vector2 Position;
             public float Value;
             public GoldSource Source;
@@ -94,6 +123,8 @@ namespace Cardstorm.Pickups
 
         public int ActiveOf(PickupKind kind) => activeByKind[(int)kind];
 
+        float glintTime;
+
         void Awake()
         {
             if (clock == null) clock = FindFirstObjectByType<GameClock>();
@@ -101,6 +132,7 @@ namespace Cardstorm.Pickups
             if (enemies == null) enemies = FindFirstObjectByType<EnemyManager>();
             if (player == null && enemies != null) player = enemies.Player;
             if (cards == null) cards = FindFirstObjectByType<PlayerCards>();
+            if (vfx == null) vfx = FindFirstObjectByType<VfxManager>();
             if (energySprite == null) Debug.LogWarning("PickupManager no tiene sprite de energía: usa el de la experiencia.", this);
 
             Prewarm(PickupKind.Xp, xpPrewarm);
@@ -142,7 +174,9 @@ namespace Cardstorm.Pickups
 
         public void SpawnChest(Vector2 position, int gold)
         {
-            if (gold > 0) Spawn(PickupKind.Chest, position, gold, GoldSource.Chest);
+            if (gold <= 0) return;
+            Spawn(PickupKind.Chest, position, gold, GoldSource.Chest);
+            if (vfx != null && chestSpawnVfx != null) vfx.Burst(chestSpawnVfx, position);
         }
 
         public void ReleaseAll()
@@ -166,7 +200,7 @@ namespace Cardstorm.Pickups
                 Vector2 offset = new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * coinOffset;
                 var source = definition.isBoss ? GoldSource.Boss : GoldSource.Enemy;
                 var coin = Spawn(PickupKind.Gold, position + offset, gold, source);
-                if (gold > definition.coinValue) SetSize(coin, coinSize * dimeScale);
+                if (gold > definition.coinValue) SetDime(coin);
             }
 
             if (energyPerOrb > 0f && DropRoller.RollEnergy(definition.energyChance, state.Random))
@@ -185,6 +219,7 @@ namespace Cardstorm.Pickups
             float dt = clock != null ? clock.DeltaTime : Time.deltaTime;
             if (dt <= 0f) return;
 
+            glintTime = (glintTime + dt) % glintPeriod;
             Vector2 playerPos = player.position;
             float radius = state.Stats.Value(StatType.PickupRadius);
             float radiusSqr = radius * radius;
@@ -196,6 +231,7 @@ namespace Cardstorm.Pickups
             for (int i = active.Count - 1; i >= 0; i--)
             {
                 var p = active[i];
+                UpdateGlint(p);
                 Vector2 toPlayer = playerPos - p.Position;
                 float distSqr = toPlayer.sqrMagnitude;
 
@@ -238,7 +274,53 @@ namespace Cardstorm.Pickups
             if (p.Kind == PickupKind.Xp) run.AddXp(p.Value);
             else if (p.Kind == PickupKind.Energy) cards.Energy.Add(p.Value);
             else run.AddGold(Mathf.RoundToInt(p.Value), p.Source);
+
+            var collectVfx = p.Kind switch
+            {
+                PickupKind.Xp => xpCollectVfx,
+                PickupKind.Gold => goldCollectVfx,
+                PickupKind.Energy => energyCollectVfx,
+                _ => chestOpenVfx,
+            };
+            if (vfx != null && collectVfx != null) vfx.Burst(collectVfx, p.Position);
             Release(p);
+        }
+
+        Sprite BaseSprite(Pickup p) => p.Kind switch
+        {
+            PickupKind.Gold => p.Dime && dimeSprite != null ? dimeSprite : coinSprite,
+            PickupKind.Chest => chestSprite,
+            PickupKind.Energy when energySprite != null => energySprite,
+            _ => xpSprite,
+        };
+
+        Sprite[] Glint(Pickup p) => p.Kind switch
+        {
+            PickupKind.Gold => p.Dime && dimeSprite != null ? dimeGlint : coinGlint,
+            PickupKind.Chest => chestGlint,
+            PickupKind.Energy => energyGlint,
+            _ => xpGlint,
+        };
+
+        // Frame 0 es el sprite base; del 1 al N, los del brillo. Solo cambia el sprite cuando cambia el frame.
+        void UpdateGlint(Pickup p)
+        {
+            var glint = Glint(p);
+            if (glint == null || glint.Length == 0) return;
+            float t = glintTime + p.GlintPhase;
+            if (t >= glintPeriod) t -= glintPeriod;
+            int frame = (int)(t / glintFrameTime) + 1;
+            if (frame > glint.Length) frame = 0;
+            if (frame == p.GlintFrame) return;
+            p.GlintFrame = frame;
+            p.Renderer.sprite = frame == 0 ? BaseSprite(p) : glint[frame - 1];
+        }
+
+        void SetDime(Pickup p)
+        {
+            p.Dime = true;
+            if (dimeSprite != null) p.Renderer.sprite = dimeSprite;
+            else SetSize(p, coinSize * dimeScale);
         }
 
         Pickup NearestXp(Vector2 position, float maxDistance)
@@ -270,6 +352,10 @@ namespace Cardstorm.Pickups
             p.Attracted = false;
             p.AttractTime = 0f;
             p.Transform.position = position;
+            p.Dime = false;
+            p.GlintPhase = Random.value * glintPeriod;
+            p.GlintFrame = 0;
+            p.Renderer.sprite = BaseSprite(p);
             if (kind == PickupKind.Gold) SetSize(p, coinSize);
             p.Transform.gameObject.SetActive(true);
 
@@ -315,20 +401,15 @@ namespace Cardstorm.Pickups
             go.transform.localScale = new Vector3(size, size, 1f);
 
             var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = kind switch
-            {
-                PickupKind.Gold => coinSprite,
-                PickupKind.Chest => chestSprite,
-                PickupKind.Energy when energySprite != null => energySprite,
-                _ => xpSprite,
-            };
+            var p = new Pickup { Kind = kind, Transform = go.transform, Renderer = renderer };
+            renderer.sprite = BaseSprite(p);
             renderer.color = kind switch { PickupKind.Gold => coinColor, PickupKind.Chest => chestColor, PickupKind.Energy => energyColor, _ => xpColor };
             renderer.sortingOrder = kind == PickupKind.Chest ? sortingOrder - 1 : sortingOrder;
             if (spriteMaterial != null) renderer.sharedMaterial = spriteMaterial;
 
             go.SetActive(false);
             InstanceCount++;
-            return new Pickup { Kind = kind, Transform = go.transform };
+            return p;
         }
     }
 }

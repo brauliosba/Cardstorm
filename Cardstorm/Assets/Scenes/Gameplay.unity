@@ -377,6 +377,7 @@ MonoBehaviour:
   run: {fileID: 200822254}
   clock: {fileID: 829606318}
   map: {fileID: 1816950341}
+  playerHealth: {fileID: 0}
   bosses:
   - name: Heraldo
     definition: {fileID: 11400000, guid: 023635c8c93829d42a6c06c0c799b663, type: 2}
@@ -849,6 +850,7 @@ MonoBehaviour:
   deathVfx: {fileID: 876539390674624426, guid: 5b4f32dc043ec40eeb95f2eeb0d8ae08, type: 3}
   deathChunksVfx: {fileID: 96014255814617626, guid: c0b81234e34cd64ab46a302e53a3969c, type: 3}
   vfx: {fileID: 1215376949}
+  cameraShake: {fileID: 0}
   despawnDistance: 60
   despawnTime: 5
 --- !u!114 &350652525
@@ -4124,21 +4126,51 @@ MonoBehaviour:
   clock: {fileID: 829606318}
   cards: {fileID: 127580127}
   player: {fileID: 478590299}
-  xpSprite: {fileID: 21300000, guid: ac46a2867e5843a28f3bb002afa7da8b, type: 3}
-  coinSprite: {fileID: 21300000, guid: df5f9065d77343c8871e4fcc7c2c408c, type: 3}
-  chestSprite: {fileID: 21300000, guid: ff771ce775659304f84fbecef4bb4a44, type: 3}
-  energySprite: {fileID: 21300000, guid: d356f1735bc0668f548cd65abc19dd86, type: 3}
+  xpSprite: {fileID: 21300000, guid: 3277ce3bbedc4c9dcc5457f9080d2e5a, type: 3}
+  coinSprite: {fileID: 21300000, guid: c108df7d252644dcc7c2f72f5d18259f, type: 3}
+  chestSprite: {fileID: 21300000, guid: ae14f8210080571d57826a78d10cedbb, type: 3}
+  energySprite: {fileID: 21300000, guid: d72bcf46678fac45628db56b4c2f7f8a, type: 3}
   spriteMaterial: {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   xpColor: {r: 1, g: 1, b: 1, a: 1}
   coinColor: {r: 1, g: 1, b: 1, a: 1}
-  chestColor: {r: 0.55, g: 0.33, b: 0.15, a: 1}
+  chestColor: {r: 1, g: 1, b: 1, a: 1}
   energyColor: {r: 1, g: 1, b: 1, a: 1}
-  xpSize: 0.35
-  coinSize: 0.4
-  dimeScale: 1.35
+  xpSize: 1
+  coinSize: 1
+  dimeSprite: {fileID: 21300000, guid: 47130470140139f602891badc4dc52b6, type: 3}
+  dimeScale: 1
   chestSize: 1
-  energySize: 0.4
+  energySize: 1
   sortingOrder: -5
+  xpGlint:
+  - {fileID: 21300000, guid: 6dbd4d3a0d14e2098e9f538ce0e1d36c, type: 3}
+  - {fileID: 21300000, guid: 741b959c515663582be501f0b5e9e782, type: 3}
+  - {fileID: 21300000, guid: 9065fd002190ac88df3dee5b004d47f5, type: 3}
+  coinGlint:
+  - {fileID: 21300000, guid: e90acb71361cce92e9abda06ef0e7fec, type: 3}
+  - {fileID: 21300000, guid: 60d20f6b11f20fa2492a2e32b78a2e53, type: 3}
+  - {fileID: 21300000, guid: 1e94504f1787f9eee0e8fbae7b0edd17, type: 3}
+  dimeGlint:
+  - {fileID: 21300000, guid: 0fe544fadac6a6c8f30436deaa85a154, type: 3}
+  - {fileID: 21300000, guid: fc881290ed8cb5afbe362b0d15f45a29, type: 3}
+  - {fileID: 21300000, guid: 06357cbf5ba40e801b76610b72bb55b4, type: 3}
+  energyGlint:
+  - {fileID: 21300000, guid: 72ff0dd5f627344a1bce66ddd9eddda4, type: 3}
+  - {fileID: 21300000, guid: 1e4bb83431796512d9ddbee60337fdb2, type: 3}
+  - {fileID: 21300000, guid: 5a563c51fbc92f75ac75b40ba2de26fa, type: 3}
+  chestGlint:
+  - {fileID: 21300000, guid: 04403eb8feb6bf0ec9651c671816b5e8, type: 3}
+  - {fileID: 21300000, guid: 89b1118d57df0d6773774654b54093db, type: 3}
+  - {fileID: 21300000, guid: 1c8db5de537d30edbae50dbf44621fd4, type: 3}
+  - {fileID: 21300000, guid: d0e74aed168e810f0be72031ec191510, type: 3}
+  glintPeriod: 1.5
+  glintFrameTime: 0.033333335
+  vfx: {fileID: 1215376949}
+  xpCollectVfx: {fileID: 876539390674624426, guid: 1ab9a0d8d24f2d0d5fa854e43577fd30, type: 3}
+  goldCollectVfx: {fileID: 876539390674624426, guid: 18b4ee3a79f1121772790c114ab2010e, type: 3}
+  energyCollectVfx: {fileID: 876539390674624426, guid: 6c2d45b6d2cfec3f40289c6d26a868ed, type: 3}
+  chestSpawnVfx: {fileID: 876539390674624426, guid: e658011fc2d8860924ae24de75dc041a, type: 3}
+  chestOpenVfx: {fileID: 876539390674624426, guid: 67700657b1ca9193c7e664cf5e841bc8, type: 3}
   xpPrewarm: 400
   coinPrewarm: 400
   chestPrewarm: 4
