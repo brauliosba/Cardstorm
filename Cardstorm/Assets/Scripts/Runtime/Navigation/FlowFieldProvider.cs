@@ -38,10 +38,14 @@ namespace Cardstorm.Navigation
             int width = Mathf.CeilToInt(rect.width / cellSize);
             int height = Mathf.CeilToInt(rect.height / cellSize);
             field = new FlowField(rect.min, width, height, cellSize) { MaxDistance = maxDistance };
-            BakeObstacles();
         }
 
-        void Start() => Rebuild();
+        // En Start, cuando todos los colliders del mapa (también el compuesto del tilemap) ya existen.
+        void Start()
+        {
+            BakeObstacles();
+            Rebuild();
+        }
 
         void Update()
         {

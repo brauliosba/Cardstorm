@@ -90,5 +90,30 @@ namespace Cardstorm.Core
                 Debug.LogWarning($"[MapLayout] Solo caben {result.Count} de {s.Count} obstáculos con estas reglas.");
             return result;
         }
+
+        // Celdas de la rejilla de 1 unidad que ocupa el obstáculo; la celda (x, y) cubre [x, x + 1] × [y, y + 1].
+        // El tamaño se redondea a celdas enteras: la roca es un disco con las esquinas recortadas y la columna, un cuadrado.
+        public static void GetCells(Obstacle o, List<Vector2Int> cells)
+        {
+            cells.Clear();
+            int n = Mathf.Max(2, Mathf.RoundToInt(o.Kind == ObstacleKind.Rock ? o.Size * 2f : o.Size));
+
+            // Con n par el centro cae en una esquina de celda; con n impar, en el centro de una celda.
+            Vector2 center = n % 2 == 0
+                ? new Vector2(Mathf.Round(o.Position.x), Mathf.Round(o.Position.y))
+                : new Vector2(Mathf.Floor(o.Position.x) + 0.5f, Mathf.Floor(o.Position.y) + 0.5f);
+            int originX = Mathf.RoundToInt(center.x - n * 0.5f);
+            int originY = Mathf.RoundToInt(center.y - n * 0.5f);
+            float limit = n * 0.5f;
+
+            for (int j = 0; j < n; j++)
+            for (int i = 0; i < n; i++)
+            {
+                var cell = new Vector2Int(originX + i, originY + j);
+                if (o.Kind == ObstacleKind.Rock && Vector2.Distance(cell + new Vector2(0.5f, 0.5f), center) > limit)
+                    continue;
+                cells.Add(cell);
+            }
+        }
     }
 }

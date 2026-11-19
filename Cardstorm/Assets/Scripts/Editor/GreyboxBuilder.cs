@@ -1,15 +1,18 @@
+using System.Collections.Generic;
 using System.IO;
 using Cardstorm.Core;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 namespace Cardstorm.EditorTools
 {
     // Genera el greybox de forma reproducible e idempotente: sprites y el mapa de Gameplay.unity
-    // (los obstáculos se instancian a partir de los prefabs Obstacle_Rock y Obstacle_Column).
-    // En la escena solo se recrea el objeto raíz "Map"; el resto de objetos no se toca.
+    // (suelo y muros en tilemaps con los tiles de Tiny Dungeon; obstáculos según MapLayout).
+    // En la escena solo se recrean los hijos de "Map"; Map (MapBounds) y CameraBounds se conservan
+    // porque otros objetos los referencian. El resto de objetos no se toca.
     public static class GreyboxBuilder
     {
         public const string ArtFolder = "Assets/Art/Greybox";
@@ -20,9 +23,8 @@ namespace Cardstorm.EditorTools
         public const string DiamondSpritePath = ArtFolder + "/Greybox_Diamond.png";
         public const string RingSpritePath = ArtFolder + "/Greybox_Ring.png";
 
-        public const string PrefabFolder = "Assets/Prefabs";
-        public const string RockPrefabPath = PrefabFolder + "/Obstacle_Rock.prefab";
-        public const string ColumnPrefabPath = PrefabFolder + "/Obstacle_Column.prefab";
+        const string TileSpriteFolder = "Assets/Art/Kenney/TinyDungeon/Tiles";
+        public const string MapTileFolder = "Assets/Art/Map";
 
         public const string GameplayScenePath = "Assets/Scenes/Gameplay.unity";
 
@@ -30,13 +32,16 @@ namespace Cardstorm.EditorTools
 
         const int SpriteSize = 64;
 
-        // Mapa
-        static readonly Vector2 MapSize = new(120f, 120f);
-        const float BorderThickness = 2f;
-        const float GridSpacing = 10f;
-        static readonly Color FloorColor = new Color32(0x2B, 0x2B, 0x30, 0xFF);
-        static readonly Color GridColor = new Color32(0x36, 0x36, 0x3C, 0xFF);
-        static readonly Color BorderColor = new Color32(0x4A, 0x4A, 0x52, 0xFF);
+        // Mapa (1 celda = 1 unidad = un tile de 16 px)
+        static readonly Vector2Int MapSize = new(120, 120);
+        const int BorderThickness = 2;
+        const int FloorSeed = 2026;
+        const float FloorVariantChance = 0.03f;
+        // Suelo oscurecido para que personajes y proyectiles destaquen
+        static readonly Color FloorTint = new(0.75f, 0.75f, 0.75f, 1f);
+        const int FloorTile = 0;
+        static readonly int[] FloorVariantTiles = { 12, 24 };
+        const int WallTile = 40;
 
         [MenuItem("Cardstorm/Greybox/Construir greybox")]
         public static void BuildAll()
@@ -162,71 +167,130 @@ namespace Cardstorm.EditorTools
 
         static void BuildMap(Scene scene)
         {
+            GameObject map = null;
             foreach (var go in scene.GetRootGameObjects())
             {
-                if (go.name == "Map")
-                    Object.DestroyImmediate(go);
+                if (go.name == "Map") { map = go; break; }
             }
-            var map = new GameObject("Map");
-            SceneManager.MoveGameObjectToScene(map, scene);
-            map.AddComponent<MapBounds>();
-            Rect rect = new(-MapSize * 0.5f, MapSize);
-
-            // Suelo y cuadrícula para percibir el desplazamiento
-            var floor = CreateChild(map.transform, "Floor");
-            floor.transform.localScale = new Vector3(MapSize.x, MapSize.y, 1f);
-            AddSprite(floor, SquareSpritePath, FloorColor, -100);
-
-            var grid = CreateChild(map.transform, "Grid");
-            for (float x = rect.xMin; x <= rect.xMax + 0.01f; x += GridSpacing)
+            if (map == null)
             {
-                var line = CreateChild(grid.transform, $"V {x:0}");
-                line.transform.localPosition = new Vector3(x, 0f, 0f);
-                line.transform.localScale = new Vector3(0.06f, MapSize.y, 1f);
-                AddSprite(line, SquareSpritePath, GridColor, -99);
+                map = new GameObject("Map");
+                SceneManager.MoveGameObjectToScene(map, scene);
             }
-            for (float y = rect.yMin; y <= rect.yMax + 0.01f; y += GridSpacing)
+            if (!map.TryGetComponent<MapBounds>(out _))
+                map.AddComponent<MapBounds>();
+
+            for (int i = map.transform.childCount - 1; i >= 0; i--)
             {
-                var line = CreateChild(grid.transform, $"H {y:0}");
-                line.transform.localPosition = new Vector3(0f, y, 0f);
-                line.transform.localScale = new Vector3(MapSize.x, 0.06f, 1f);
-                AddSprite(line, SquareSpritePath, GridColor, -99);
+                var child = map.transform.GetChild(i).gameObject;
+                if (child.name != "CameraBounds")
+                    Object.DestroyImmediate(child);
             }
 
-            // Muros del borde, por fuera del área jugable
-            var borders = CreateChild(map.transform, "Borders");
-            float t = BorderThickness;
-            CreateWall(borders.transform, "North", new Vector2(0f, rect.yMax + t * 0.5f), new Vector2(MapSize.x + 2f * t, t));
-            CreateWall(borders.transform, "South", new Vector2(0f, rect.yMin - t * 0.5f), new Vector2(MapSize.x + 2f * t, t));
-            CreateWall(borders.transform, "East", new Vector2(rect.xMax + t * 0.5f, 0f), new Vector2(t, MapSize.y));
-            CreateWall(borders.transform, "West", new Vector2(rect.xMin - t * 0.5f, 0f), new Vector2(t, MapSize.y));
+            var floorTile = LoadOrCreateTile("Floor", FloorTile, Tile.ColliderType.None);
+            var variantTiles = new TileBase[FloorVariantTiles.Length];
+            for (int i = 0; i < variantTiles.Length; i++)
+                variantTiles[i] = LoadOrCreateTile($"Floor_{i + 1}", FloorVariantTiles[i], Tile.ColliderType.None);
+            var wallTile = LoadOrCreateTile("Wall", WallTile, Tile.ColliderType.Grid);
 
-            // Obstáculos con semilla fija
-            var obstacles = CreateChild(map.transform, "Obstacles");
-            var rockPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(RockPrefabPath);
-            var columnPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(ColumnPrefabPath);
-            if (rockPrefab == null || columnPrefab == null)
-                Debug.LogWarning($"[GreyboxBuilder] Faltan los prefabs {RockPrefabPath} o {ColumnPrefabPath}: el mapa se construye sin obstáculos.");
-            int index = 0;
-            foreach (var o in MapLayout.GenerateObstacles(MapLayout.DefaultSettings(rect)))
+            var gridObject = CreateChild(map.transform, "Grid");
+            gridObject.AddComponent<Grid>().cellSize = Vector3.one;
+
+            // Área jugable: celdas de -60 a 59 en cada eje
+            var rect = new RectInt(-MapSize / 2, MapSize);
+
+            // Suelo con alguna variante suelta, siempre con la misma semilla
+            var floor = CreateTilemap(gridObject.transform, "Floor", 0, -100, FloorTint);
+            var random = new System.Random(FloorSeed);
+            var floorCells = new List<Vector3Int>(rect.width * rect.height);
+            var floorTiles = new List<TileBase>(rect.width * rect.height);
+            foreach (var cell in rect.allPositionsWithin)
             {
-                bool isRock = o.Kind == MapLayout.ObstacleKind.Rock;
-                var prefab = isRock ? rockPrefab : columnPrefab;
-                if (prefab == null) continue;
-                var go = (GameObject)PrefabUtility.InstantiatePrefab(prefab, scene);
-                go.name = $"{(isRock ? "Rock" : "Column")} {index++:00}";
-                go.transform.SetParent(obstacles.transform, false);
-                go.transform.localPosition = o.Position;
-                float scale = isRock ? o.Size * 2f : o.Size;
-                go.transform.localScale = new Vector3(scale, scale, 1f);
+                floorCells.Add((Vector3Int)cell);
+                floorTiles.Add(random.NextDouble() < FloorVariantChance
+                    ? variantTiles[random.Next(variantTiles.Length)]
+                    : floorTile);
             }
+            floor.SetTiles(floorCells.ToArray(), floorTiles.ToArray());
+
+            // Muros: borde por fuera del área jugable y obstáculos con semilla fija, con un solo collider compuesto
+            var walls = CreateTilemap(gridObject.transform, "Walls", Layers.Obstacle, -10, Color.white);
+            var wallCells = new HashSet<Vector3Int>();
+            for (int y = rect.yMin - BorderThickness; y < rect.yMax + BorderThickness; y++)
+            for (int x = rect.xMin - BorderThickness; x < rect.xMax + BorderThickness; x++)
+            {
+                if (!rect.Contains(new Vector2Int(x, y)))
+                    wallCells.Add(new Vector3Int(x, y, 0));
+            }
+            var obstacleCells = new List<Vector2Int>();
+            var obstacleRect = new Rect(rect.position, rect.size);
+            foreach (var o in MapLayout.GenerateObstacles(MapLayout.DefaultSettings(obstacleRect)))
+            {
+                MapLayout.GetCells(o, obstacleCells);
+                foreach (var cell in obstacleCells)
+                    wallCells.Add((Vector3Int)cell);
+            }
+            var wallArray = new Vector3Int[wallCells.Count];
+            wallCells.CopyTo(wallArray);
+            var wallTiles = new TileBase[wallArray.Length];
+            for (int i = 0; i < wallTiles.Length; i++) wallTiles[i] = wallTile;
+            walls.SetTiles(wallArray, wallTiles);
+
+            var body = walls.gameObject.AddComponent<Rigidbody2D>();
+            body.bodyType = RigidbodyType2D.Static;
+            var tilemapCollider = walls.gameObject.AddComponent<TilemapCollider2D>();
+            tilemapCollider.compositeOperation = Collider2D.CompositeOperation.Merge;
+            // Polígonos y no contornos: OverlapCircle y OverlapBox tienen que detectar el interior
+            var composite = walls.gameObject.AddComponent<CompositeCollider2D>();
+            composite.geometryType = CompositeCollider2D.GeometryType.Polygons;
+            tilemapCollider.ProcessTilemapChanges();
+            composite.GenerateGeometry();
 
             // Forma para el Confiner2D de Cinemachine. Desactivada: no participa en la física.
-            var cameraBounds = CreateChild(map.transform, "CameraBounds");
-            var boundsCollider = cameraBounds.AddComponent<BoxCollider2D>();
-            boundsCollider.size = MapSize;
-            boundsCollider.isTrigger = true;
-            boundsCollider.enabled = false;
+            var cameraBounds = map.transform.Find("CameraBounds");
+            if (cameraBounds == null)
+            {
+                cameraBounds = CreateChild(map.transform, "CameraBounds").transform;
+                var boundsCollider = cameraBounds.gameObject.AddComponent<BoxCollider2D>();
+                boundsCollider.size = MapSize;
+                boundsCollider.isTrigger = true;
+                boundsCollider.enabled = false;
+            }
+            cameraBounds.SetAsLastSibling();
+        }
+
+        // Crea el Tile del sprite tile_NNNN si no existe; si existe, lo reutiliza sin tocarlo.
+        static Tile LoadOrCreateTile(string name, int spriteIndex, Tile.ColliderType colliderType)
+        {
+            string path = $"{MapTileFolder}/{name}.asset";
+            var tile = AssetDatabase.LoadAssetAtPath<Tile>(path);
+            if (tile != null) return tile;
+
+            if (!AssetDatabase.IsValidFolder(MapTileFolder))
+                AssetDatabase.CreateFolder("Assets/Art", "Map");
+            string spritePath = $"{TileSpriteFolder}/tile_{spriteIndex:0000}.png";
+            var sprite = AssetDatabase.LoadAssetAtPath<Sprite>(spritePath);
+            if (sprite == null)
+                Debug.LogWarning($"[GreyboxBuilder] Falta el sprite {spritePath}.");
+
+            tile = ScriptableObject.CreateInstance<Tile>();
+            tile.sprite = sprite;
+            tile.colliderType = colliderType;
+            AssetDatabase.CreateAsset(tile, path);
+            return tile;
+        }
+
+        static Tilemap CreateTilemap(Transform grid, string name, int layer, int sortingOrder, Color color)
+        {
+            var go = CreateChild(grid, name, layer);
+            var tilemap = go.AddComponent<Tilemap>();
+            tilemap.color = color;
+            var renderer = go.AddComponent<TilemapRenderer>();
+            renderer.sortingOrder = sortingOrder;
+            var material = AssetDatabase.LoadAssetAtPath<Material>(UnlitSpriteMaterialPath);
+            if (material != null)
+                renderer.sharedMaterial = material;
+            return tilemap;
         }
 
         static GameObject CreateChild(Transform parent, string name, int layer = 0)
@@ -234,27 +298,6 @@ namespace Cardstorm.EditorTools
             var go = new GameObject(name) { layer = layer };
             go.transform.SetParent(parent, false);
             return go;
-        }
-
-        static void CreateWall(Transform parent, string name, Vector2 position, Vector2 size)
-        {
-            var wall = CreateChild(parent, name, Layers.Obstacle);
-            wall.transform.localPosition = position;
-            wall.transform.localScale = new Vector3(size.x, size.y, 1f);
-            AddSprite(wall, SquareSpritePath, BorderColor, -10);
-            wall.AddComponent<BoxCollider2D>().size = Vector2.one;
-        }
-
-        static SpriteRenderer AddSprite(GameObject go, string spritePath, Color color, int sortingOrder)
-        {
-            var renderer = go.AddComponent<SpriteRenderer>();
-            renderer.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(spritePath);
-            renderer.color = color;
-            renderer.sortingOrder = sortingOrder;
-            var material = AssetDatabase.LoadAssetAtPath<Material>(UnlitSpriteMaterialPath);
-            if (material != null)
-                renderer.sharedMaterial = material;
-            return renderer;
         }
     }
 }
