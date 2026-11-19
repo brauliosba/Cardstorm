@@ -358,6 +358,8 @@ MonoBehaviour:
   removalScreen: {fileID: 398906490}
   catalog: {fileID: 11400000, guid: d64d6d638a9c9c840956d1a2359218d6, type: 2}
   gemCatalog: {fileID: 11400000, guid: 0bae2c74e1e283c41831a6b9cc5ea10f, type: 2}
+  vfx: {fileID: 1215376949}
+  levelUpVfx: {fileID: 1402574705509788313, guid: 2d17fa9b18bbe2d7af660654fa79f787, type: 3}
   resumeInvulnerability: 0.5
   levelUpHealFraction: 0.5
 --- !u!114 &200822257
@@ -377,7 +379,7 @@ MonoBehaviour:
   run: {fileID: 200822254}
   clock: {fileID: 829606318}
   map: {fileID: 1816950341}
-  playerHealth: {fileID: 0}
+  playerHealth: {fileID: 478590293}
   bosses:
   - name: Heraldo
     definition: {fileID: 11400000, guid: 023635c8c93829d42a6c06c0c799b663, type: 2}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cardstorm.Cards;
+using Cardstorm.Combat;
 using Cardstorm.Core;
 using Cardstorm.Localization;
 using Cardstorm.Player;
@@ -25,6 +26,10 @@ namespace Cardstorm.Progression
         [SerializeField] RemovalScreen removalScreen;
         [SerializeField] ShopCatalog catalog;
         [SerializeField] GemCatalog gemCatalog;
+        [SerializeField] VfxManager vfx;
+
+        [Tooltip("Se emite en el jugador al subir de nivel. La elección se abre cuando acaba (la vida del sistema raíz).")]
+        [SerializeField] ParticleSystem levelUpVfx;
 
         [Tooltip("Invulnerabilidad al volver a la partida, para no recibir un golpe nada más cerrar la tienda.")]
         [SerializeField, Min(0f)] float resumeInvulnerability = 0.5f;
@@ -50,6 +55,8 @@ namespace Cardstorm.Progression
         bool lockNextScreen;
         bool refillEnergyOnClose;
         bool held;
+        // Hora de la partida a la que se abre la elección tras el VFX (negativa si no hay ninguna esperando).
+        double openAt = -1;
 
         public bool IsOpen { get; private set; }
 
@@ -63,7 +70,7 @@ namespace Cardstorm.Progression
             set
             {
                 held = value;
-                if (!held && !IsOpen && queue != null && !queue.IsEmpty) Open();
+                if (!held && !IsOpen && !Waiting && queue != null && !queue.IsEmpty) Open();
             }
         }
         public LevelUpQueue Queue => queue;
@@ -72,6 +79,10 @@ namespace Cardstorm.Progression
         public CardRemoval Removal => removal;
 
         double Now => clock != null ? clock.Elapsed : Time.timeSinceLevelLoad;
+
+        bool Waiting => openAt >= 0;
+
+        float VfxDuration => levelUpVfx != null ? levelUpVfx.main.startLifetime.constantMax : 0f;
 
         bool GemsAvailable => gemScreen != null && gemCatalog != null && gemCatalog.gems.Count > 0;
 
@@ -86,6 +97,7 @@ namespace Cardstorm.Progression
             if (shop == null) shop = FindFirstObjectByType<ShopScreen>(FindObjectsInactive.Include);
             if (gemScreen == null) gemScreen = FindFirstObjectByType<GemScreen>(FindObjectsInactive.Include);
             if (removalScreen == null) removalScreen = FindFirstObjectByType<RemovalScreen>(FindObjectsInactive.Include);
+            if (vfx == null) vfx = FindFirstObjectByType<VfxManager>();
             if (catalog == null) Debug.LogError("LevelUpController no tiene ShopCatalog: la tienda saldrá vacía.", this);
             if (gemCatalog == null) Debug.LogWarning("LevelUpController no tiene GemCatalog: Mejorar carta no se podrá elegir.", this);
             if (choice == null) Debug.LogWarning("LevelUpController no tiene LevelUpChoiceScreen: cada subida abre directamente la tienda.", this);
@@ -149,6 +161,21 @@ namespace Cardstorm.Progression
             }
         }
 
+        // El reloj de la partida se para en pausa: la espera también.
+        void Update()
+        {
+            if (!Waiting || Now < openAt) return;
+            openAt = -1;
+            if (run.Won || (health != null && health.IsDead)) return;
+            if (!held && !IsOpen && !queue.IsEmpty) Open();
+        }
+
+        // El pilar, el anillo y las flechas van en espacio local: siguen al jugador.
+        void LateUpdate()
+        {
+            if (vfx != null && health != null) vfx.Follow(levelUpVfx, health.transform.position);
+        }
+
         // RunManager crea el estado en su Start: la cola y las ofertas se crean con la primera subida.
         void EnsureCreated()
         {
@@ -180,7 +207,21 @@ namespace Cardstorm.Progression
                 if (choice != null) choice.UpdateQueue(queue.Position, queue.Total);
                 shop.UpdateQueue(queue.Position, queue.Total);
             }
-            else if (!held) Open();
+            else if (!held && !Waiting) PlayVfxThenOpen();
+        }
+
+        // Varias subidas seguidas comparten un solo VFX: las demás esperan en la cola.
+        void PlayVfxThenOpen()
+        {
+            float duration = VfxDuration;
+            if (duration <= 0f || vfx == null || health == null)
+            {
+                Open();
+                return;
+            }
+            vfx.Burst(levelUpVfx, health.transform.position);
+            health.GrantInvulnerability(duration);
+            openAt = Now + duration;
         }
 
         // Depuración: abre la elección del nivel actual con Eliminar carta al final, sin subir de nivel.
@@ -202,7 +243,7 @@ namespace Cardstorm.Progression
 
         bool CanOpenForDebug()
         {
-            if (IsOpen || held || run.State == null || run.Won) return false;
+            if (IsOpen || held || Waiting || run.State == null || run.Won) return false;
             EnsureCreated();
             return true;
         }
