@@ -35,3 +35,7 @@ MonoBehaviour:
         damage: 14
         range: 5
         arcDegrees: 360
+        vfx: {fileID: 876539390674624426, guid: 270a63d43d26157abcd3b0e9f8132639, type: 3}
+        vfxRange: 5
+        hitVfx: {fileID: 1108618801246905864, guid: 97ac8daeb33d0f44030df84811d514f4, type: 3}
+        waveTime: 0.2

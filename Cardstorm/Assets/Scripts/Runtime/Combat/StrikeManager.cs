@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Cardstorm.CameraRig;
 using Cardstorm.Core;
+using Cardstorm.Enemies;
 using UnityEngine;
 
 namespace Cardstorm.Combat
@@ -44,7 +45,20 @@ namespace Cardstorm.Combat
             public bool Fell;
         }
 
+        // Golpe a un enemigo concreto cuando le llega una onda.
+        struct Hit
+        {
+            public Enemy Enemy;
+            public int Spawn;
+            public Vector2 Origin;
+            public float Damage;
+            public float Remaining;
+            public DamageSource Source;
+            public ParticleSystem Vfx;
+        }
+
         readonly List<Strike> pending = new(32);
+        readonly List<Hit> hits = new(64);
 
         public int PendingCount => pending.Count;
 
@@ -76,6 +90,29 @@ namespace Cardstorm.Combat
             });
         }
 
+        // Daña al enemigo pasado el retraso, si sigue vivo y es el mismo (no ha vuelto al pool).
+        // El efecto sale en su posición de ese momento, girado desde el origen.
+        public void ScheduleHit(Enemy enemy, float damage, float delay, Vector2 origin, in DamageSource source, ParticleSystem hitVfx = null)
+        {
+            var hit = new Hit
+            {
+                Enemy = enemy, Spawn = enemy.Spawns, Origin = origin,
+                Damage = damage, Remaining = delay, Source = source, Vfx = hitVfx,
+            };
+            if (delay <= 0f) Land(in hit);
+            else hits.Add(hit);
+        }
+
+        void Land(in Hit hit)
+        {
+            var enemy = hit.Enemy;
+            if (enemy == null || !enemy.IsAlive || enemy.Spawns != hit.Spawn) return;
+
+            Vector2 pos = enemy.Body.position;
+            enemy.TakeDamage(hit.Damage, in hit.Source);
+            if (hit.Vfx != null && vfx != null) vfx.Burst(hit.Vfx, pos, pos - hit.Origin, orient: true);
+        }
+
         void Detonate(Vector2 center, float radius, float damage, float slowFactor, float slowDuration, Color color,
             in DamageSource source, in Visuals visuals)
         {
@@ -90,12 +127,29 @@ namespace Cardstorm.Combat
             if (flashes != null)
                 for (int i = 0; i < pending.Count; i++) flashes.Cancel(pending[i].TelegraphId);
             pending.Clear();
+            hits.Clear();
         }
 
         void Update()
         {
             float dt = clock != null && clock.Paused ? 0f : Time.deltaTime;
             if (dt <= 0f) return;
+
+            for (int i = hits.Count - 1; i >= 0; i--)
+            {
+                var h = hits[i];
+                h.Remaining -= dt;
+                if (h.Remaining > 0f)
+                {
+                    hits[i] = h;
+                    continue;
+                }
+
+                int last = hits.Count - 1;
+                if (i != last) hits[i] = hits[last];
+                hits.RemoveAt(last);
+                Land(in h);
+            }
 
             // Hacia atrás: se quita intercambiando con el último y no se salta ninguno.
             for (int i = pending.Count - 1; i >= 0; i--)

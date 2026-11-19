@@ -32,6 +32,12 @@ namespace Cardstorm.Cards.Effects
         [Tooltip("Corte en cada enemigo alcanzado, girado hacia él.")]
         public ParticleSystem hitVfx;
 
+        [Tooltip("Segundos que tarda el golpe en llegar al alcance, frenando como la onda del VFX. 0 = inmediato.")]
+        [Min(0f)] public float waveTime;
+
+        // La onda dibujada se abre con r = 1 - (1 - t)^WaveEase: el golpe llega en t = 1 - (1 - r)^(1 / WaveEase).
+        const float WaveEase = 2.2f;
+
         public override CardTraits Traits =>
             CardTraits.Damage | CardTraits.Area | (arcDegrees < 360f ? CardTraits.Targeted : CardTraits.None);
 
@@ -49,6 +55,7 @@ namespace Cardstorm.Cards.Effects
             float finalArc = Mathf.Min(360f, arcDegrees * context.AreaMultiplier);
             Vector2 origin = context.Origin;
             var vfxManager = context.Caster.Vfx;
+            var strikes = waveTime > 0f ? context.Caster.Strikes : null;
             int count = Physics2D.OverlapCircle(origin, finalRange + SearchMargin, filter, Buffer);
 
             // Un collider por enemigo: cada uno se golpea como mucho una vez.
@@ -57,8 +64,17 @@ namespace Cardstorm.Cards.Effects
                 if (!Buffer[i].TryGetComponent(out Enemy enemy) || !enemy.IsAlive) continue;
 
                 Vector2 pos = enemy.Body.position;
-                if (Vector2.Distance(origin, pos) - enemy.Radius > finalRange) continue;
+                float edge = Vector2.Distance(origin, pos) - enemy.Radius;
+                if (edge > finalRange) continue;
                 if (!Targeting.InArc(origin, context.Aim, pos, finalArc)) continue;
+
+                if (strikes != null)
+                {
+                    float reach = Mathf.Clamp01(edge / finalRange);
+                    float delay = waveTime * (1f - Mathf.Pow(1f - reach, 1f / WaveEase));
+                    strikes.ScheduleHit(enemy, finalDamage, delay, origin, context.Source, hitVfx);
+                    continue;
+                }
 
                 enemy.TakeDamage(finalDamage, context.Source);
                 if (vfxManager != null) vfxManager.Burst(hitVfx, pos, pos - origin, orient: true);

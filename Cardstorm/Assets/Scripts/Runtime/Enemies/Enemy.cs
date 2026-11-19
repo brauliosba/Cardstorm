@@ -48,6 +48,8 @@ namespace Cardstorm.Enemies
         public float MaxHealth { get; private set; }
         public float Health { get; private set; }
         public bool IsAlive { get; private set; }
+        // Cuenta las salidas del pool: distingue esta vida de la instancia de las anteriores.
+        public int Spawns { get; private set; }
         public bool IsBoss => Definition != null && Definition.isBoss;
 
         // Huye sin recibir ni hacer daño y se desvanece. Al terminar, EnemyManager lo recicla.
@@ -120,6 +122,7 @@ namespace Cardstorm.Enemies
         public void Activate(EnemyDefinition definition, Vector2 position, float reinforcement)
         {
             Definition = definition;
+            Spawns++;
             Speed = definition.moveSpeed;
             MaxHealth = definition.maxHealth * reinforcement;
             Health = MaxHealth;
