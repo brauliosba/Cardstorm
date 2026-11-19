@@ -43,7 +43,8 @@ namespace Cardstorm.Combat
         // Con orient, las partículas del raíz salen giradas hacia direction; la instancia es compartida,
         // así que el giro va en cada partícula y no en el renderer.
         // scale agranda el efecto entero (tamaño y forma de emisión), p. ej. para ajustarlo a un radio.
-        public void Burst(ParticleSystem prefab, Vector2 position, Vector2 direction = default, bool orient = false, float scale = 1f)
+        // mirror voltea en horizontal las partículas del raíz (necesita la rotación 3D en el prefab).
+        public void Burst(ParticleSystem prefab, Vector2 position, Vector2 direction = default, bool orient = false, float scale = 1f, bool mirror = false)
         {
             if (prefab == null) return;
             var inst = Get(prefab, scale);
@@ -55,14 +56,16 @@ namespace Cardstorm.Combat
             for (int s = 0; s < inst.Systems.Length; s++)
             {
                 // La rotación de las partículas va en sentido horario.
-                if (s == 0 && orient) p.rotation = -angle;
+                // Volteada, el sprite apunta a -X: se gira lo que falta hasta direction.
+                if (s == 0 && mirror) p.rotation3D = new Vector3(0f, 180f, orient ? angle - 180f : 0f);
+                else if (s == 0 && orient) p.rotation = -angle;
                 else p.ResetRotation();
                 inst.Systems[s].Emit(p, inst.Counts[s]);
             }
         }
 
         // Deja partículas a lo largo del segmento. carry guarda la distancia sobrante entre llamadas.
-        public void Trail(ParticleSystem prefab, Vector2 from, Vector2 to, ref float carry)
+        public void Trail(ParticleSystem prefab, Vector2 from, Vector2 to, ref float carry, bool mirror = false)
         {
             if (prefab == null) return;
             var inst = Get(prefab);
@@ -74,6 +77,7 @@ namespace Cardstorm.Combat
             Vector2 dir = delta / length;
 
             var p = new ParticleSystem.EmitParams { startColor = FlashColor(), applyShapeToPosition = true };
+            if (mirror) p.rotation3D = new Vector3(0f, 180f, 0f);
             float d = inst.Spacing - carry;
             for (; d <= length; d += inst.Spacing)
             {

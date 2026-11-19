@@ -1,4 +1,6 @@
+using Cardstorm.Combat;
 using Cardstorm.Core;
+using Cardstorm.Visuals;
 using UnityEngine;
 
 namespace Cardstorm.Player
@@ -23,6 +25,24 @@ namespace Cardstorm.Player
         Vector2 dashVelocity;
         float dashTimer;
 
+        // Lo que se dibuja durante el desplazamiento.
+        public struct DashVisuals
+        {
+            public VfxManager Vfx;
+            public ParticleSystem Ghost, Start, End;
+        }
+
+        // Dónde sale el polvo respecto al centro del jugador: a sus pies y un poco por detrás.
+        static readonly Vector2 FeetOffset = new(0f, -0.3125f);
+        const float StartBack = 0.25f;
+        const float EndBack = 0.1875f;
+
+        SpriteRenderer art;
+        DashVisuals dashVisuals;
+        Vector2 dashLast;
+        float dashCarry;
+        bool dashMirror;
+
         // Multiplicador de la carta Zancada (+10 % por copia).
         public float SpeedMultiplier { get; set; } = 1f;
 
@@ -39,6 +59,8 @@ namespace Cardstorm.Player
         {
             rb = GetComponent<Rigidbody2D>();
             input = GetComponent<PlayerInputReader>();
+            var motion = GetComponentInChildren<SpriteMotion>(true);
+            if (motion != null) art = motion.GetComponent<SpriteRenderer>();
 
             rb.bodyType = RigidbodyType2D.Dynamic;
             rb.gravityScale = 0f;
@@ -63,7 +85,7 @@ namespace Cardstorm.Player
         }
 
         // Desplazamiento rápido que ignora la entrada. Atraviesa a los enemigos, pero no los obstáculos.
-        public void Dash(Vector2 direction, float distance, float duration)
+        public void Dash(Vector2 direction, float distance, float duration, DashVisuals visuals = default)
         {
             if (distance <= 0f || duration <= 0f) return;
             if (direction.sqrMagnitude < 0.0001f) direction = LastMoveDirection;
@@ -71,10 +93,35 @@ namespace Cardstorm.Player
             dashVelocity = direction.normalized * (distance / duration);
             dashTimer = duration;
             rb.excludeLayers = Layers.EnemyMask;
+
+            // Los fantasmas miran hacia donde va; en vertical, hacia donde ya miraba.
+            Vector2 dir = direction.normalized;
+            dashMirror = Mathf.Abs(dir.x) > 0.01f ? dir.x < 0f : art != null && art.flipX;
+            dashVisuals = visuals;
+            dashLast = rb.position;
+            dashCarry = 0f;
+            if (visuals.Vfx == null) return;
+            visuals.Vfx.Burst(visuals.Ghost, rb.position, mirror: dashMirror);
+            visuals.Vfx.Burst(visuals.Start, rb.position - dir * StartBack + FeetOffset, dir, orient: true, mirror: dir.x < 0f);
+        }
+
+        // Estela desde el último paso y, al acabar, el polvo de la llegada.
+        void DashTrail()
+        {
+            Vector2 position = rb.position;
+            dashVisuals.Vfx.Trail(dashVisuals.Ghost, dashLast, position, ref dashCarry, dashMirror);
+            dashLast = position;
+            if (IsDashing) return;
+
+            Vector2 dir = dashVelocity.normalized;
+            dashVisuals.Vfx.Burst(dashVisuals.End, position - dir * EndBack + FeetOffset);
+            dashVisuals = default;
         }
 
         void FixedUpdate()
         {
+            if (dashVisuals.Vfx != null) DashTrail();
+
             if (IsDashing)
             {
                 rb.linearVelocity = dashVelocity;
