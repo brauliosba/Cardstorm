@@ -5,7 +5,7 @@
 Este repositorio contiene el prototipo desarrollado como **Trabajo Final de Máster (TFM)** del Máster Universitario en Diseño y Programación de Videojuegos de la Universitat Oberta de Catalunya (UOC), curso 2026-2027.
 
 - **Autor:** Braulio Baldeón
-- **Motor:** Unity 6 (6000.3.11f1), Universal Render Pipeline
+- **Motor:** Unity 6 (6000.3.11f1), Universal Render Pipeline con *2D Renderer*
 - **Plataforma objetivo:** Windows (PC), teclado y ratón o mando
 - **Estado:** vertical slice (Sprint 3)
 
@@ -83,7 +83,9 @@ Mejorar carta ofrece tres gemas al azar (se pueden refrescar pagando oro) y, al 
 | Git LFS | 3.x (el repositorio usa LFS para recursos binarios) |
 | IDE (opcional) | Visual Studio 2022 o JetBrains Rider |
 
-Paquetes principales del proyecto: Universal RP 17.3, Input System 1.19, uGUI, Timeline y AI Navigation.
+Paquetes principales del proyecto: Universal RP 17.3, Input System 1.19, Localization 1.5, Cinemachine 3.1, uGUI con TextMesh Pro y Timeline. DOTween va incluido en `Assets/Plugins`.
+
+No se usa AI Navigation (NavMesh): los enemigos se mueven con física 2D y un campo de flujo propio (`FlowFieldProvider`) que comparten todos.
 
 ---
 
@@ -103,13 +105,15 @@ Paquetes principales del proyecto: Universal RP 17.3, Input System 1.19, uGUI, T
 
 ## Cómo ejecutar en el editor
 
-1. Abre la escena principal en `Assets/Scenes/`.
+1. Abre `Assets/Scenes/MainMenu.unity`.
 2. Pulsa **Play**.
+
+También se puede dar a Play directamente en `Assets/Scenes/Gameplay.unity` para empezar una partida sin pasar por el menú.
 
 ## Cómo compilar una build para Windows
 
 1. **File → Build Profiles** (o *Build Settings*).
-2. Selecciona la plataforma **Windows** y comprueba que la escena principal está en la lista de escenas.
+2. Selecciona la plataforma **Windows** y comprueba que la lista de escenas es `MainMenu` (0) y `Gameplay` (1).
 3. Pulsa **Build** y elige una carpeta de salida fuera del repositorio (por ejemplo, `Builds/`).
 4. Ejecuta `Cardstorm.exe`.
 
@@ -125,9 +129,16 @@ Las versiones compiladas de cada entrega (PEC) se publican en la sección **[Rel
 | Carta de la derecha | L o 3 | B |
 | Carta de abajo | K o 4 | A |
 | Ver descripción de las cartas | Mantener Mayús | Mantener gatillo izquierdo |
+| Ver estadísticas | Tab | LB |
 | Pausa | Esc | Start |
 
-*Los controles pueden cambiar durante el desarrollo.*
+Los controles se pueden reasignar en **Opciones › Controles**, en teclado y en mando. Se cambia la tecla principal de cada acción (WASD, I/J/L/K, Mayús, Tab y Esc); las flechas y 1–4 siguen como alternativa fija. Si la tecla nueva ya está en uso, las dos acciones se intercambian. **Restablecer** vuelve a los controles de serie. En mando, el movimiento con el joystick no se reasigna.
+
+### Menú y opciones
+
+El juego empieza en el menú principal: **Jugar**, **Desbloqueos** (desactivado por ahora), **Opciones** y **Salir**, con el código de jugador y la versión en la esquina. La pausa tiene **Continuar**, **Reiniciar**, **Opciones** y **Menú principal**.
+
+Las opciones son las mismas en el menú y en la pausa: volumen de música y de efectos, sacudida de cámara (normal, reducida o desactivada), **Reducir destellos**, idioma y controles. Se guardan entre partidas.
 
 ### Teclas de depuración
 
@@ -157,7 +168,7 @@ Solo en el editor y en *development build*.
 
 ## Idiomas
 
-El juego está en **español** e **inglés**. Se cambia en el menú de pausa con el botón **Idioma** y la elección se recuerda entre partidas. La primera vez se usa el idioma del sistema y, si no es ninguno de los dos, español.
+El juego está en **español** e **inglés**. Se cambia en **Opciones** (desde el menú o la pausa) y la elección se recuerda entre partidas. La primera vez se usa el idioma del sistema y, si no es ninguno de los dos, español.
 
 Los textos están en una hoja de Google Sheets con dos pestañas, `UI` (interfaz) y `Content` (cartas, gemas y enemigos), que es la fuente de verdad. Para traer los cambios al proyecto:
 
@@ -176,7 +187,7 @@ Cada partida se graba en local, sin conexión ni datos personales, en:
 %USERPROFILE%\AppData\LocalLow\DefaultCompany\Cardstorm\telemetria\
 ```
 
-Son cuatro CSV por partida (`resumen`, `eventos`, `muestras` cada 15 s y `cartas`), con el nombre `<código>_<fecha>_<hora>_<fichero>.csv`. El código de jugador son 4 caracteres al azar que se guardan entre partidas; se ve en el menú de pausa y en la pantalla final, que también tiene un botón para abrir la carpeta. La grabación está activa también en la build normal; se apaga desmarcando `TelemetryRecorder` en el objeto `Telemetry` de la escena.
+Son cuatro CSV por partida (`resumen`, `eventos`, `muestras` cada 15 s y `cartas`), con el nombre `<código>_<fecha>_<hora>_<fichero>.csv`. El código de jugador son 4 caracteres al azar que se guardan entre partidas; se ve en el menú principal, en el de pausa y en la pantalla final, que también tiene un botón para abrir la carpeta. La grabación está activa también en la build normal; se apaga desmarcando `TelemetryRecorder` en el objeto `Telemetry` de la escena.
 
 Para juntar todas las partidas y comprobar los criterios de equilibrado:
 
@@ -200,6 +211,7 @@ Cardstorm/
 ├── Tools/
 │   └── Telemetry/        Script de análisis de las partidas (Python)
 ├── .gitattributes        Reglas de Git LFS
+├── CREDITS.md            Recursos de terceros y contenido hecho con IA
 ├── LICENSE
 └── README.md
 ```
@@ -221,11 +233,16 @@ El proyecto se gestiona con **Scrum adaptado a una sola persona**, con sprints a
 
 ## Recursos de terceros
 
-Los recursos gráficos y de sonido de terceros que se incorporen se listarán aquí con su autor, origen y licencia, y también en el apartado de recursos de terceros de la memoria del TFM.
+La lista completa, con enlaces y qué se usa de cada uno, está en [`CREDITS.md`](CREDITS.md).
 
-| Recurso | Autor | Origen | Licencia |
-|---|---|---|---|
-| *(pendiente)* | | | |
+| Recurso | Autor | Licencia |
+|---|---|---|
+| [Tiny Dungeon](https://kenney.nl/assets/tiny-dungeon) (personajes, enemigos y mapa) | Kenney | CC0 1.0 |
+| [UI Pack – Pixel Adventure](https://kenney.nl/assets/ui-pack-pixel-adventure) (interfaz) | Kenney | CC0 1.0 |
+| [Kenney Fonts](https://kenney.nl/assets/kenney-fonts) (Kenney Mini Square) | Kenney | CC0 1.0 |
+| [DOTween](https://dotween.demigiant.com) | Demigiant | [Licencia de DOTween](https://dotween.demigiant.com/license.php) |
+
+La música, los efectos de sonido, los iconos y los efectos visuales son originales y se han hecho con ayuda de IA (Claude Code), sin modelos de generación de audio ni de imagen. El detalle está en `CREDITS.md`.
 
 ---
 
