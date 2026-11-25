@@ -18,7 +18,7 @@ Este repositorio contiene el prototipo desarrollado como **Trabajo Final de Más
 - **Tipos de carta:** ataque (proyectil, área, cuerpo a cuerpo), defensa y movilidad, invocaciones y cartas de poder con efecto pasivo.
 - **Progresión en la partida:** los enemigos sueltan experiencia y oro; al subir de nivel se elige entre **Nueva carta** (tienda) y **Mejorar carta** (gemas) y, cada 5 niveles, después se pueden eliminar cartas del mazo.
 - **Partida completa de unos 15 minutos**, con una oleada densa hacia el minuto 3, un minijefe en el minuto 5 y un jefe final en el minuto 15.
-- **Mazo inicial:** 4 × Disparo, 2 × Tajo, 2 × Esquivar.
+- **Mazo inicial:** 4 × Disparo, 2 × Tajo, 1 × Esquivar.
 
 ### Alcance previsto (MVP)
 
